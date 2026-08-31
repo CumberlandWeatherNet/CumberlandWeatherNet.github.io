@@ -2,54 +2,128 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CWN — SEVERE WEATHER MODE</title>
+<title>CWN — 1994 SEVERE WEATHER BULLETIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;background:#000;font-family:'Courier New',monospace;color:#FFEFD5;overflow:hidden;}
 
-#scaleWrapper{width:1920px;height:1080px;transform-origin:top left;position:absolute;top:0;left:0;}
+#scaleWrapper{
+    width:1920px;
+    height:1080px;
+    transform-origin:top left;
+    position:absolute;
+    top:0;
+    left:0;
+}
 
+/* BASE */
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:'Courier New', monospace;
+    color:#FFEFD5;
+}
+
+/* CRT EFFECT */
 body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;
-    background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 1px,transparent 2px,transparent 4px);
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.02) 0px,
+        rgba(255,255,255,.02) 1px,
+        transparent 2px,
+        transparent 4px
+    );
 }
 body::after{
-    content:"";position:fixed;inset:0;pointer-events:none;
-    background:radial-gradient(ellipse at center,rgba(0,0,0,.0) 40%,rgba(0,0,0,.7) 100%);
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,.0) 40%,
+        rgba(0,0,0,.7) 100%
+    );
 }
 
 /* NAV BAR */
 .navbar{
-    height:40px;background:#3b0000;border-bottom:3px solid #FFCC00;
-    display:flex;align-items:center;gap:20px;padding-left:20px;
+    height:40px;
+    background:#3b0000;
+    border-bottom:3px solid #FFCC00;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding-left:20px;
 }
 .navbar a{
-    color:#FFCC99;text-decoration:none;font-size:20px;
+    color:#FFCC99;
+    text-decoration:none;
+    font-size:20px;
 }
 .navbar a:hover{color:#FFFFFF;}
 
 /* CWN LIVE BUG */
 .live-bug{
-    position:absolute;top:10px;right:20px;
-    background:#FF0000;color:#FFF;padding:6px 12px;
-    font-size:20px;border:3px solid #FFF;
+    position:absolute;
+    top:10px;
+    right:20px;
+    background:#FF0000;
+    color:#FFF;
+    padding:6px 12px;
+    font-size:20px;
+    border:3px solid #FFF;
     text-shadow:1px 1px #000;
 }
 
 /* HEADER */
 .header{
-    height:110px;background:linear-gradient(90deg,#3b0000,#7a0000,#b00000);
-    border-bottom:6px solid #FFCC00;display:flex;justify-content:space-between;align-items:center;padding:0 30px;
+    height:110px;
+    background:linear-gradient(90deg,#3b0000,#7a0000,#b00000);
+    border-bottom:6px solid #FFCC00;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 30px;
 }
-.network-title{font-size:46px;letter-spacing:3px;color:#FFEFD5;text-shadow:2px 0 #FF0000,-2px 0 #FFCC00;}
-.header-sub{font-size:22px;color:#FFCC99;}
-.severe-label{font-size:32px;padding:10px 18px;border:3px solid #FFCC00;color:#FFCC00;}
 
+.network-title{
+    font-size:46px;
+    letter-spacing:3px;
+    color:#FFEFD5;
+    text-shadow:2px 0 #FF0000,-2px 0 #FFCC00;
+}
+
+.header-sub{
+    font-size:22px;
+    color:#FFCC99;
+}
+
+.severe-label{
+    font-size:32px;
+    padding:10px 18px;
+    border:3px solid #FFCC00;
+    color:#FFCC00;
+}
+
+/* CLOCK */
 .clock-box{
-    width:380px;height:80px;background:#120000;border:3px solid #FFCC00;
-    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;
+    width:380px;
+    height:80px;
+    background:#120000;
+    border:3px solid #FFCC00;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:2px;
 }
 .clock{font-size:28px;color:#FFCC00;}
 .date{font-size:18px;color:#FFCC99;}
@@ -57,34 +131,90 @@ body::after{
 
 /* MAIN GRID */
 .main{
-    height:900px;padding:12px;display:grid;
-    grid-template-columns:1100px 780px;gap:12px;overflow:hidden;
+    height:900px;
+    padding:12px;
+    display:grid;
+    grid-template-columns:1100px 780px;
+    gap:12px;
+    overflow:hidden;
 }
 
 /* PANELS */
 .panel{
-    background:#120000;border:4px solid #FFCC00;overflow:hidden;display:flex;flex-direction:column;
+    background:#120000;
+    border:4px solid #FFCC00;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
 }
+
 .panel-title{
-    height:52px;line-height:52px;padding-left:16px;font-size:28px;
-    background:linear-gradient(90deg,#3b0000,#7a0000);border-bottom:3px solid #FF0000;color:#FFEFD5;
+    height:52px;
+    line-height:52px;
+    padding-left:16px;
+    font-size:28px;
+    background:linear-gradient(90deg,#3b0000,#7a0000);
+    border-bottom:3px solid #FF0000;
+    color:#FFEFD5;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* 1994 DROPDOWN */
+.city-dropdown{
+    background:#120000;
+    color:#FFCC99;
+    border:2px solid #FFCC00;
+    font-size:20px;
+    padding:4px 8px;
+    margin-right:20px;
+    cursor:pointer;
+}
+.city-dropdown option{
+    background:#120000;
+    color:#FFCC99;
 }
 
 /* RADAR */
 .radar-window{
-    flex:1;background:#000;display:flex;justify-content:center;align-items:center;overflow:hidden;
+    flex:1;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
 }
 .radar-window img{
-    width:115%;height:115%;object-fit:cover;image-rendering:pixelated;filter:contrast(1.2) brightness(1.1);
+    width:115%;
+    height:115%;
+    object-fit:cover;
+    image-rendering:pixelated;
+    filter:contrast(1.2) brightness(1.1);
 }
 
 /* RADAR LEGEND */
 .radar-legend{
-    height:90px;background:#120000;border-top:3px solid #FFCC00;
-    padding:8px 16px;display:flex;flex-direction:column;gap:6px;font-size:18px;color:#FFEFD5;
+    height:90px;
+    background:#120000;
+    border-top:3px solid #FFCC00;
+    padding:8px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:18px;
+    color:#FFEFD5;
 }
-.legend-row{display:flex;align-items:center;gap:10px;}
-.legend-swatch{width:18px;height:18px;border:1px solid #FFEFD5;}
+.legend-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.legend-swatch{
+    width:18px;
+    height:18px;
+    border:1px solid #FFEFD5;
+}
 .legend-light{background:#00FF00;}
 .legend-moderate{background:#FFFF00;}
 .legend-heavy{background:#FF8000;}
@@ -92,26 +222,56 @@ body::after{
 
 /* RIGHT COLUMN */
 .right-stack{
-    display:grid;grid-template-rows:430px 430px;gap:12px;
+    display:grid;
+    grid-template-rows:430px 430px;
+    gap:12px;
 }
 
 /* BULLETIN */
-.bulletin-content{padding:14px;font-size:22px;line-height:1.4;overflow:hidden;}
-.bulletin-line{margin-bottom:12px;color:#FFEFD5;font-size:24px;font-weight:bold;}
+.bulletin-content{
+    padding:14px;
+    font-size:22px;
+    line-height:1.4;
+    overflow:hidden;
+}
+.bulletin-line{
+    margin-bottom:12px;
+    color:#FFEFD5;
+    font-size:24px;
+    font-weight:bold;
+}
 
 /* LOCATION PANEL */
-.location-content{padding:14px;font-size:22px;line-height:1.5;}
-.location-line{margin-bottom:10px;color:#FFCC99;font-size:22px;}
+.location-content{
+    padding:14px;
+    font-size:22px;
+    line-height:1.5;
+}
+.location-line{
+    margin-bottom:10px;
+    color:#FFCC99;
+    font-size:22px;
+}
 
 /* EMERGENCY CRAWL */
 .emergency-crawl{
-    position:absolute;bottom:0;left:0;width:100%;height:40px;
-    background:#8b0000;border-top:3px solid #FFCC00;
-    overflow:hidden;display:none;
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:40px;
+    background:#8b0000;
+    border-top:3px solid #FFCC00;
+    overflow:hidden;
+    display:none;
 }
 .crawl-text{
-    white-space:nowrap;font-size:24px;line-height:40px;color:#FFCC99;
-    animation:crawl 20s linear infinite;padding-left:100%;
+    white-space:nowrap;
+    font-size:24px;
+    line-height:40px;
+    color:#FFCC99;
+    animation:crawl 20s linear infinite;
+    padding-left:100%;
 }
 @keyframes crawl{
     from{transform:translateX(0);}
@@ -123,78 +283,104 @@ body::after{
 <body>
 <div id="scaleWrapper">
 
-    <!-- NAV BAR -->
-    <div class="navbar">
-        <a href="index.html">Home</a>
-        <a href="severe.html">Severe Page</a>
-        <a href="tornado.html">Tornado Override</a>
-        <a href="breaking.html">Breaking Weather</a>
-        <a href="standby.html">Standby Slate</a>
+<!-- NAV BAR -->
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="80s.html">80s Weather</a>
+    <a href="1994Severe.html">1994 Severe</a>
+    <a href="breaking.html">Breaking Weather</a>
+</div>
+
+<!-- CWN LIVE BUG -->
+<div class="live-bug">CWN LIVE</div>
+
+<!-- HEADER -->
+<div class="header">
+    <div>
+        <div class="network-title">CUMBERLAND WEATHER NET</div>
+        <div class="header-sub">SEVERE WEATHER BULLETIN — 1994 STYLE</div>
+    </div>
+    <div class="severe-label">SEVERE MODE</div>
+    <div class="clock-box">
+        <div class="clock" id="clock">--:-- --</div>
+        <div class="date" id="date">Loading...</div>
+        <div class="temp" id="temp">Temp: --°</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- RADAR -->
+    <div class="panel">
+        <div class="panel-title">LIVE RADAR — MIDDLE TENNESSEE</div>
+        <div class="radar-window">
+            <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
+        </div>
+        <div class="radar-legend">
+            <div>RADAR LEGEND</div>
+            <div class="legend-row">
+                <div class="legend-swatch legend-light"></div><span>Light Rain</span>
+                <div class="legend-swatch legend-moderate"></div><span>Moderate Rain</span>
+            </div>
+            <div class="legend-row">
+                <div class="legend-swatch legend-heavy"></div><span>Heavy Rain</span>
+                <div class="legend-swatch legend-severe"></div><span>Severe Storms</span>
+            </div>
+        </div>
     </div>
 
-    <!-- CWN LIVE BUG -->
-    <div class="live-bug">CWN LIVE</div>
+    <!-- RIGHT COLUMN -->
+    <div class="right-stack">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div>
-            <div class="network-title">CUMBERLAND WEATHER NET</div>
-            <div class="header-sub">SEVERE WEATHER BULLETIN — 1994 STYLE</div>
-        </div>
-        <div class="severe-label">SEVERE MODE</div>
-        <div class="clock-box">
-            <div class="clock" id="clock">--:-- --</div>
-            <div class="date" id="date">Loading...</div>
-            <div class="temp" id="temp">Temp: --°</div>
-        </div>
-    </div>
-
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- RADAR -->
+        <!-- BULLETIN -->
         <div class="panel">
-            <div class="panel-title">LIVE RADAR — MIDDLE TENNESSEE</div>
-            <div class="radar-window">
-                <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
+            <div class="panel-title">SEVERE WEATHER BULLETIN</div>
+            <div class="bulletin-content" id="bulletinPanel"></div>
+        </div>
+
+        <!-- YOUR LOCATION -->
+        <div class="panel">
+            <div class="panel-title">
+                YOUR LOCATION
+                <select id="citySelect" class="city-dropdown">
+                    <option value="">Select City</option>
+                    <option value="36.1627,-86.7816">Nashville</option>
+                    <option value="36.2081,-86.2911">Lebanon</option>
+                    <option value="36.3884,-86.4467">Gallatin</option>
+                    <option value="36.3040,-86.6200">Hendersonville</option>
+                    <option value="35.8456,-86.3903">Murfreesboro</option>
+                    <option value="35.9251,-86.8689">Franklin</option>
+                    <option value="35.6151,-87.0353">Columbia</option>
+                    <option value="36.1628,-85.5016">Cookeville</option>
+                    <option value="36.5298,-87.3595">Clarksville</option>
+                    <option value="36.5092,-86.8850">Springfield</option>
+                    <option value="36.0770,-87.3870">Dickson</option>
+                    <option value="35.4834,-86.4603">Shelbyville</option>
+                    <option value="35.4734,-86.0886">Manchester</option>
+                    <option value="35.3620,-86.2094">Tullahoma</option>
+                    <option value="35.6834,-85.7697">McMinnville</option>
+                    <option value="35.9256,-85.4644">Sparta</option>
+                    <option value="36.2512,-85.9519">Carthage</option>
+                    <option value="36.5212,-86.2919">Lafayette</option>
+                    <option value="36.3900,-86.1611">Hartsville</option>
+                    <option value="36.3851,-85.3230">Livingston</option>
+                    <option value="36.4270,-84.9372">Jamestown</option>
+                    <option value="35.9484,-85.0269">Crossville</option>
+                </select>
             </div>
-            <div class="radar-legend">
-                <div>RADAR LEGEND</div>
-                <div class="legend-row">
-                    <div class="legend-swatch legend-light"></div><span>Light Rain</span>
-                    <div class="legend-swatch legend-moderate"></div><span>Moderate Rain</span>
-                </div>
-                <div class="legend-row">
-                    <div class="legend-swatch legend-heavy"></div><span>Heavy Rain</span>
-                    <div class="legend-swatch legend-severe"></div><span>Severe Storms</span>
-                </div>
+            <div class="location-content" id="locationPanel">
+                <div class="location-line">Select a city to view conditions.</div>
             </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div class="right-stack">
-
-            <!-- BULLETIN -->
-            <div class="panel">
-                <div class="panel-title">SEVERE WEATHER BULLETIN</div>
-                <div class="bulletin-content" id="bulletinPanel"></div>
-            </div>
-
-            <!-- YOUR LOCATION -->
-            <div class="panel">
-                <div class="panel-title">YOUR LOCATION</div>
-                <div class="location-content" id="locationPanel">
-                    <div class="location-line">Detecting your location...</div>
-                </div>
-            </div>
-
-        </div>
     </div>
+</div>
 
-    <!-- EMERGENCY CRAWL -->
-    <div class="emergency-crawl" id="crawlBox">
-        <div class="crawl-text" id="crawlText"></div>
-    </div>
+<!-- EMERGENCY CRAWL -->
+<div class="emergency-crawl" id="crawlBox">
+    <div class="crawl-text" id="crawlText"></div>
+</div>
 
 </div>
 
@@ -218,35 +404,40 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* IP LOCATION */
-async function updateLocationPanel(){
+/* CITY SELECT WEATHER */
+document.getElementById("citySelect").addEventListener("change", async function(){
+    const val=this.value;
     const panel=document.getElementById("locationPanel");
 
+    if(!val){
+        panel.innerHTML="<div class='location-line'>Select a city to view conditions.</div>";
+        return;
+    }
+
+    const [lat,lon]=val.split(",");
+
     try{
-        const ip=await fetch("https://ipinfo.io/json?token=YOUR_TOKEN_HERE").then(r=>r.json());
-        const loc=ip.loc.split(",");
-        const lat=loc[0],lon=loc[1];
+        const pointsResp=await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+        const pointsData=await pointsResp.json();
 
-        const points=await fetch(`https://api.weather.gov/points/${lat},${lon}`).then(r=>r.json());
-        const city=points.properties.relativeLocation.properties.city;
-        const state=points.properties.relativeLocation.properties.state;
+        const city=pointsData.properties.relativeLocation.properties.city;
+        const state=pointsData.properties.relativeLocation.properties.state;
 
-        const hourly=await fetch(points.properties.forecastHourly).then(r=>r.json());
-        const p=hourly.properties.periods[0];
+        const hourlyResp=await fetch(pointsData.properties.forecastHourly);
+        const hourlyData=await hourlyResp.json();
+        const period=hourlyData.properties.periods[0];
 
         panel.innerHTML=`
             <div class="location-line"><strong>${city}, ${state}</strong></div>
-            <div class="location-line">Temperature: ${p.temperature}°${p.temperatureUnit}</div>
-            <div class="location-line">Condition: ${p.shortForecast}</div>
-            <div class="location-line">Humidity: ${p.relativeHumidity.value}%</div>
-            <div class="location-line">Precipitation Chance: ${p.probabilityOfPrecipitation.value}%</div>
+            <div class="location-line">Temperature: ${period.temperature}°${period.temperatureUnit}</div>
+            <div class="location-line">Condition: ${period.shortForecast}</div>
+            <div class="location-line">Humidity: ${period.relativeHumidity.value}%</div>
+            <div class="location-line">Precipitation Chance: ${period.probabilityOfPrecipitation.value}%</div>
         `;
     }catch(e){
-        panel.innerHTML="<div class='location-line'>Unable to load location.</div>";
+        panel.innerHTML="<div class='location-line'>Unable to load data.</div>";
     }
-}
-updateLocationPanel();
-setInterval(updateLocationPanel,300000);
+});
 
 /* SEVERE ALERTS */
 const middleTN=[
@@ -293,7 +484,7 @@ async function updateAlerts(){
 updateAlerts();
 setInterval(updateAlerts,120000);
 
-/* EMERGENCY CRAWL (EMPTY UNTIL ACTIVATED) */
+/* EMERGENCY CRAWL */
 function activateCrawl(text){
     const box=document.getElementById("crawlBox");
     const crawl=document.getElementById("crawlText");
