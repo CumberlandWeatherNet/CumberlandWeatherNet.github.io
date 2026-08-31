@@ -32,7 +32,6 @@ html, body{
     color:#F8F7FF;
 }
 
-/* Softer CRT glow & vignette */
 body{
     box-shadow:
         inset 0 0 120px rgba(0,200,255,.30),
@@ -71,7 +70,7 @@ body::after{
         );
 }
 
-/* HEADER — 80s BAR */
+/* HEADER */
 .header{
     height:100px;
     display:flex;
@@ -246,7 +245,7 @@ body::after{
     to{transform:translateX(-100%);}
 }
 
-/* TICKER — 80s SCROLLER */
+/* TICKER */
 .footer{
     height:70px;
     background:linear-gradient(90deg,#001326,#001f3f);
@@ -326,7 +325,7 @@ body::after{
             <!-- CURRENT CONDITIONS -->
             <div class="panel">
                 <div class="panel-title">CURRENT CONDITIONS</div>
-                <div class="panel-content">
+                <div class="panel-content" id="conditionsPanel">
                     <div class="city-row"><span>LEBANON</span><span>--°</span></div>
                     <div class="city-row"><span>NASHVILLE</span><span>--°</span></div>
                     <div class="city-row"><span>COOKEVILLE</span><span>--°</span></div>
@@ -444,6 +443,39 @@ async function updateForecast(){
     }
 }
 updateForecast();
+
+/* CURRENT CONDITIONS VIA OPEN-METEO (PER CITY) */
+async function updateConditions(){
+    const cities = {
+        "LEBANON": {lat:36.2081, lon:-86.2911},
+        "NASHVILLE": {lat:36.1627, lon:-86.7816},
+        "COOKEVILLE": {lat:36.1628, lon:-85.5016},
+        "CROSSVILLE": {lat:35.9489, lon:-85.0269}
+    };
+
+    const rows = document.querySelectorAll(".city-row");
+
+    for(const [city, coords] of Object.entries(cities)){
+        const url =
+            `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m&timezone=America/Chicago`;
+        try{
+            const data = await fetch(url).then(res => res.json());
+            const tempC = data.current.temperature_2m;
+            const tempF = Math.round(tempC * 9/5 + 32);
+
+            rows.forEach(row => {
+                const name = row.children[0].innerText.trim().toUpperCase();
+                if(name.includes(city)){
+                    row.children[1].innerText = tempF + "°";
+                }
+            });
+        }catch(err){
+            console.log("Conditions error for", city, err);
+        }
+    }
+}
+updateConditions();
+setInterval(updateConditions, 300000); // refresh every 5 minutes
 
 /* ALERTS VIA NWS */
 async function updateAlerts(){
