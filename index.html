@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1920,height=1080">
 <title>Cumberland Weather Network — 80s Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{
@@ -13,23 +12,33 @@
     box-sizing:border-box;
 }
 
-html, body{
+/* AUTO-SCALE WRAPPER: 1920x1080 DESIGN SPACE */
+#scaleWrapper{
     width:1920px;
     height:1080px;
+    transform-origin:top left;
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+/* BASE BODY / CRT FEEL (SOFTENED) */
+html, body{
+    width:100%;
+    height:100%;
     overflow:hidden;
-    background:#000814; /* deeper, more 80s CRT */
-    font-family:'VT323', monospace;
+    background:#000814;
+    font-family:'VT323', monospace, 'Courier New', monospace;
     color:#F8F7FF;
 }
 
-/* CRT + 80s GLOW */
 body{
-    animation:flicker .18s infinite;
     box-shadow:
-        inset 0 0 160px rgba(0,200,255,.45),
-        inset 0 0 320px rgba(0,0,0,.9);
+        inset 0 0 120px rgba(0,200,255,.30),
+        inset 0 0 260px rgba(0,0,0,.85);
 }
 
+/* Softer scanlines */
 body::before{
     content:"";
     position:fixed;
@@ -39,13 +48,14 @@ body::before{
     background:
         repeating-linear-gradient(
             0deg,
-            rgba(255,255,255,.04) 0px,
-            rgba(255,255,255,.04) 1px,
+            rgba(255,255,255,.02) 0px,
+            rgba(255,255,255,.02) 1px,
             transparent 2px,
             transparent 4px
         );
 }
 
+/* Softer vignette */
 body::after{
     content:"";
     position:fixed;
@@ -56,17 +66,11 @@ body::after{
         radial-gradient(
             ellipse at center,
             rgba(0,0,0,.0) 40%,
-            rgba(0,0,0,.7) 100%
+            rgba(0,0,0,.6) 100%
         );
 }
 
-@keyframes flicker{
-    0%{opacity:.995;}
-    50%{opacity:1;}
-    100%{opacity:.99;}
-}
-
-/* HEADER — 80s BAR */
+/* HEADER */
 .header{
     height:100px;
     display:flex;
@@ -74,8 +78,8 @@ body::after{
     align-items:center;
     padding:0 25px;
     background:linear-gradient(90deg,#001a33,#004b8c,#00c8ff);
-    border-bottom:4px solid #fffb00; /* retro yellow */
-    box-shadow:0 0 18px rgba(0,200,255,.6);
+    border-bottom:4px solid #fffb00;
+    box-shadow:0 0 14px rgba(0,200,255,.5);
 }
 
 .logo{
@@ -99,7 +103,7 @@ body::after{
     height:72px;
     background:#000010;
     border:3px solid #00c8ff;
-    box-shadow:0 0 14px rgba(0,200,255,.7);
+    box-shadow:0 0 10px rgba(0,200,255,.5);
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -132,7 +136,7 @@ body::after{
 .panel{
     background:linear-gradient(135deg,#001326,#001f3f);
     border:4px solid #00c8ff;
-    box-shadow:0 0 16px rgba(0,200,255,.5);
+    box-shadow:0 0 12px rgba(0,200,255,.4);
     overflow:hidden;
 }
 
@@ -171,12 +175,6 @@ body::after{
     padding:12px;
     height:calc(100% - 50px);
     overflow:hidden;
-}
-
-/* FORECAST PANEL EDGE FIX */
-.forecast-panel{
-    border-left:none !important;
-    border-right:none !important;
 }
 
 /* ALERTS */
@@ -242,18 +240,18 @@ body::after{
         -1px 0 #00c8ff;
 }
 
-@keyframes scrollInfo {
-    from { transform: translateX(100%); }
-    to   { transform: translateX(-100%); }
+@keyframes scrollInfo{
+    from{transform:translateX(100%);}
+    to{transform:translateX(-100%);}
 }
 
-/* TICKER — 80s SCROLLER */
+/* TICKER */
 .footer{
     height:70px;
     background:linear-gradient(90deg,#001326,#001f3f);
     border-top:4px solid #ff006e;
     overflow:hidden;
-    box-shadow:0 -4px 16px rgba(0,200,255,.6);
+    box-shadow:0 -4px 12px rgba(0,200,255,.5);
 }
 
 .ticker-wrap{
@@ -264,245 +262,243 @@ body::after{
 
 .ticker-content{
     white-space:nowrap;
-    font-size:34px;
+    font-size:26px;
     line-height:70px;
-    color:#00ff9a;
-    padding-right:150px;
+    color:#fffbff;
     letter-spacing:3px;
-    text-transform:uppercase;
-    text-shadow:
-        1px 0 #ff006e,
-        -1px 0 #00c8ff;
+    padding-right:140px;
 }
 
 @keyframes ticker{
     from{transform:translateX(0);}
     to{transform:translateX(-50%);}
 }
-
 </style>
 </head>
 
 <body>
+<div id="scaleWrapper">
 
-<div class="header">
-    <div>
-        <div class="logo">CUMBERLAND WEATHER NETWORK</div>
-        <div class="tagline">CWN • TENNESSEE REGIONAL WEATHER • 80s EDITION</div>
-    </div>
-
-    <div class="clock-box">
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="date" id="date">JAN 01 1987</div>
-    </div>
-</div>
-
-<div class="main">
-
-    <!-- RADAR PANEL -->
-    <div class="panel radar">
-        <div class="panel-title">TENNESSEE RADAR</div>
-        <div class="radar-window">
-            <img 
-                src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif"
-                style="
-                    width:100%;
-                    height:100%;
-                    object-fit:contain;
-                    image-rendering:pixelated;
-                    filter:contrast(1.2) brightness(1.15);
-                "
-            >
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <div class="logo">CUMBERLAND WEATHER NET</div>
+            <div class="tagline">80s WEATHER CENTER</div>
+        </div>
+        <div class="clock-box">
+            <div class="clock" id="clock">--:-- --</div>
+            <div class="date" id="date">Loading...</div>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <!-- MAIN -->
+    <div class="main">
 
+        <!-- RADAR PANEL -->
         <div class="panel">
-            <div class="panel-title">ACTIVE ALERTS</div>
-            <div class="panel-content alerts-content">
-                <div class="warning">LOADING ALERTS...</div>
+            <div class="panel-title">TENNESSEE RADAR</div>
+            <div class="radar-window">
+                <img
+                    src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif"
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:contain;
+                        image-rendering:pixelated;
+                        filter:contrast(1.2) brightness(1.15);
+                    "
+                >
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title">CURRENT CONDITIONS</div>
-            <div class="panel-content">
-                <div class="city-row"><span>LEBANON</span><span>--°</span></div>
-                <div class="city-row"><span>NASHVILLE</span><span>--°</span></div>
-                <div class="city-row"><span>COOKEVILLE</span><span>--°</span></div>
-                <div class="city-row"><span>CROSSVILLE</span><span>--°</span></div>
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+
+            <!-- ALERTS -->
+            <div class="panel">
+                <div class="panel-title">ACTIVE ALERTS</div>
+                <div class="panel-content alerts-content">
+                    <div class="warning">LOADING ALERTS...</div>
+                </div>
             </div>
-        </div>
 
-        <div class="panel forecast-panel">
-            <div class="panel-title">FORECAST CENTER</div>
-            <div class="panel-content">
-
-                <div class="forecast-line"><span class="day-label" id="day1"></span><span class="temp-label" id="temp1"></span><div class="scroll-info"><span id="info1"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day2"></span><span class="temp-label" id="temp2"></span><div class="scroll-info"><span id="info2"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day3"></span><span class="temp-label" id="temp3"></span><div class="scroll-info"><span id="info3"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day4"></span><span class="temp-label" id="temp4"></span><div class="scroll-info"><span id="info4"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day5"></span><span class="temp-label" id="temp5"></span><div class="scroll-info"><span id="info5"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day6"></span><span class="temp-label" id="temp6"></span><div class="scroll-info"><span id="info6"></span></div></div>
-                <div class="forecast-line"><span class="day-label" id="day7"></span><span class="temp-label" id="temp7"></span><div class="scroll-info"><span id="info7"></span></div></div>
-
+            <!-- CURRENT CONDITIONS -->
+            <div class="panel">
+                <div class="panel-title">CURRENT CONDITIONS</div>
+                <div class="panel-content" id="conditionsPanel">
+                    <div class="city-row"><span>LEBANON</span><span>--°</span></div>
+                    <div class="city-row"><span>NASHVILLE</span><span>--°</span></div>
+                    <div class="city-row"><span>COOKEVILLE</span><span>--°</span></div>
+                    <div class="city-row"><span>CROSSVILLE</span><span>--°</span></div>
+                </div>
             </div>
-        </div>
 
+            <!-- FORECAST -->
+            <div class="panel">
+                <div class="panel-title">7-DAY FORECAST</div>
+                <div class="panel-content" id="forecastPanel">
+                    <!-- forecast lines injected here -->
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
 
-<div class="footer">
-    <div class="ticker-wrap">
-        <div class="ticker-content">
-            • CWN • CUMBERLAND WEATHER NETWORK • TENNESSEE REGIONAL WEATHER • LIVE RADAR • SEVERE WEATHER ALERTS • CURRENT CONDITIONS • FORECAST CENTER • 80s EDITION •
-        </div>
-        <div class="ticker-content">
-            • CWN • CUMBERLAND WEATHER NETWORK • TENNESSEE REGIONAL WEATHER • LIVE RADAR • SEVERE WEATHER ALERTS • CURRENT CONDITIONS • FORECAST CENTER • 80s EDITION •
+    <!-- TICKER -->
+    <div class="footer">
+        <div class="ticker-wrap">
+            <div class="ticker-content">
+                CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+            </div>
+            <div class="ticker-content">
+                CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+            </div>
         </div>
     </div>
+
 </div>
 
 <script>
+/* AUTO-SCALE TO FIT ANY SCREEN */
+function scaleToFit(){
+    const wrapper = document.getElementById("scaleWrapper");
+    const scaleX = window.innerWidth / 1920;
+    const scaleY = window.innerHeight / 1080;
+    const scale = Math.min(scaleX, scaleY);
+    wrapper.style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", scaleToFit);
+window.addEventListener("load", scaleToFit);
+
+/* CLOCK + DATE */
 function updateClock(){
     const now = new Date();
-    document.getElementById("clock").innerHTML = now.toLocaleTimeString();
-    document.getElementById("date").innerHTML =
-        now.toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}).toUpperCase();
+    const options = {hour:'numeric', minute:'numeric'};
+    const timeStr = now.toLocaleTimeString('en-US', options);
+    const dateStr = now.toLocaleDateString('en-US', {
+        weekday:'short',
+        month:'short',
+        day:'numeric',
+        year:'numeric'
+    });
+    document.getElementById("clock").textContent = timeStr;
+    document.getElementById("date").textContent = dateStr;
 }
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 updateClock();
-</script>
 
-<script>
-const cities = {
-    "LEBANON": { lat: 36.2081, lon: -86.2911 },
-    "NASHVILLE": { lat: 36.1627, lon: -86.7816 },
-    "COOKEVILLE": { lat: 36.1628, lon: -85.5016 },
-    "CROSSVILLE": { lat: 35.9484, lon: -85.0269 }
-};
-
-async function updateWeather() {
-    for (const city in cities) {
-        const { lat, lon } = cities[city];
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`;
-
-        try {
-            const data = await fetch(url).then(res => res.json());
-            const tempC = data.current.temperature_2m;
-            const tempF = Math.round((tempC * 1.8) + 32);
-
-            const rows = document.querySelectorAll(".city-row");
-            rows.forEach(row => {
-                if (row.children[0].innerText === city) {
-                    row.children[1].innerText = tempF + "°";
-                }
-            });
-
-        } catch (err) {
-            console.log("Weather update error:", err);
-        }
-    }
-}
-
-setInterval(updateWeather, 300000);
-updateWeather();
-</script>
-
-<script>
-async function updateForecast() {
+/* FORECAST VIA OPEN-METEO */
+async function updateForecast(){
     const lat = 36.2081;
     const lon = -86.2911;
-
     const url =
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=America/Chicago`;
-
-    try {
+    try{
         const data = await fetch(url).then(res => res.json());
-
         const days = data.daily.time;
         const highsC = data.daily.temperature_2m_max;
         const lowsC = data.daily.temperature_2m_min;
         const codes = data.daily.weathercode;
-
         const wx = {
-            0: "CLEAR",
-            1: "MAINLY CLEAR",
-            2: "PARTLY CLOUDY",
-            3: "OVERCAST",
-            45: "FOG",
-            48: "FOG",
-            51: "LIGHT DRIZZLE",
-            53: "DRIZZLE",
-            55: "HEAVY DRIZZLE",
-            61: "LIGHT RAIN",
-            63: "RAIN",
-            65: "HEAVY RAIN",
-            71: "LIGHT SNOW",
-            73: "SNOW",
-            75: "HEAVY SNOW",
-            95: "THUNDERSTORMS",
-            96: "STRONG T-STORMS",
-            99: "SEVERE T-STORMS"
+            0:"CLEAR",
+            1:"MAINLY CLEAR",
+            2:"PARTLY CLOUDY",
+            3:"OVERCAST",
+            45:"FOG",
+            48:"FOG",
+            51:"LIGHT DRIZZLE",
+            53:"DRIZZLE",
+            55:"HEAVY DRIZZLE",
+            61:"LIGHT RAIN",
+            63:"RAIN",
+            65:"HEAVY RAIN",
+            71:"LIGHT SNOW",
+            73:"SNOW",
+            75:"HEAVY SNOW",
+            95:"THUNDERSTORMS",
+            96:"STRONG T-STORMS",
+            99:"SEVERE T-STORMS"
         };
-
-        for (let i = 0; i < 7; i++) {
+        const panel = document.getElementById("forecastPanel");
+        panel.innerHTML = "";
+        for(let i=0;i<7;i++){
             const localDate = new Date(days[i] + "T00:00:00-05:00");
-
-            const dayName = localDate.toLocaleDateString("en-US", {
-                weekday: "long",
-                timeZone: "America/Chicago"
-            }).toUpperCase();
-
-            const highF = Math.round((highsC[i] * 1.8) + 32);
-            const lowF = Math.round((lowsC[i] * 1.8) + 32);
-
-            const condition = wx[codes[i]] || "UNKNOWN";
-
-            document.getElementById(`day${i+1}`).innerText = dayName;
-            document.getElementById(`temp${i+1}`).innerText = `H ${highF}°  L ${lowF}°`;
-            document.getElementById(`info${i+1}`).innerText = condition;
+            const dayName = localDate.toLocaleDateString("en-US",{weekday:"long"}).toUpperCase();
+            const highF = Math.round(highsC[i] * 9/5 + 32);
+            const lowF = Math.round(lowsC[i] * 9/5 + 32);
+            const desc = wx[codes[i]] || "UNAVAILABLE";
+            const line = document.createElement("div");
+            line.className = "forecast-line";
+            line.innerHTML = `
+                <span class="day-label">${dayName}</span>
+                <span class="temp-label">H:${highF}°  L:${lowF}°</span>
+                <div class="scroll-info"><span>${desc}</span></div>
+            `;
+            panel.appendChild(line);
         }
-
-    } catch (err) {
-        console.log("Forecast update error:", err);
+    }catch(err){
+        console.log("Forecast error:", err);
+        const panel = document.getElementById("forecastPanel");
+        panel.innerHTML = "<div class=\"warning\">FORECAST DATA UNAVAILABLE</div>";
     }
 }
-
-setInterval(updateForecast, 10800000);
 updateForecast();
-</script>
 
-<script>
-async function updateAlerts() {
+/* CURRENT CONDITIONS VIA OPEN-METEO (PER CITY) */
+async function updateConditions(){
+    const cities = {
+        "LEBANON": {lat:36.2081, lon:-86.2911},
+        "NASHVILLE": {lat:36.1627, lon:-86.7816},
+        "COOKEVILLE": {lat:36.1628, lon:-85.5016},
+        "CROSSVILLE": {lat:35.9489, lon:-85.0269}
+    };
+
+    const rows = document.querySelectorAll(".city-row");
+
+    for(const [city, coords] of Object.entries(cities)){
+        const url =
+            `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m&timezone=America/Chicago`;
+        try{
+            const data = await fetch(url).then(res => res.json());
+            const tempC = data.current.temperature_2m;
+            const tempF = Math.round(tempC * 9/5 + 32);
+
+            rows.forEach(row => {
+                const name = row.children[0].innerText.trim().toUpperCase();
+                if(name.includes(city)){
+                    row.children[1].innerText = tempF + "°";
+                }
+            });
+        }catch(err){
+            console.log("Conditions error for", city, err);
+        }
+    }
+}
+updateConditions();
+setInterval(updateConditions, 300000); // refresh every 5 minutes
+
+/* ALERTS VIA NWS */
+async function updateAlerts(){
     const url = "https://api.weather.gov/alerts/active?area=TN";
-
-    try {
+    try{
         const data = await fetch(url).then(res => res.json());
         const alerts = data.features;
-
         const container = document.querySelector(".alerts-content");
         container.innerHTML = "";
-
-        if (!alerts || alerts.length === 0) {
+        if(!alerts || alerts.length === 0){
             container.innerHTML = `<div class="warning">NO ACTIVE ALERTS</div>`;
             return;
         }
-
         alerts.forEach(alert => {
             const event = alert.properties.event || "UNKNOWN ALERT";
             container.innerHTML += `<div class="warning">${event.toUpperCase()}</div>`;
         });
-
-    } catch (err) {
+    }catch(err){
         console.log("Alert update error:", err);
         const container = document.querySelector(".alerts-content");
         container.innerHTML = `<div class="warning">ALERT DATA UNAVAILABLE</div>`;
     }
 }
-
 setInterval(updateAlerts, 120000);
 updateAlerts();
 </script>
