@@ -2,17 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Cumberland Weather Network — 80s Edition</title>
+<title>Cumberland Weather Net — 80s Weather Center</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
-/* AUTO-SCALE WRAPPER: 1920x1080 DESIGN SPACE */
 #scaleWrapper{
     width:1920px;
     height:1080px;
@@ -22,8 +17,8 @@
     left:0;
 }
 
-/* BASE BODY / CRT FEEL (SOFTENED) */
-html, body{
+/* BASE CRT LOOK */
+html,body{
     width:100%;
     height:100%;
     overflow:hidden;
@@ -38,63 +33,76 @@ body{
         inset 0 0 260px rgba(0,0,0,.85);
 }
 
-/* Softer scanlines */
+/* Scanlines */
 body::before{
     content:"";
     position:fixed;
     inset:0;
     pointer-events:none;
     z-index:9998;
-    background:
-        repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,.02) 0px,
-            rgba(255,255,255,.02) 1px,
-            transparent 2px,
-            transparent 4px
-        );
+    background:repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.02) 0px,
+        rgba(255,255,255,.02) 1px,
+        transparent 2px,
+        transparent 4px
+    );
 }
 
-/* Softer vignette */
-body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:9997;
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(0,0,0,.0) 40%,
-            rgba(0,0,0,.6) 100%
-        );
+/* NAV BAR */
+.navbar{
+    height:40px;
+    background:#001326;
+    border-bottom:3px solid #00c8ff;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding-left:20px;
+}
+.navbar a{
+    color:#b4e9ff;
+    text-decoration:none;
+    font-size:20px;
+}
+.navbar a:hover{
+    color:#FFFFFF;
+}
+
+/* CWN LIVE BUG */
+.live-bug{
+    position:absolute;
+    top:50px;
+    right:30px;
+    background:#ff006e;
+    color:#fff;
+    padding:6px 12px;
+    font-size:22px;
+    border:3px solid #fff;
+    text-shadow:1px 1px #000;
+    box-shadow:0 0 12px rgba(255,0,110,.6);
+    z-index:9999;
 }
 
 /* HEADER */
 .header{
-    height:100px;
+    height:110px;
+    background:linear-gradient(90deg,#001326,#004b8c);
+    border-bottom:4px solid #00c8ff;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:0 25px;
-    background:linear-gradient(90deg,#001a33,#004b8c,#00c8ff);
-    border-bottom:4px solid #fffb00;
-    box-shadow:0 0 14px rgba(0,200,255,.5);
+    padding:0 30px;
 }
 
 .logo{
-    font-size:50px;
-    letter-spacing:3px;
-    color:#fffbff;
-    text-shadow:
-        2px 0 #ff006e,
-        -2px 0 #00c8ff;
+    font-size:48px;
+    color:#b4e9ff;
+    text-shadow:1px 0 #fffb00;
 }
 
 .tagline{
     font-size:22px;
     color:#b4e9ff;
-    text-shadow:1px 0 #fffb00;
 }
 
 /* CLOCK */
@@ -113,9 +121,7 @@ body::after{
 .clock{
     font-size:36px;
     color:#fffb00;
-    text-shadow:
-        1px 0 #ff006e,
-        -1px 0 #00c8ff;
+    text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
 }
 
 .date{
@@ -147,111 +153,48 @@ body::after{
     font-size:30px;
     background:linear-gradient(90deg,#001f3f,#004b8c);
     border-bottom:2px solid #ff006e;
-    white-space:nowrap;
-    overflow:hidden;
     color:#fffbff;
-    text-shadow:
-        2px 0 #ff006e,
-        -2px 0 #00c8ff;
+    text-shadow:2px 0 #ff006e, -2px 0 #00c8ff;
 }
 
 /* RADAR */
 .radar-window{
-    height:calc(100% - 50px);
-    background:#000000;
+    width:100%;
+    height:100%;
+    background:#000;
     display:flex;
     justify-content:center;
     align-items:center;
-}
-
-/* SIDEBAR */
-.sidebar{
-    display:grid;
-    grid-template-rows:215px 215px 460px;
-    gap:10px;
-}
-
-.panel-content{
-    padding:12px;
-    height:calc(100% - 50px);
     overflow:hidden;
+    box-shadow:0 -4px 12px rgba(0,200,255,.5);
 }
 
-/* ALERTS */
-.warning{
-    font-size:23px;
-    color:#fffb00;
-    margin-bottom:8px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    text-shadow:
-        1px 0 #ff006e,
-        -1px 0 #00c8ff;
+.radar-window img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    image-rendering:pixelated;
 }
 
-/* CONDITIONS */
-.city-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:25px;
-    margin-bottom:10px;
-    white-space:nowrap;
-    color:#e3f3ff;
-}
-
-/* FORECAST */
-.forecast-line{
-    font-size:26px;
-    margin-bottom:10px;
-    display:flex;
-    gap:20px;
-    align-items:center;
-    white-space:nowrap;
-    color:#fdfbff;
-}
-
-.day-label{
-    width:170px;
-    font-weight:bold;
-    color:#fffb00;
-    text-shadow:
-        1px 0 #ff006e,
-        -1px 0 #00c8ff;
-}
-
-.temp-label{
-    width:190px;
+/* CITY TEMPS */
+.city-list{
+    padding:10px;
+    font-size:24px;
     color:#b4e9ff;
 }
 
-.scroll-info{
-    overflow:hidden;
-    flex:1;
+.city-row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
 }
 
-.scroll-info span{
-    display:inline-block;
-    white-space:nowrap;
-    animation:scrollInfo 12s linear infinite;
-    color:#fffbff;
-    text-shadow:
-        1px 0 #ff006e,
-        -1px 0 #00c8ff;
-}
-
-@keyframes scrollInfo{
-    from{transform:translateX(100%);}
-    to{transform:translateX(-100%);}
-}
-
-/* TICKER */
+/* FOOTER TICKER */
 .footer{
     height:70px;
-    background:linear-gradient(90deg,#001326,#001f3f);
-    border-top:4px solid #ff006e;
+    background:#001326;
+    border-top:4px solid #00c8ff;
     overflow:hidden;
-    box-shadow:0 -4px 12px rgba(0,200,255,.5);
 }
 
 .ticker-wrap{
@@ -273,234 +216,136 @@ body::after{
     from{transform:translateX(0);}
     to{transform:translateX(-50%);}
 }
+
+/* EMERGENCY CRAWL (inactive until activated) */
+.emergency-crawl{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:40px;
+    background:#8b0000;
+    border-top:3px solid #fffb00;
+    overflow:hidden;
+    display:none;
+}
+.crawl-text{
+    white-space:nowrap;
+    font-size:24px;
+    line-height:40px;
+    color:#fffbff;
+    animation:crawl 20s linear infinite;
+    padding-left:100%;
+}
+@keyframes crawl{
+    from{transform:translateX(0);}
+    to{transform:translateX(-100%);}
+}
 </style>
 </head>
 
 <body>
 <div id="scaleWrapper">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div>
-            <div class="logo">CUMBERLAND WEATHER NET</div>
-            <div class="tagline">80s WEATHER CENTER</div>
-        </div>
-        <div class="clock-box">
-            <div class="clock" id="clock">--:-- --</div>
-            <div class="date" id="date">Loading...</div>
+<!-- NAV BAR -->
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="80s.html">80s Weather</a>
+    <a href="breaking.html">Breaking Weather</a>
+</div>
+
+<!-- CWN LIVE BUG -->
+<div class="live-bug">CWN LIVE</div>
+
+<!-- HEADER -->
+<div class="header">
+    <div>
+        <div class="logo">CUMBERLAND WEATHER NET</div>
+        <div class="tagline">80s WEATHER CENTER</div>
+    </div>
+
+    <div class="clock-box">
+        <div class="clock" id="clock">--:-- --</div>
+        <div class="date" id="date">Loading...</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- RADAR PANEL -->
+    <div class="panel">
+        <div class="panel-title">TENNESSEE RADAR</div>
+        <div class="radar-window">
+            <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
         </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- RADAR PANEL -->
-        <div class="panel">
-            <div class="panel-title">TENNESSEE RADAR</div>
-            <div class="radar-window">
-                <img
-                    src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif"
-                    style="
-                        width:100%;
-                        height:100%;
-                        object-fit:contain;
-                        image-rendering:pixelated;
-                        filter:contrast(1.2) brightness(1.15);
-                    "
-                >
-            </div>
-        </div>
-
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-
-            <!-- ALERTS -->
-            <div class="panel">
-                <div class="panel-title">ACTIVE ALERTS</div>
-                <div class="panel-content alerts-content">
-                    <div class="warning">LOADING ALERTS...</div>
-                </div>
-            </div>
-
-            <!-- CURRENT CONDITIONS -->
-            <div class="panel">
-                <div class="panel-title">CURRENT CONDITIONS</div>
-                <div class="panel-content" id="conditionsPanel">
-                    <div class="city-row"><span>LEBANON</span><span>--°</span></div>
-                    <div class="city-row"><span>NASHVILLE</span><span>--°</span></div>
-                    <div class="city-row"><span>COOKEVILLE</span><span>--°</span></div>
-                    <div class="city-row"><span>CROSSVILLE</span><span>--°</span></div>
-                </div>
-            </div>
-
-            <!-- FORECAST -->
-            <div class="panel">
-                <div class="panel-title">7-DAY FORECAST</div>
-                <div class="panel-content" id="forecastPanel">
-                    <!-- forecast lines injected here -->
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- TICKER -->
-    <div class="footer">
-        <div class="ticker-wrap">
-            <div class="ticker-content">
-                CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
-            </div>
-            <div class="ticker-content">
-                CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
-            </div>
+    <!-- CITY TEMPS PANEL -->
+    <div class="panel">
+        <div class="panel-title">CITY TEMPERATURES</div>
+        <div class="city-list">
+            <div class="city-row"><span>NASHVILLE</span><span>--°</span></div>
+            <div class="city-row"><span>LEBANON</span><span>--°</span></div>
+            <div class="city-row"><span>MURFREESBORO</span><span>--°</span></div>
+            <div class="city-row"><span>FRANKLIN</span><span>--°</span></div>
+            <div class="city-row"><span>GALLATIN</span><span>--°</span></div>
+            <div class="city-row"><span>COOKEVILLE</span><span>--°</span></div>
+            <div class="city-row"><span>CROSSVILLE</span><span>--°</span></div>
         </div>
     </div>
 
 </div>
 
-<script>
-/* AUTO-SCALE TO FIT ANY SCREEN */
-function scaleToFit(){
-    const wrapper = document.getElementById("scaleWrapper");
-    const scaleX = window.innerWidth / 1920;
-    const scaleY = window.innerHeight / 1080;
-    const scale = Math.min(scaleX, scaleY);
-    wrapper.style.transform = `scale(${scale})`;
-}
-window.addEventListener("resize", scaleToFit);
-window.addEventListener("load", scaleToFit);
+<!-- TICKER -->
+<div class="footer">
+    <div class="ticker-wrap">
+        <div class="ticker-content">
+            CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+        </div>
+        <div class="ticker-content">
+            CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+        </div>
+    </div>
+</div>
 
-/* CLOCK + DATE */
-function updateClock(){
-    const now = new Date();
-    const options = {hour:'numeric', minute:'numeric'};
-    const timeStr = now.toLocaleTimeString('en-US', options);
-    const dateStr = now.toLocaleDateString('en-US', {
-        weekday:'short',
-        month:'short',
-        day:'numeric',
-        year:'numeric'
-    });
-    document.getElementById("clock").textContent = timeStr;
-    document.getElementById("date").textContent = dateStr;
+<!-- EMERGENCY CRAWL -->
+<div class="emergency-crawl" id="crawlBox">
+    <div class="crawl-text" id="crawlText"></div>
+</div>
+
+</div>
+
+<script>
+function scaleToFit(){
+    const wrapper=document.getElementById("scaleWrapper");
+    const scale=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+    wrapper.style.transform=`scale(${scale})`;
 }
-setInterval(updateClock, 1000);
+window.addEventListener("resize",scaleToFit);
+window.addEventListener("load",scaleToFit);
+
+/* CLOCK */
+function updateClock(){
+    const now=new Date();
+    document.getElementById("clock").textContent=
+        now.toLocaleTimeString("en-US",{hour:"numeric",minute:"numeric"});
+    document.getElementById("date").textContent=
+        now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+setInterval(updateClock,1000);
 updateClock();
 
-/* FORECAST VIA OPEN-METEO */
-async function updateForecast(){
-    const lat = 36.2081;
-    const lon = -86.2911;
-    const url =
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=America/Chicago`;
-    try{
-        const data = await fetch(url).then(res => res.json());
-        const days = data.daily.time;
-        const highsC = data.daily.temperature_2m_max;
-        const lowsC = data.daily.temperature_2m_min;
-        const codes = data.daily.weathercode;
-        const wx = {
-            0:"CLEAR",
-            1:"MAINLY CLEAR",
-            2:"PARTLY CLOUDY",
-            3:"OVERCAST",
-            45:"FOG",
-            48:"FOG",
-            51:"LIGHT DRIZZLE",
-            53:"DRIZZLE",
-            55:"HEAVY DRIZZLE",
-            61:"LIGHT RAIN",
-            63:"RAIN",
-            65:"HEAVY RAIN",
-            71:"LIGHT SNOW",
-            73:"SNOW",
-            75:"HEAVY SNOW",
-            95:"THUNDERSTORMS",
-            96:"STRONG T-STORMS",
-            99:"SEVERE T-STORMS"
-        };
-        const panel = document.getElementById("forecastPanel");
-        panel.innerHTML = "";
-        for(let i=0;i<7;i++){
-            const localDate = new Date(days[i] + "T00:00:00-05:00");
-            const dayName = localDate.toLocaleDateString("en-US",{weekday:"long"}).toUpperCase();
-            const highF = Math.round(highsC[i] * 9/5 + 32);
-            const lowF = Math.round(lowsC[i] * 9/5 + 32);
-            const desc = wx[codes[i]] || "UNAVAILABLE";
-            const line = document.createElement("div");
-            line.className = "forecast-line";
-            line.innerHTML = `
-                <span class="day-label">${dayName}</span>
-                <span class="temp-label">H:${highF}°  L:${lowF}°</span>
-                <div class="scroll-info"><span>${desc}</span></div>
-            `;
-            panel.appendChild(line);
-        }
-    }catch(err){
-        console.log("Forecast error:", err);
-        const panel = document.getElementById("forecastPanel");
-        panel.innerHTML = "<div class=\"warning\">FORECAST DATA UNAVAILABLE</div>";
-    }
+/* EMERGENCY CRAWL CONTROL */
+function activateCrawl(text){
+    const box=document.getElementById("crawlBox");
+    const crawl=document.getElementById("crawlText");
+    crawl.textContent=text;
+    box.style.display="block";
 }
-updateForecast();
-
-/* CURRENT CONDITIONS VIA OPEN-METEO (PER CITY) */
-async function updateConditions(){
-    const cities = {
-        "LEBANON": {lat:36.2081, lon:-86.2911},
-        "NASHVILLE": {lat:36.1627, lon:-86.7816},
-        "COOKEVILLE": {lat:36.1628, lon:-85.5016},
-        "CROSSVILLE": {lat:35.9489, lon:-85.0269}
-    };
-
-    const rows = document.querySelectorAll(".city-row");
-
-    for(const [city, coords] of Object.entries(cities)){
-        const url =
-            `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m&timezone=America/Chicago`;
-        try{
-            const data = await fetch(url).then(res => res.json());
-            const tempC = data.current.temperature_2m;
-            const tempF = Math.round(tempC * 9/5 + 32);
-
-            rows.forEach(row => {
-                const name = row.children[0].innerText.trim().toUpperCase();
-                if(name.includes(city)){
-                    row.children[1].innerText = tempF + "°";
-                }
-            });
-        }catch(err){
-            console.log("Conditions error for", city, err);
-        }
-    }
+function deactivateCrawl(){
+    document.getElementById("crawlBox").style.display="none";
 }
-updateConditions();
-setInterval(updateConditions, 300000); // refresh every 5 minutes
-
-/* ALERTS VIA NWS */
-async function updateAlerts(){
-    const url = "https://api.weather.gov/alerts/active?area=TN";
-    try{
-        const data = await fetch(url).then(res => res.json());
-        const alerts = data.features;
-        const container = document.querySelector(".alerts-content");
-        container.innerHTML = "";
-        if(!alerts || alerts.length === 0){
-            container.innerHTML = `<div class="warning">NO ACTIVE ALERTS</div>`;
-            return;
-        }
-        alerts.forEach(alert => {
-            const event = alert.properties.event || "UNKNOWN ALERT";
-            container.innerHTML += `<div class="warning">${event.toUpperCase()}</div>`;
-        });
-    }catch(err){
-        console.log("Alert update error:", err);
-        const container = document.querySelector(".alerts-content");
-        container.innerHTML = `<div class="warning">ALERT DATA UNAVAILABLE</div>`;
-    }
-}
-setInterval(updateAlerts, 120000);
-updateAlerts();
 </script>
 
 </body>
