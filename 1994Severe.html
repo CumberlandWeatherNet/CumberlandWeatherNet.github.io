@@ -386,9 +386,8 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* CITY SELECT WEATHER */
-document.getElementById("citySelect").addEventListener("change", async function(){
-    const val=this.value;
+/* LOAD CITY WEATHER */
+async function loadCity(val){
     const panel=document.getElementById("locationPanel");
 
     if(!val){
@@ -409,6 +408,7 @@ document.getElementById("citySelect").addEventListener("change", async function(
         const hourlyData=await hourlyResp.json();
         const period=hourlyData.properties.periods[0];
 
+        // Update bottom panel
         panel.innerHTML=`
             <div class="location-line"><strong>${city}, ${state}</strong></div>
             <div class="location-line">Temperature: ${period.temperature}°${period.temperatureUnit}</div>
@@ -416,8 +416,33 @@ document.getElementById("citySelect").addEventListener("change", async function(
             <div class="location-line">Humidity: ${period.relativeHumidity.value}%</div>
             <div class="location-line">Precipitation Chance: ${period.probabilityOfPrecipitation.value}%</div>
         `;
+
+        // Update top-right temp
+        document.getElementById("temp").textContent =
+            `Temp: ${period.temperature}°${period.temperatureUnit}`;
+
     }catch(e){
         panel.innerHTML="<div class='location-line'>Unable to load data.</div>";
+    }
+}
+
+/* CITY SELECT HANDLER */
+document.getElementById("citySelect").addEventListener("change", function(){
+    const val=this.value;
+
+    // Save selection
+    localStorage.setItem("savedCity", val);
+
+    // Load weather
+    loadCity(val);
+});
+
+/* LOAD SAVED CITY ON PAGE START */
+window.addEventListener("load", () => {
+    const saved=localStorage.getItem("savedCity");
+    if(saved){
+        document.getElementById("citySelect").value=saved;
+        loadCity(saved);
     }
 });
 
