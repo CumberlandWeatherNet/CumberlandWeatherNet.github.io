@@ -177,7 +177,7 @@ body::before{
   overflow-y:auto;
 }
 
-/* FORECAST — FIXED HEIGHT + TICKER + SCROLL */
+/* FORECAST — FIXED HEIGHT + SCROLL + CONDITION TICKERS */
 #forecastPanel{
   height:250px;
   overflow-y:auto;
@@ -192,16 +192,22 @@ body::before{
   display:flex;
   gap:20px;
   align-items:center;
-  white-space:nowrap;
   color:#fdfbff;
-  animation:forecastTicker 18s linear infinite;
+  white-space:nowrap;
 }
 
-.forecast-line:hover{
+/* ONLY CONDITIONS SCROLL */
+.condition-ticker{
+  display:inline-block;
+  animation:conditionScroll 14s linear infinite;
+  padding-left:40px;
+}
+
+.condition-ticker:hover{
   animation-play-state:paused;
 }
 
-@keyframes forecastTicker{
+@keyframes conditionScroll{
   from{transform:translateX(0);}
   to{transform:translateX(-100%);}
 }
@@ -371,10 +377,21 @@ async function loadCity(val){
     periods.forEach(period=>{
       const line=document.createElement("div");
       line.className="forecast-line";
-      line.innerHTML=
-        "<span>"+period.name+"</span>"+
-        "<span>"+period.temperature+"°"+period.temperatureUnit+"</span>"+
-        "<span>"+period.shortForecast+"</span>";
+
+      const day=document.createElement("span");
+      day.textContent=period.name;
+
+      const temp=document.createElement("span");
+      temp.textContent=period.temperature+"°"+period.temperatureUnit;
+
+      const cond=document.createElement("span");
+      cond.className="condition-ticker";
+      cond.textContent=period.shortForecast;
+
+      line.appendChild(day);
+      line.appendChild(temp);
+      line.appendChild(cond);
+
       forecast.appendChild(line);
     });
 
