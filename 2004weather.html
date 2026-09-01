@@ -39,7 +39,7 @@ html, body{
 
 /* NAV BAR */
 .navbar{
-  height:40px;
+  height:36px;
   background:#003366;
   border-bottom:3px solid #99CCFF;
   display:flex;
@@ -58,7 +58,7 @@ html, body{
 
 /* HEADER */
 .header{
-  height:90px;
+  height:80px;
   background:linear-gradient(90deg,#003366,#005599,#0077CC);
   border-bottom:3px solid #99CCFF;
   display:flex;
@@ -71,12 +71,12 @@ html, body{
   flex-direction:column;
 }
 .network-title{
-  font-size:30px;
+  font-size:28px;
   font-weight:bold;
   letter-spacing:1px;
 }
 .network-sub{
-  font-size:16px;
+  font-size:15px;
   color:#E0F0FF;
 }
 .header-right{
@@ -86,24 +86,24 @@ html, body{
   gap:2px;
 }
 .clock{
-  font-size:24px;
+  font-size:22px;
 }
 .date{
-  font-size:16px;
+  font-size:15px;
   color:#E0F0FF;
 }
 .header-temp{
-  font-size:18px;
+  font-size:17px;
   color:#FFEEAA;
 }
 
 /* MAIN GRID */
 .main{
   flex:1;
-  padding:10px;
+  padding:8px;
   display:grid;
   grid-template-columns:1180px 720px;
-  gap:10px;
+  gap:8px;
 }
 
 /* PANELS */
@@ -115,10 +115,10 @@ html, body{
   overflow:hidden;
 }
 .panel-title{
-  height:44px;
-  line-height:44px;
-  padding:0 14px;
-  font-size:20px;
+  height:40px;
+  line-height:40px;
+  padding:0 12px;
+  font-size:18px;
   background:#004477;
   border-bottom:2px solid #99CCFF;
   display:flex;
@@ -127,9 +127,9 @@ html, body{
 }
 .panel-content{
   flex:1;
-  padding:10px 14px;
-  font-size:16px;
-  line-height:1.45;
+  padding:8px 12px;
+  font-size:15px;
+  line-height:1.4;
 }
 
 /* RADAR */
@@ -149,9 +149,9 @@ html, body{
 
 /* ALERTS */
 .alerts-content .warning{
-  font-size:16px;
+  font-size:15px;
   color:#FFEEAA;
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
 
 /* DROPDOWN */
@@ -170,54 +170,54 @@ html, body{
 
 /* CURRENT CONDITIONS */
 .conditions-content{
-  padding:10px 14px;
-  font-size:16px;
-  line-height:1.45;
+  padding:8px 12px;
+  font-size:15px;
+  line-height:1.4;
 }
 
 /* FORECAST */
 .forecast-content{
-  padding:10px 14px;
-  font-size:16px;
+  padding:8px 12px;
+  font-size:15px;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:4px;
 }
 .forecast-line{
   display:flex;
   align-items:center;
-  gap:20px;
+  gap:16px;
   white-space:nowrap;
 }
 .day-label{
-  width:160px;
+  width:150px;
   font-weight:bold;
 }
 .temp-label{
-  width:160px;
+  width:150px;
   color:#FFEEAA;
 }
 
-/* SCROLLER (non-clashing) */
+/* SCROLLER */
 .scroll-info{
   overflow:hidden;
   flex:1;
-  padding-left:30px;
-  mask-image:linear-gradient(to right, transparent 0px, black 30px);
+  padding-left:20px;
+  mask-image:linear-gradient(to right, transparent 0px, black 20px);
 }
 .scroll-info span{
   display:inline-block;
   white-space:nowrap;
-  animation:scrollInfo 30s linear infinite;
+  animation:scrollInfo 28s linear infinite;
 }
 @keyframes scrollInfo{
   from{transform:translateX(100%);}
   to{transform:translateX(-120%);}
 }
 
-/* FOOTER TICKER */
+/* FOOTER TICKER (slightly shorter) */
 .footer{
-  height:60px;
+  height:50px;
   background:#003366;
   border-top:3px solid #99CCFF;
   overflow:hidden;
@@ -225,12 +225,12 @@ html, body{
 .ticker-wrap{
   display:flex;
   width:max-content;
-  animation:tickerMove 30s linear infinite;
+  animation:tickerMove 28s linear infinite;
 }
 .ticker-content{
   white-space:nowrap;
-  font-size:16px;
-  padding-right:120px;
+  font-size:15px;
+  padding-right:100px;
 }
 @keyframes tickerMove{
   from{transform:translateX(0);}
@@ -275,7 +275,7 @@ html, body{
       </div>
 
       <!-- RIGHT: STACK -->
-      <div style="display:grid;grid-template-rows:1fr 1fr 1fr;gap:10px;">
+      <div style="display:grid;grid-template-rows:300px 300px 260px;gap:8px;">
 
         <!-- ALERTS -->
         <div class="panel">
