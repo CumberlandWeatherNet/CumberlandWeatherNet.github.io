@@ -17,7 +17,7 @@ html,body{
   color:#F8F7FF;
 }
 
-/* FIXED 1920×1080 LAYOUT */
+/* FIXED 1920×1080 */
 #scaleWrapper{
   width:1920px;
   height:1080px;
@@ -27,7 +27,7 @@ html,body{
   left:0;
 }
 
-/* CRT EFFECT */
+/* CRT */
 body::before{
   content:"";
   position:fixed;
@@ -42,7 +42,7 @@ body::before{
   );
 }
 
-/* NAV BAR */
+/* NAV */
 .navbar{
   height:40px;
   background:#001326;
@@ -153,11 +153,19 @@ body::before{
   object-fit:contain;
 }
 
-/* SIDEBAR */
+/* SIDEBAR FIXED HEIGHTS */
 .sidebar{
   display:grid;
-  grid-template-rows:1fr 1fr 1fr;
+  grid-template-rows:300px 300px 300px;
   gap:10px;
+}
+
+/* ALERTS */
+.alerts-content{
+  padding:10px;
+  font-size:22px;
+  color:#fffbff;
+  overflow-y:auto;
 }
 
 /* CONDITIONS */
@@ -166,11 +174,12 @@ body::before{
   font-size:24px;
   color:#b4e9ff;
   line-height:1.6;
+  overflow-y:auto;
 }
 
-/* FORECAST — FIXED HEIGHT + INTERNAL SCROLL */
+/* FORECAST — FIXED HEIGHT + SCROLL */
 #forecastPanel{
-  height:300px;
+  height:250px;
   overflow-y:auto;
   padding:10px;
 }
@@ -182,16 +191,6 @@ body::before{
   align-items:center;
   white-space:nowrap;
   color:#fdfbff;
-}
-
-/* ALERTS */
-.alerts-content{
-  padding:10px;
-}
-.alerts-content .warning{
-  margin-bottom:8px;
-  font-size:22px;
-  color:#fffbff;
 }
 
 /* TICKER */
@@ -258,7 +257,7 @@ body::before{
     <!-- ALERTS -->
     <div class="panel">
       <div class="panel-title">ACTIVE ALERTS</div>
-      <div class="alerts-content">LOADING ALERTS...</div>
+      <div class="alerts-content" id="alertsPanel">LOADING ALERTS...</div>
     </div>
 
     <!-- CONDITIONS -->
@@ -390,7 +389,7 @@ window.addEventListener("load",()=>{
 
 /* ALERTS */
 async function updateAlerts(){
-  const box=document.querySelector(".alerts-content");
+  const box=document.getElementById("alertsPanel");
   try{
     const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
     const alerts=data.features;
