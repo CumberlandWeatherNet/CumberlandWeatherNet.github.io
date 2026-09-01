@@ -97,6 +97,18 @@ html, body{
   color:#FFEEAA;
 }
 
+/* 2004 Alert Banner */
+#alertBanner{
+  display:none;
+  height:42px;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  color:#000;
+  font-weight:bold;
+  border-bottom:3px solid #99CCFF;
+}
+
 /* MAIN GRID */
 .main{
   flex:1;
@@ -150,8 +162,7 @@ html, body{
 /* ALERTS */
 .alerts-content .warning{
   font-size:15px;
-  color:#FFEEAA;
-  margin-bottom:4px;
+  margin-bottom:8px;
 }
 
 /* DROPDOWN */
@@ -236,6 +247,17 @@ html, body{
   from{transform:translateX(0);}
   to{transform:translateX(-50%);}
 }
+
+/* Storm Desk Mode */
+.stormDesk{
+  background:linear-gradient(90deg,#660000,#990000,#CC0000) !important;
+  animation:stormPulse 2s infinite;
+}
+@keyframes stormPulse{
+  0%{box-shadow:0 0 10px #FF0000;}
+  50%{box-shadow:0 0 25px #FF4444;}
+  100%{box-shadow:0 0 10px #FF0000;}
+}
 </style>
 </head>
 
@@ -262,6 +284,9 @@ html, body{
         <div class="header-temp" id="headerTemp">Temp: --°</div>
       </div>
     </div>
+
+    <!-- 2004 Alert Banner -->
+    <div id="alertBanner"></div>
 
     <!-- MAIN -->
     <div class="main">
@@ -376,7 +401,13 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* LOAD CITY WEATHER (same logic as 80s page) */
+/* STORM DESK MODE */
+function activateStormDesk(){
+  document.querySelector(".header").classList.add("stormDesk");
+  document.querySelector(".network-sub").textContent = "STORM DESK — LIVE COVERAGE";
+}
+
+/* LOAD CITY WEATHER */
 async function loadCity(val){
   const conditions=document.getElementById("conditionsPanel");
   const forecast=document.getElementById("forecastPanel");
@@ -508,30 +539,19 @@ window.addEventListener("load",()=>{
   }
 });
 
-/* ALERTS VIA NWS */
+/* ALERTS WITH COLORS, ICONS, DESCRIPTIONS, BANNER */
 async function updateAlerts(){
-  const url = "https://api.weather.gov/alerts/active?area=TN";
-  try{
-    const data = await fetch(url).then(res => res.json());
-    const alerts = data.features;
-    const container = document.querySelector(".alerts-content");
-    container.innerHTML = "";
-    if(!alerts || alerts.length===0){
-      container.innerHTML = `<div class="warning">NO ACTIVE ALERTS</div>`;
-      return;
-    }
-    alerts.forEach(alert=>{
-      const event = alert.properties.event || "UNKNOWN ALERT";
-      container.innerHTML += `<div class="warning">${event.toUpperCase()}</div>`;
-    });
-  }catch(err){
-    const container = document.querySelector(".alerts-content");
-    container.innerHTML = `<div class="warning">ALERT DATA UNAVAILABLE</div>`;
-  }
-}
-updateAlerts();
-setInterval(updateAlerts,300000);
-</script>
+  const container = document.querySelector(".alerts-content");
 
-</body>
-</html>
+  const middleTN = [
+    "DAVIDSON","CHEATHAM","DICKSON","HICKMAN","HOUSTON","HUMPHREYS",
+    "MONTGOMERY","ROBERTSON","STEWART","SUMNER","WILLIAMSON",
+    "WILSON","RUTHERFORD","CANNON","COFFEE","BEDFORD","MARSHALL",
+    "MAURY","PERRY","LEWIS","WAYNE","LAWRENCE","GILES","LINCOLN",
+    "MOORE","FRANKLIN","DEKALB","SMITH","JACKSON","PUTNAM",
+    "OVERTON","CLAY","MACON","TROUSDALE","WHITE","CUMBERLAND",
+    "FENTRESS"
+  ];
+
+  try{
+    const data = await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r
