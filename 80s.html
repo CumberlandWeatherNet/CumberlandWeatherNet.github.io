@@ -17,13 +17,15 @@ html, body{
   color:#F8F7FF;
 }
 
-/* CENTER + AUTO SCALE */
+/* TRUE CENTER + AUTO SCALE */
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 #scaleWrapper{
   width:1920px;
   height:1080px;
-  position:absolute;
-  top:50%;
-  left:50%;
   transform-origin:top left;
 }
 
@@ -203,20 +205,22 @@ body::after{
   width:190px;
   color:#b4e9ff;
 }
+
+/* SCROLLER — FIX 2, 3, 4 */
 .scroll-info{
   overflow:hidden;
   flex:1;
+  padding-left:40px;              /* dead zone before scroller */
+  mask-image:linear-gradient(to right, transparent 0px, black 40px);
 }
 .scroll-info span{
   display:inline-block;
   white-space:nowrap;
-  animation:scrollInfo 12s linear infinite;
-  color:#fffbff;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
+  animation:scrollInfo 30s linear infinite;
 }
 @keyframes scrollInfo{
   from{transform:translateX(100%);}
-  to{transform:translateX(-100%);}
+  to{transform:translateX(-120%);} /* disappears before temps */
 }
 
 /* TICKER */
@@ -230,7 +234,7 @@ body::after{
 .ticker-wrap{
   display:flex;
   width:max-content;
-  animation:ticker 35s linear infinite;
+  animation:ticker 30s linear infinite; /* same speed as scroller */
 }
 .ticker-content{
   white-space:nowrap;
@@ -285,10 +289,9 @@ body::after{
     <div class="panel">
       <div class="panel-title">
         CURRENT CONDITIONS
-        <select id="citySelect" class="city-dropdown">
+        <select id="citySelect">
           <option value="">Select City</option>
 
-          <!-- FULL CITY LIST -->
           <option value="36.1627,-86.7816">Nashville</option>
           <option value="36.2081,-86.2911">Lebanon</option>
           <option value="36.3342,-86.4467">Gallatin</option>
@@ -311,7 +314,6 @@ body::after{
           <option value="36.3851,-85.3230">Livingston</option>
           <option value="36.4345,-84.9372">Jamestown</option>
           <option value="35.9489,-85.0269">Crossville</option>
-
         </select>
       </div>
       <div class="conditions-content" id="conditionsPanel">
@@ -343,11 +345,11 @@ body::after{
 </div>
 
 <script>
-/* AUTO SCALE + CENTER */
+/* AUTO SCALE (FINAL) */
 function scaleToFit(){
   const w=document.getElementById("scaleWrapper");
   const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
-  w.style.transform="translate(-50%, -50%) scale("+s+")";
+  w.style.transform="scale("+s+")";
 }
 window.addEventListener("resize",scaleToFit);
 window.addEventListener("load",scaleToFit);
@@ -395,7 +397,6 @@ async function loadCity(val){
     const daily=await fetch(points.properties.forecast).then(r=>r.json());
     const periods=daily.properties.periods;
 
-    /* Build 7-day forecast */
     const days={};
 
     periods.forEach(period=>{
