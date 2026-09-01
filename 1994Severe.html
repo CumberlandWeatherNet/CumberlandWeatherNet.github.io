@@ -8,8 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
-/* ⭐ FIXED SCALING ⭐ */
-html,body{
+html, body{
   width:100%;
   height:100%;
   margin:0;
@@ -30,33 +29,8 @@ html,body{
   transform-origin:center center;
 }
 
-/* CRT EFFECT */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:repeating-linear-gradient(
-    0deg,
-    rgba(255,255,255,.02) 0px,
-    rgba(255,255,255,.02) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-}
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:radial-gradient(
-    ellipse at center,
-    rgba(0,0,0,.0) 40%,
-    rgba(0,0,0,.7) 100%
-  );
-}
+/* --- ORIGINAL 1994 STYLING (unchanged) --- */
 
-/* NAV BAR */
 .navbar{
   height:40px;
   background:#3b0000;
@@ -72,7 +46,6 @@ body::after{
   font-size:20px;
 }
 
-/* HEADER */
 .header{
   height:120px;
   background:#3b0000;
@@ -97,7 +70,6 @@ body::after{
   color:#FF0000;
 }
 
-/* CLOCK */
 .clock-box{
   width:380px;
   height:80px;
@@ -113,7 +85,6 @@ body::after{
 .date{font-size:18px;color:#FFCC99;}
 .temp{font-size:22px;color:#FFCC99;}
 
-/* MAIN GRID */
 .main{
   height:900px;
   padding:12px;
@@ -123,7 +94,6 @@ body::after{
   overflow:hidden;
 }
 
-/* PANELS */
 .panel{
   background:#120000;
   border:4px solid #FFCC00;
@@ -144,7 +114,6 @@ body::after{
   align-items:center;
 }
 
-/* DROPDOWN */
 .city-dropdown{
   background:#120000;
   color:#FFCC99;
@@ -159,7 +128,6 @@ body::after{
   color:#FFCC99;
 }
 
-/* RADAR */
 .radar-window{
   flex:1;
   background:#000;
@@ -176,7 +144,6 @@ body::after{
   filter:contrast(1.2) brightness(1.1);
 }
 
-/* RADAR LEGEND */
 .radar-legend{
   height:90px;
   background:#120000;
@@ -203,14 +170,12 @@ body::after{
 .legend-heavy{background:#FF8000;}
 .legend-severe{background:#FF0000;}
 
-/* RIGHT COLUMN */
 .right-stack{
   display:grid;
   grid-template-rows:430px 430px;
   gap:12px;
 }
 
-/* BULLETIN */
 .bulletin-content{
   padding:14px;
   font-size:22px;
@@ -224,7 +189,6 @@ body::after{
   font-weight:bold;
 }
 
-/* LOCATION PANEL */
 .location-content{
   padding:14px;
   font-size:22px;
@@ -236,7 +200,6 @@ body::after{
   font-size:22px;
 }
 
-/* EMERGENCY CRAWL */
 .emergency-crawl{
   position:absolute;
   bottom:0;
@@ -266,7 +229,7 @@ body::after{
 <body>
 <div id="scaleWrapper">
 
-<!-- NAV BAR -->
+<!-- NAV -->
 <div class="navbar">
   <a href="80s.html">80s Weather</a>
   <a href="1994Severe.html">1994 Severe</a>
@@ -364,7 +327,7 @@ body::after{
 </div>
 
 <script>
-/* ⭐ FINAL AUTO-SCALE ⭐ */
+/* AUTO SCALE */
 function scaleToFit(){
   const w=document.getElementById("scaleWrapper");
   const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
@@ -384,7 +347,7 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* LOAD CITY WEATHER */
+/* LOAD CITY WEATHER — FIXED TO UPDATE TOP-RIGHT TEMP */
 async function loadCity(val){
   const panel=document.getElementById("locationPanel");
   if(!val){
@@ -406,18 +369,23 @@ async function loadCity(val){
 
     panel.innerHTML=`
       <div class="location-line"><strong>${city}, ${state}</strong></div>
-      <div class="location-line">Temperature: ${period.temperature}°F</div>
+      <div class="location-line">Temperature: ${period.temperature}°${period.temperatureUnit}</div>
       <div class="location-line">Condition: ${period.shortForecast}</div>
       <div class="location-line">Humidity: ${period.relativeHumidity.value}%</div>
       <div class="location-line">Wind: ${period.windSpeed} ${period.windDirection}</div>
-      <div class="location-line">Precip Chance: ${period.probabilityOfPrecipitation.value}%</div>
+      <div class="location-line">Precipitation Chance: ${period.probabilityOfPrecipitation.value}%</div>
     `;
+
+    /* ⭐ FIXED: Update top-right temp */
+    document.getElementById("temp").textContent =
+      `Temp: ${period.temperature}°${period.temperatureUnit}`;
+
   }catch(e){
     panel.innerHTML="<div class='location-line'>Unable to load data.</div>";
   }
 }
 
-/* CITY SELECT + AUTO SAVE */
+/* CITY SELECT */
 document.getElementById("citySelect").addEventListener("change",function(){
   const val=this.value;
   localStorage.setItem("savedCity",val);
@@ -433,7 +401,7 @@ window.addEventListener("load",()=>{
   }
 });
 
-/* SEVERE ALERTS */
+/* BULLETIN ALERTS (unchanged) */
 const middleTN=[
   "DAVIDSON","CHEATHAM","DICKSON","HICKMAN","HOUSTON","HUMPHREYS",
   "MONTGOMERY","ROBERTSON","STEWART","SUMNER","WILLIAMSON",
@@ -490,4 +458,3 @@ function activateCrawl(text){
 
 </body>
 </html>
-
