@@ -100,7 +100,7 @@ html, body{
 /* MAIN GRID */
 .main{
   flex:1;
-  padding:8px;
+  padding:6px;
   display:grid;
   grid-template-columns:1180px 720px;
   gap:8px;
@@ -132,9 +132,9 @@ html, body{
   line-height:1.4;
 }
 
-/* RADAR */
+/* RADAR — aligned perfectly with right column */
 .radar-window{
-  flex:1;
+  height:860px;
   background:#000;
   display:flex;
   justify-content:center;
@@ -215,9 +215,9 @@ html, body{
   to{transform:translateX(-120%);}
 }
 
-/* FOOTER TICKER (slightly shorter) */
+/* FOOTER TICKER — raised + visible */
 .footer{
-  height:50px;
+  height:46px;
   background:#003366;
   border-top:3px solid #99CCFF;
   overflow:hidden;
@@ -230,7 +230,7 @@ html, body{
 .ticker-content{
   white-space:nowrap;
   font-size:15px;
-  padding-right:100px;
+  padding-right:80px;
 }
 @keyframes tickerMove{
   from{transform:translateX(0);}
