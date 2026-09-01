@@ -2,34 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1920,height=1080">
 <title>Cumberland Weather Network — 80s Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
 html, body{
-  width:1920px;
-  height:1080px;
+  width:100%;
+  height:100%;
   overflow:hidden;
-  background:#000814; /* CRT deep blue */
+  background:#000814;
   font-family:'VT323', monospace;
   color:#F8F7FF;
 }
 
-/* CRT + Glow + Scanlines */
-body{
-  animation:flicker .18s infinite;
-  box-shadow:
-    inset 0 0 160px rgba(0,200,255,.45),
-    inset 0 0 320px rgba(0,0,0,.9);
+/* CENTER + AUTO SCALE */
+#scaleWrapper{
+  width:1920px;
+  height:1080px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform-origin:top left;
 }
+
+/* CRT EFFECTS */
 body::before{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:9998;
   background:repeating-linear-gradient(
     0deg,
     rgba(255,255,255,.04) 0px,
@@ -37,26 +40,42 @@ body::before{
     transparent 2px,
     transparent 4px
   );
+  z-index:9998;
 }
 body::after{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:9997;
   background:radial-gradient(
     ellipse at center,
     rgba(0,0,0,.0) 40%,
     rgba(0,0,0,.7) 100%
   );
-}
-@keyframes flicker{
-  0%{opacity:.995;}
-  50%{opacity:1;}
-  100%{opacity:.99;}
+  z-index:9997;
 }
 
-/* HEADER — Retro Gradient Bar */
+/* NAV BAR */
+.navbar{
+  height:40px;
+  background:#001326;
+  border-bottom:3px solid #00c8ff;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding-left:20px;
+}
+.navbar a{
+  color:#b4e9ff;
+  text-decoration:none;
+  font-size:20px;
+  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
+}
+.navbar a:hover{
+  color:#fff;
+}
+
+/* HEADER */
 .header{
   height:100px;
   display:flex;
@@ -76,7 +95,6 @@ body::after{
 .tagline{
   font-size:22px;
   color:#b4e9ff;
-  text-shadow:1px 0 #fffb00;
 }
 
 /* CLOCK */
@@ -110,7 +128,7 @@ body::after{
   gap:10px;
 }
 
-/* PANELS — Retro Gradient */
+/* PANELS */
 .panel{
   background:linear-gradient(135deg,#001326,#001f3f);
   border:4px solid #00c8ff;
@@ -128,7 +146,7 @@ body::after{
   text-shadow:2px 0 #ff006e, -2px 0 #00c8ff;
 }
 
-/* RADAR — Retro Zoom + Flush */
+/* RADAR */
 .radar-window{
   width:100%;
   height:820px;
@@ -160,7 +178,7 @@ body::after{
   overflow-y:auto;
 }
 
-/* FORECAST — Retro Layout */
+/* FORECAST */
 #forecastPanel{
   height:240px;
   overflow-y:auto;
@@ -201,7 +219,7 @@ body::after{
   to{transform:translateX(-100%);}
 }
 
-/* TICKER — Retro */
+/* TICKER */
 .footer{
   height:70px;
   background:linear-gradient(90deg,#001326,#001f3f);
@@ -231,6 +249,12 @@ body::after{
 <body>
 <div id="scaleWrapper">
 
+<!-- NAV -->
+<div class="navbar">
+  <a href="80s.html">80s Weather</a>
+  <a href="1994Severe.html">1994 Severe</a>
+</div>
+
 <!-- HEADER -->
 <div class="header">
   <div>
@@ -259,7 +283,37 @@ body::after{
 
     <!-- CONDITIONS -->
     <div class="panel">
-      <div class="panel-title">CURRENT CONDITIONS</div>
+      <div class="panel-title">
+        CURRENT CONDITIONS
+        <select id="citySelect" class="city-dropdown">
+          <option value="">Select City</option>
+
+          <!-- FULL CITY LIST -->
+          <option value="36.1627,-86.7816">Nashville</option>
+          <option value="36.2081,-86.2911">Lebanon</option>
+          <option value="36.3342,-86.4467">Gallatin</option>
+          <option value="36.3040,-86.6200">Hendersonville</option>
+          <option value="35.8456,-86.3903">Murfreesboro</option>
+          <option value="35.9251,-86.8689">Franklin</option>
+          <option value="35.6151,-87.0353">Columbia</option>
+          <option value="36.1628,-85.5016">Cookeville</option>
+          <option value="36.5298,-87.3595">Clarksville</option>
+          <option value="36.5092,-86.8850">Springfield</option>
+          <option value="36.0770,-87.3878">Dickson</option>
+          <option value="35.4834,-86.4603">Shelbyville</option>
+          <option value="35.4734,-86.0886">Manchester</option>
+          <option value="35.3620,-86.2094">Tullahoma</option>
+          <option value="35.6860,-85.7791">McMinnville</option>
+          <option value="35.9256,-85.4644">Sparta</option>
+          <option value="36.2515,-85.9511">Carthage</option>
+          <option value="36.5212,-86.0266">Lafayette</option>
+          <option value="36.3900,-86.1600">Hartsville</option>
+          <option value="36.3851,-85.3230">Livingston</option>
+          <option value="36.4345,-84.9372">Jamestown</option>
+          <option value="35.9489,-85.0269">Crossville</option>
+
+        </select>
+      </div>
       <div class="conditions-content" id="conditionsPanel">
         Select a city to view conditions.
       </div>
@@ -289,10 +343,11 @@ body::after{
 </div>
 
 <script>
+/* AUTO SCALE + CENTER */
 function scaleToFit(){
   const w=document.getElementById("scaleWrapper");
   const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
-  w.style.transform="scale("+s+")";
+  w.style.transform="translate(-50%, -50%) scale("+s+")";
 }
 window.addEventListener("resize",scaleToFit);
 window.addEventListener("load",scaleToFit);
@@ -401,6 +456,22 @@ async function loadCity(val){
     forecast.textContent="Unable to load forecast.";
   }
 }
+
+/* CITY SELECT + AUTO SAVE */
+document.getElementById("citySelect").addEventListener("change",function(){
+  const val=this.value;
+  localStorage.setItem("savedCity80s",val);
+  loadCity(val);
+});
+
+/* LOAD SAVED CITY */
+window.addEventListener("load",()=>{
+  const saved=localStorage.getItem("savedCity80s");
+  if(saved){
+    document.getElementById("citySelect").value=saved;
+    loadCity(saved);
+  }
+});
 </script>
 
 </body>
