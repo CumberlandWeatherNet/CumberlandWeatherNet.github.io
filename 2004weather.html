@@ -39,11 +39,11 @@ html, body{
   flex:0 0 auto;
   background:#003366;
   border-bottom:3px solid #99CCFF;
-  height:36px;
   display:flex;
   align-items:center;
   gap:20px;
   padding:0 20px;
+  height:36px;
 }
 .navbar a{
   color:#E0F0FF;
@@ -509,12 +509,4 @@ async function updateAlerts(){
     "MONTGOMERY","ROBERTSON","STEWART","SUMNER","WILLIAMSON",
     "WILSON","RUTHERFORD","CANNON","COFFEE","BEDFORD","MARSHALL",
     "MAURY","PERRY","LEWIS","WAYNE","LAWRENCE","GILES","LINCOLN",
-    "MOORE","FRANKLIN","DEKALB","SMITH","JACKSON","PUTNAM",
-    "OVERTON","CLAY","MACON","TROUSDALE","WHITE","CUMBERLAND",
-    "FENTRESS"
-  ];
-
-  try{
-    const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
-    const alerts=data.features||[];
-
+    "MOORE","FRANKLIN","DEKALB","SMITH
