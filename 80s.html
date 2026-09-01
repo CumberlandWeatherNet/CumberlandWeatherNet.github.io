@@ -22,11 +22,13 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
+  margin:0;
+  padding:0;
 }
 #scaleWrapper{
   width:1920px;
   height:1080px;
-  transform-origin:top left;
+  transform-origin:center center;
 }
 
 /* CRT EFFECTS */
@@ -146,6 +148,27 @@ body::after{
   border-bottom:2px solid #ff006e;
   color:#fffbff;
   text-shadow:2px 0 #ff006e, -2px 0 #00c8ff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+/* RETRO DROPDOWN */
+#citySelect{
+  margin-right:15px;
+  background:#001326;
+  border:3px solid #00c8ff;
+  color:#fffbff;
+  font-family:'VT323', monospace;
+  font-size:22px;
+  padding:6px 12px;
+  border-radius:4px;
+  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
+  box-shadow:0 0 12px rgba(0,200,255,.5);
+}
+#citySelect option{
+  background:#000814;
+  color:#b4e9ff;
 }
 
 /* RADAR */
@@ -206,11 +229,11 @@ body::after{
   color:#b4e9ff;
 }
 
-/* SCROLLER — FIX 2, 3, 4 */
+/* SCROLLER */
 .scroll-info{
   overflow:hidden;
   flex:1;
-  padding-left:40px;              /* dead zone before scroller */
+  padding-left:40px;
   mask-image:linear-gradient(to right, transparent 0px, black 40px);
 }
 .scroll-info span{
@@ -220,7 +243,7 @@ body::after{
 }
 @keyframes scrollInfo{
   from{transform:translateX(100%);}
-  to{transform:translateX(-120%);} /* disappears before temps */
+  to{transform:translateX(-120%);}
 }
 
 /* TICKER */
@@ -234,7 +257,7 @@ body::after{
 .ticker-wrap{
   display:flex;
   width:max-content;
-  animation:ticker 30s linear infinite; /* same speed as scroller */
+  animation:ticker 30s linear infinite;
 }
 .ticker-content{
   white-space:nowrap;
@@ -288,10 +311,9 @@ body::after{
     <!-- CONDITIONS -->
     <div class="panel">
       <div class="panel-title">
-        CURRENT CONDITIONS
+        <span>CURRENT CONDITIONS</span>
         <select id="citySelect">
           <option value="">Select City</option>
-
           <option value="36.1627,-86.7816">Nashville</option>
           <option value="36.2081,-86.2911">Lebanon</option>
           <option value="36.3342,-86.4467">Gallatin</option>
@@ -345,7 +367,7 @@ body::after{
 </div>
 
 <script>
-/* AUTO SCALE (FINAL) */
+/* AUTO SCALE (final, stable) */
 function scaleToFit(){
   const w=document.getElementById("scaleWrapper");
   const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
@@ -354,7 +376,7 @@ function scaleToFit(){
 window.addEventListener("resize",scaleToFit);
 window.addEventListener("load",scaleToFit);
 
-/* CLOCK */
+/* CLOCK + "Tonight" logic */
 function updateClock(){
   const now=new Date();
   document.getElementById("clock").textContent=
@@ -397,17 +419,16 @@ async function loadCity(val){
     const daily=await fetch(points.properties.forecast).then(r=>r.json());
     const periods=daily.properties.periods;
 
-    const days={};
+    const daysMap={};
 
     periods.forEach(period=>{
-      const name=period.name;
-      if(name.includes("Night")) return;
+      const start=new Date(period.startTime);
+      const dateKey=start.toDateString();
+      const isNight=!period.isDaytime;
 
-      const date=new Date(period.startTime).toDateString();
-
-      if(!days[date]){
-        days[date]={
-          day:name,
+      if(!daysMap[dateKey]){
+        daysMap[dateKey]={
+          day:period.name,
           high:null,
           low:null,
           cond:period.shortForecast
@@ -415,13 +436,29 @@ async function loadCity(val){
       }
 
       if(period.isDaytime){
-        days[date].high=period.temperature;
+        daysMap[dateKey].high=period.temperature;
       }else{
-        days[date].low=period.temperature;
+        daysMap[dateKey].low=period.temperature;
       }
     });
 
-    const finalDays=Object.values(days).slice(0,7);
+    const now=new Date();
+    const finalDays=Object.keys(daysMap)
+      .sort((a,b)=>new Date(a)-new Date(b))
+      .slice(0,7)
+      .map(key=>{
+        const d=daysMap[key];
+        const dateObj=new Date(key);
+
+        if(dateObj.toDateString()===now.toDateString() && now.getHours()>=18){
+          d.day="Tonight";
+        }
+
+        if(d.high===null && d.low!==null) d.high=d.low;
+        if(d.low===null && d.high!==null) d.low=d.high;
+
+        return d;
+      });
 
     forecast.innerHTML="";
 
