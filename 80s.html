@@ -1,455 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cumberland Weather Network — 80s Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<title>Cumberland Weather Network — 80s Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    #scaleWrapper {
-      width: 1920px;
-      height: 1080px;
-      transform-origin: top left;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-    /* BASE CRT LOOK */
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000814;
-      font-family: 'VT323', monospace, 'Courier New', monospace;
-      color: #F8F7FF;
-    }
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000814;
+  font-family:'VT323', monospace, 'Courier New', monospace;
+  color:#F8F7FF;
+}
 
-    body {
-      box-shadow:
-        inset 0 0 120px rgba(0, 200, 255, 0.3),
-        inset 0 0 260px rgba(0, 0, 0, 0.85);
-    }
+/* FIXED 1920×1080 LAYOUT */
+#scaleWrapper{
+  width:1920px;
+  height:1080px;
+  transform-origin:top left;
+  position:absolute;
+  top:0;
+  left:0;
+}
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9998;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.02) 0px,
-        rgba(255, 255, 255, 0.02) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-    }
+/* CRT EFFECT */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,.02) 0px,
+    rgba(255,255,255,.02) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+}
 
-    /* NAV BAR */
-    .navbar {
-      height: 40px;
-      background: #001326;
-      border-bottom: 3px solid #00c8ff;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding-left: 20px;
-    }
+/* NAV BAR */
+.navbar{
+  height:40px;
+  background:#001326;
+  border-bottom:3px solid #00c8ff;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding-left:20px;
+}
+.navbar a{
+  color:#b4e9ff;
+  text-decoration:none;
+  font-size:20px;
+}
+.navbar a:hover{color:#fff;}
 
-    .navbar a {
-      color: #b4e9ff;
-      text-decoration: none;
-      font-size: 20px;
-    }
+/* HEADER */
+.header{
+  height:110px;
+  background:linear-gradient(90deg,#001326,#004b8c);
+  border-bottom:4px solid #00c8ff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 30px;
+}
+.logo{
+  font-size:48px;
+  color:#b4e9ff;
+  text-shadow:1px 0 #fffb00;
+}
+.tagline{
+  font-size:22px;
+  color:#b4e9ff;
+}
 
-    .navbar a:hover {
-      color: #ffffff;
-    }
+/* CLOCK */
+.clock-box{
+  width:360px;
+  height:72px;
+  background:#000010;
+  border:3px solid #00c8ff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.clock{
+  font-size:36px;
+  color:#fffb00;
+}
+.date{
+  font-size:20px;
+  color:#b4e9ff;
+}
 
-    /* HEADER */
-    .header {
-      height: 110px;
-      background: linear-gradient(90deg, #001326, #004b8c);
-      border-bottom: 4px solid #00c8ff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 30px;
-    }
+/* MAIN GRID */
+.main{
+  height:910px;
+  padding:10px;
+  display:grid;
+  grid-template-columns:1320px 570px;
+  gap:10px;
+}
 
-    .logo {
-      font-size: 48px;
-      color: #b4e9ff;
-      text-shadow: 1px 0 #fffb00;
-    }
+/* PANELS */
+.panel{
+  background:linear-gradient(135deg,#001326,#001f3f);
+  border:4px solid #00c8ff;
+  overflow:hidden;
+}
+.panel-title{
+  height:50px;
+  line-height:50px;
+  padding-left:15px;
+  font-size:30px;
+  background:linear-gradient(90deg,#001f3f,#004b8c);
+  border-bottom:2px solid #ff006e;
+  color:#fffbff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .tagline {
-      font-size: 22px;
-      color: #b4e9ff;
-    }
+/* DROPDOWN */
+.city-dropdown{
+  background:#000010;
+  color:#b4e9ff;
+  border:2px solid #00c8ff;
+  font-size:20px;
+  padding:4px 8px;
+  margin-right:20px;
+  cursor:pointer;
+}
 
-    .clock-box {
-      width: 360px;
-      height: 72px;
-      background: #000010;
-      border: 3px solid #00c8ff;
-      box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+/* RADAR */
+.radar-window{
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.radar-window img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
 
-    .clock {
-      font-size: 36px;
-      color: #fffb00;
-      text-shadow: 1px 0 #ff006e, -1px 0 #00c8ff;
-    }
+/* SIDEBAR */
+.sidebar{
+  display:grid;
+  grid-template-rows:1fr 1fr 1fr;
+  gap:10px;
+}
 
-    .date {
-      font-size: 20px;
-      color: #b4e9ff;
-    }
+/* CONDITIONS */
+.conditions-content{
+  padding:10px;
+  font-size:24px;
+  color:#b4e9ff;
+  line-height:1.6;
+}
 
-    /* MAIN LAYOUT */
-    .main {
-      height: 910px;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: 1320px 570px;
-      gap: 10px;
-    }
+/* FORECAST — FIXED HEIGHT + INTERNAL SCROLL */
+#forecastPanel{
+  height:300px;
+  overflow-y:auto;
+  padding:10px;
+}
+.forecast-line{
+  font-size:26px;
+  margin-bottom:10px;
+  display:flex;
+  gap:20px;
+  align-items:center;
+  white-space:nowrap;
+  color:#fdfbff;
+}
 
-    .panel {
-      background: linear-gradient(135deg, #001326, #001f3f);
-      border: 4px solid #00c8ff;
-      box-shadow: 0 0 12px rgba(0, 200, 255, 0.4);
-      overflow: hidden;
-    }
+/* ALERTS */
+.alerts-content{
+  padding:10px;
+}
+.alerts-content .warning{
+  margin-bottom:8px;
+  font-size:22px;
+  color:#fffbff;
+}
 
-    .panel-title {
-      height: 50px;
-      line-height: 50px;
-      padding-left: 15px;
-      font-size: 30px;
-      background: linear-gradient(90deg, #001f3f, #004b8c);
-      border-bottom: 2px solid #ff006e;
-      color: #fffbff;
-      text-shadow: 2px 0 #ff006e, -2px 0 #00c8ff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .city-dropdown {
-      background: #000010;
-      color: #b4e9ff;
-      border: 2px solid #00c8ff;
-      font-size: 20px;
-      padding: 4px 8px;
-      margin-right: 20px;
-      cursor: pointer;
-    }
-
-    .city-dropdown option {
-      background: #000010;
-      color: #b4e9ff;
-    }
-
-    .radar-window {
-      width: 100%;
-      height: 100%;
-      background: #000000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      box-shadow: 0 -4px 12px rgba(0, 200, 255, 0.5);
-    }
-
-    .radar-window img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      image-rendering: pixelated;
-    }
-
-    .sidebar {
-      display: grid;
-      grid-template-rows: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-
-    .panel-content {
-      padding: 10px;
-      font-size: 24px;
-      color: #b4e9ff;
-      line-height: 1.6;
-    }
-
-    .alerts-content .warning {
-      margin-bottom: 8px;
-      font-size: 22px;
-      color: #fffbff;
-    }
-
-    .conditions-content {
-      padding: 10px;
-      font-size: 24px;
-      color: #b4e9ff;
-      line-height: 1.6;
-    }
-
-    .forecast-line {
-      font-size: 26px;
-      margin-bottom: 10px;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      white-space: nowrap;
-      color: #fdfbff;
-    }
-
-    .footer {
-      height: 70px;
-      background: #001326;
-      border-top: 4px solid #00c8ff;
-      overflow: hidden;
-    }
-
-    .ticker-wrap {
-      display: flex;
-      width: max-content;
-      animation: ticker 35s linear infinite;
-    }
-
-    .ticker-content {
-      white-space: nowrap;
-      font-size: 26px;
-      line-height: 70px;
-      color: #fffbff;
-      letter-spacing: 3px;
-      padding-right: 140px;
-    }
-
-    @keyframes ticker {
-      from {
-        transform: translateX(0);
-      }
-      to {
-        transform: translateX(-50%);
-      }
-    }
-  </style>
+/* TICKER */
+.footer{
+  height:70px;
+  background:#001326;
+  border-top:4px solid #00c8ff;
+  overflow:hidden;
+}
+.ticker-wrap{
+  display:flex;
+  width:max-content;
+  animation:ticker 35s linear infinite;
+}
+.ticker-content{
+  white-space:nowrap;
+  font-size:26px;
+  line-height:70px;
+  color:#fffbff;
+  padding-right:140px;
+}
+@keyframes ticker{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+</style>
 </head>
+
 <body>
-  <div id="scaleWrapper">
-    <!-- NAV BAR -->
-    <div class="navbar">
-      <a href="80s.html">80s Weather</a>
-      <a href="1994Severe.html">1994 Severe</a>
-    </div>
+<div id="scaleWrapper">
 
-    <!-- HEADER -->
-    <div class="header">
-      <div>
-        <div class="logo">CUMBERLAND WEATHER NET</div>
-        <div class="tagline">80s WEATHER CENTER</div>
-      </div>
-      <div class="clock-box">
-        <div class="clock" id="clock">--:-- --</div>
-        <div class="date" id="date">Loading...</div>
-      </div>
-    </div>
+<!-- NAV -->
+<div class="navbar">
+  <a href="80s.html">80s Weather</a>
+  <a href="1994Severe.html">1994 Severe</a>
+</div>
 
-    <!-- MAIN -->
-    <div class="main">
-      <!-- RADAR PANEL -->
-      <div class="panel">
-        <div class="panel-title">TENNESSEE RADAR</div>
-        <div class="radar-window">
-          <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif" alt="Radar">
-        </div>
-      </div>
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="logo">CUMBERLAND WEATHER NET</div>
+    <div class="tagline">80s WEATHER CENTER</div>
+  </div>
+  <div class="clock-box">
+    <div class="clock" id="clock">--:-- --</div>
+    <div class="date" id="date">Loading...</div>
+  </div>
+</div>
 
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <!-- ALERTS -->
-        <div class="panel">
-          <div class="panel-title">ACTIVE ALERTS</div>
-          <div class="panel-content alerts-content">
-            <div class="warning">LOADING ALERTS...</div>
-          </div>
-        </div>
+<!-- MAIN -->
+<div class="main">
 
-        <!-- CURRENT CONDITIONS -->
-        <div class="panel">
-          <div class="panel-title">
-            CURRENT CONDITIONS
-            <select id="citySelect" class="city-dropdown">
-              <option value="">Select City</option>
-              <option value="36.2081,-86.2911">Lebanon</option>
-              <option value="36.1627,-86.7816">Nashville</option>
-              <option value="36.1628,-85.5016">Cookeville</option>
-              <option value="35.9489,-85.0269">Crossville</option>
-            </select>
-          </div>
-          <div class="panel-content conditions-content" id="conditionsPanel">
-            Select a city to view conditions.
-          </div>
-        </div>
-
-        <!-- FORECAST -->
-        <div class="panel">
-          <div class="panel-title">7-DAY FORECAST</div>
-          <div class="panel-content" id="forecastPanel">
-            Select a city to view forecast.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TICKER -->
-    <div class="footer">
-      <div class="ticker-wrap">
-        <div class="ticker-content">
-          CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
-        </div>
-        <div class="ticker-content">
-          CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
-        </div>
-      </div>
+  <!-- RADAR -->
+  <div class="panel">
+    <div class="panel-title">TENNESSEE RADAR</div>
+    <div class="radar-window">
+      <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
     </div>
   </div>
 
-  <script>
-    function scaleToFit() {
-      const wrapper = document.getElementById('scaleWrapper');
-      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-      wrapper.style.transform = 'scale(' + scale + ')';
-    }
+  <!-- SIDEBAR -->
+  <div class="sidebar">
 
-    window.addEventListener('resize', scaleToFit);
-    window.addEventListener('load', scaleToFit);
+    <!-- ALERTS -->
+    <div class="panel">
+      <div class="panel-title">ACTIVE ALERTS</div>
+      <div class="alerts-content">LOADING ALERTS...</div>
+    </div>
 
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').textContent =
-        now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' });
-      document.getElementById('date').textContent =
-        now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    }
+    <!-- CONDITIONS -->
+    <div class="panel">
+      <div class="panel-title">
+        CURRENT CONDITIONS
+        <select id="citySelect" class="city-dropdown">
+          <option value="">Select City</option>
+          <option value="36.2081,-86.2911">Lebanon</option>
+          <option value="36.1627,-86.7816">Nashville</option>
+          <option value="36.1628,-85.5016">Cookeville</option>
+          <option value="35.9489,-85.0269">Crossville</option>
+        </select>
+      </div>
+      <div class="conditions-content" id="conditionsPanel">
+        Select a city to view conditions.
+      </div>
+    </div>
 
-    setInterval(updateClock, 1000);
-    updateClock();
+    <!-- FORECAST -->
+    <div class="panel">
+      <div class="panel-title">7-DAY FORECAST</div>
+      <div id="forecastPanel">Select a city to view forecast.</div>
+    </div>
 
-    async function loadCity(val) {
-      const conditionsPanel = document.getElementById('conditionsPanel');
-      const forecastPanel = document.getElementById('forecastPanel');
+  </div>
+</div>
 
-      if (!val) {
-        conditionsPanel.innerHTML = 'Select a city to view conditions.';
-        forecastPanel.innerHTML = 'Select a city to view forecast.';
-        return;
-      }
+<!-- TICKER -->
+<div class="footer">
+  <div class="ticker-wrap">
+    <div class="ticker-content">
+      CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+    </div>
+    <div class="ticker-content">
+      CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+    </div>
+  </div>
+</div>
 
-      const parts = val.split(',');
-      const lat = parts[0];
-      const lon = parts[1];
+</div>
 
-      try {
-        const pointsResp = await fetch('https://api.weather.gov/points/' + lat + ',' + lon);
-        const pointsData = await pointsResp.json();
+<script>
+function scaleToFit(){
+  const w=document.getElementById("scaleWrapper");
+  const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+  w.style.transform="scale("+s+")";
+}
+window.addEventListener("resize",scaleToFit);
+window.addEventListener("load",scaleToFit);
 
-        const city = pointsData.properties.relativeLocation.properties.city;
-        const state = pointsData.properties.relativeLocation.properties.state;
+/* CLOCK */
+function updateClock(){
+  const now=new Date();
+  document.getElementById("clock").textContent=
+    now.toLocaleTimeString("en-US",{hour:"numeric",minute:"numeric"});
+  document.getElementById("date").textContent=
+    now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+setInterval(updateClock,1000);
+updateClock();
 
-        const hourlyResp = await fetch(pointsData.properties.forecastHourly);
-        const hourlyData = await hourlyResp.json();
-        const period = hourlyData.properties.periods[0];
+/* LOAD CITY WEATHER */
+async function loadCity(val){
+  const conditions=document.getElementById("conditionsPanel");
+  const forecast=document.getElementById("forecastPanel");
 
-        conditionsPanel.innerHTML =
-          '<div><strong>' + city + ', ' + state + '</strong></div>' +
-          '<div>Temperature: ' + period.temperature + '°' + period.temperatureUnit + '</div>' +
-          '<div>Condition: ' + period.shortForecast + '</div>' +
-          '<div>Humidity: ' + period.relativeHumidity.value + '%</div>' +
-          '<div>Wind: ' + period.windSpeed + ' ' + period.windDirection + '</div>' +
-          '<div>Precipitation Chance: ' + period.probabilityOfPrecipitation.value + '%</div>';
+  if(!val){
+    conditions.textContent="Select a city to view conditions.";
+    forecast.textContent="Select a city to view forecast.";
+    return;
+  }
 
-        const dailyResp = await fetch(pointsData.properties.forecast);
-        const dailyData = await dailyResp.json();
-        const periods = dailyData.properties.periods;
+  const parts=val.split(",");
+  const lat=parts[0];
+  const lon=parts[1];
 
-        forecastPanel.innerHTML = '';
+  try{
+    const points=await fetch("https://api.weather.gov/points/"+lat+","+lon).then(r=>r.json());
+    const city=points.properties.relativeLocation.properties.city;
+    const state=points.properties.relativeLocation.properties.state;
 
-        for (let i = 0; i < periods.length; i++) {
-          const p = periods[i];
-          const line = document.createElement('div');
-          line.className = 'forecast-line';
-          line.innerHTML =
-            '<span>' + p.name + '</span>' +
-            '<span>' + p.temperature + '°' + p.temperatureUnit + '</span>' +
-            '<span>' + p.shortForecast + '</span>';
-          forecastPanel.appendChild(line);
-        }
-      } catch (e) {
-        conditionsPanel.innerHTML = 'Unable to load data.';
-        forecastPanel.innerHTML = 'Unable to load forecast.';
-      }
-    }
+    const hourly=await fetch(points.properties.forecastHourly).then(r=>r.json());
+    const p=hourly.properties.periods[0];
 
-    document.getElementById('citySelect').addEventListener('change', function () {
-      const val = this.value;
-      localStorage.setItem('savedCity80s', val);
-      loadCity(val);
+    conditions.innerHTML=
+      "<div><strong>"+city+", "+state+"</strong></div>"+
+      "<div>Temperature: "+p.temperature+"°"+p.temperatureUnit+"</div>"+
+      "<div>Condition: "+p.shortForecast+"</div>"+
+      "<div>Humidity: "+p.relativeHumidity.value+"%</div>"+
+      "<div>Wind: "+p.windSpeed+" "+p.windDirection+"</div>"+
+      "<div>Precipitation Chance: "+p.probabilityOfPrecipitation.value+"%</div>";
+
+    const daily=await fetch(points.properties.forecast).then(r=>r.json());
+    const periods=daily.properties.periods;
+
+    forecast.innerHTML="";
+    periods.forEach(period=>{
+      const line=document.createElement("div");
+      line.className="forecast-line";
+      line.innerHTML=
+        "<span>"+period.name+"</span>"+
+        "<span>"+period.temperature+"°"+period.temperatureUnit+"</span>"+
+        "<span>"+period.shortForecast+"</span>";
+      forecast.appendChild(line);
     });
 
-    window.addEventListener('load', function () {
-      const saved = localStorage.getItem('savedCity80s');
-      if (saved) {
-        const select = document.getElementById('citySelect');
-        select.value = saved;
-        loadCity(saved);
-      }
-    });
+  }catch(e){
+    conditions.textContent="Unable to load data.";
+    forecast.textContent="Unable to load forecast.";
+  }
+}
 
-    async function updateAlerts() {
-      const url = 'https://api.weather.gov/alerts/active?area=TN';
-      const container = document.querySelector('.alerts-content');
+/* CITY SELECT */
+document.getElementById("citySelect").addEventListener("change",function(){
+  const val=this.value;
+  localStorage.setItem("savedCity80s",val);
+  loadCity(val);
+});
 
-      try {
-        const data = await fetch(url).then(function (res) { return res.json(); });
-        const alerts = data.features;
+/* LOAD SAVED CITY */
+window.addEventListener("load",()=>{
+  const saved=localStorage.getItem("savedCity80s");
+  if(saved){
+    document.getElementById("citySelect").value=saved;
+    loadCity(saved);
+  }
+});
 
-        container.innerHTML = '';
-
-        if (!alerts || alerts.length === 0) {
-          container.innerHTML = '<div class="warning">NO ACTIVE ALERTS</div>';
-          return;
-        }
-
-        for (let i = 0; i < alerts.length; i++) {
-          const alert = alerts[i];
-          const event = alert.properties.event || 'UNKNOWN ALERT';
-          const div = document.createElement('div');
-          div.className = 'warning';
-          div.textContent = event.toUpperCase();
-          container.appendChild(div);
-        }
-      } catch (err) {
-        container.innerHTML = '<div class="warning">ALERT DATA UNAVAILABLE</div>';
-      }
+/* ALERTS */
+async function updateAlerts(){
+  const box=document.querySelector(".alerts-content");
+  try{
+    const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
+    const alerts=data.features;
+    box.innerHTML="";
+    if(!alerts||alerts.length===0){
+      box.innerHTML="<div class='warning'>NO ACTIVE ALERTS</div>";
+      return;
     }
+    alerts.forEach(a=>{
+      const div=document.createElement("div");
+      div.className="warning";
+      div.textContent=(a.properties.event||"UNKNOWN ALERT").toUpperCase();
+      box.appendChild(div);
+    });
+  }catch(e){
+    box.innerHTML="<div class='warning'>ALERT DATA UNAVAILABLE</div>";
+  }
+}
+updateAlerts();
+setInterval(updateAlerts,300000);
+</script>
 
-    updateAlerts();
-    setInterval(updateAlerts, 300000);
-  </script>
 </body>
 </html>
-
