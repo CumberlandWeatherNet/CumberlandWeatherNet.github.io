@@ -37,9 +37,9 @@ html, body{
 /* NAV */
 .navbar{
   flex:0 0 auto;
-  height:36px;
   background:#003366;
   border-bottom:3px solid #99CCFF;
+  height:36px;
   display:flex;
   align-items:center;
   gap:20px;
@@ -71,12 +71,14 @@ html, body{
 /* ALERT BANNER */
 #alertBanner{
   flex:0 0 auto;
-  height:42px;
+  min-height:42px;
   display:none;
   align-items:center;
   justify-content:center;
   font-size:18px;
   font-weight:bold;
+  color:#000;
+  background:#FFD700;
   border-bottom:3px solid #99CCFF;
 }
 
@@ -88,42 +90,16 @@ html, body{
   padding:8px;
 }
 
-/* LEFT COLUMN (RADAR) */
+/* LEFT COLUMN (55%) */
 .leftCol{
-  flex:1;
+  flex:0 0 55%;
   display:flex;
   flex-direction:column;
 }
-.leftCol .panel-title{
-  flex:0 0 auto;
-}
-.radar-window{
-  flex:1;
-  background:#000;
-  position:relative;
-  overflow:hidden;
-}
-.radar-window img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transform:scale(1.35); /* ZOOM INTO MIDDLE TENNESSEE */
-}
 
-/* COUNTY LINES OVERLAY */
-#countyOverlay{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  opacity:0.55;
-  pointer-events:none;
-}
-
-/* RIGHT COLUMN */
+/* RIGHT COLUMN (45%) */
 .rightCol{
-  width:720px;
+  flex:0 0 45%;
   display:flex;
   flex-direction:column;
   gap:8px;
@@ -155,10 +131,36 @@ html, body{
   overflow:hidden;
 }
 
+/* RADAR */
+.radar-window{
+  flex:1;
+  background:#000;
+  position:relative;
+  overflow:hidden;
+}
+.radar-window img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scale(1.35); /* Middle TN zoom */
+}
+
+/* COUNTY OVERLAY */
+#countyOverlay{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  opacity:0.55;
+  pointer-events:none;
+}
+
 /* ALERTS */
 .alerts-content .warning{
   margin-bottom:8px;
   font-size:15px;
+  color:#FFEEAA;
 }
 
 /* DROPDOWN */
@@ -205,7 +207,7 @@ html, body{
 /* TICKER */
 .footer{
   flex:0 0 auto;
-  height:46px;
+  min-height:46px;
   background:#003366;
   border-top:3px solid #99CCFF;
   overflow:hidden;
@@ -223,6 +225,17 @@ html, body{
 @keyframes tickerMove{
   from{transform:translateX(0);}
   to{transform:translateX(-50%);}
+}
+
+/* STORM DESK */
+.stormDesk{
+  background:linear-gradient(90deg,#660000,#990000,#CC0000) !important;
+  animation:stormPulse 2s infinite;
+}
+@keyframes stormPulse{
+  0%{box-shadow:0 0 10px #FF0000;}
+  50%{box-shadow:0 0 25px #FF4444;}
+  100%{box-shadow:0 0 10px #FF0000;}
 }
 </style>
 </head>
@@ -505,16 +518,3 @@ async function updateAlerts(){
     const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
     const alerts=data.features||[];
 
-    const filtered=alerts.filter(a=>{
-      const areas=(a.properties.areaDesc||"").toUpperCase();
-      return middleTN.some(c=>areas.includes(c));
-    });
-
-    const unique=[];
-    const seen=new Set();
-
-    filtered.forEach(a=>{
-      const event=a.properties.event||"UNKNOWN ALERT";
-      if(!seen.has(event)){
-        seen.add(event);
-        unique.push
