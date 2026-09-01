@@ -138,19 +138,20 @@ body::before{
   cursor:pointer;
 }
 
-/* RADAR */
+/* RADAR — TRIM BOTTOM + ZOOM */
 .radar-window{
   width:100%;
-  height:100%;
+  height:840px; /* trimmed to align bottom with forecast */
   background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
+  overflow:hidden;
 }
 .radar-window img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+  width:110%;   /* zoom to remove black bars */
+  height:110%;
+  object-fit:cover; /* ensures no black bars */
 }
 
 /* SIDEBAR FIXED HEIGHTS */
@@ -190,19 +191,25 @@ body::before{
   font-size:26px;
   margin-bottom:10px;
   display:flex;
-  gap:20px;
+  gap:25px;
   align-items:center;
   color:#fdfbff;
   white-space:nowrap;
 }
 
-/* ONLY CONDITIONS SCROLL */
+/* CONDITION TICKER CLIPPING */
+.condition-wrapper{
+  width:300px;       /* HARD CLIP WIDTH */
+  overflow:hidden;   /* CUT OFF CLEANLY */
+  position:relative;
+}
+
+/* SCROLLING CONDITIONS */
 .condition-ticker{
   display:inline-block;
   animation:conditionScroll 12s linear infinite;
-  padding-left:40px;
-  max-width:300px; /* CUT OFF at temps */
-  overflow:hidden;
+  white-space:nowrap;
+  padding-left:20px;
 }
 
 .condition-ticker:hover{
@@ -214,23 +221,23 @@ body::before{
   to{transform:translateX(-100%);}
 }
 
-/* TICKER */
+/* GREEN TICKER */
 .footer{
   height:70px;
   background:#001326;
-  border-top:4px solid #00c8ff;
+  border-top:4px solid #00ff00;
   overflow:hidden;
 }
 .ticker-wrap{
   display:flex;
   width:max-content;
-  animation:ticker 35s linear infinite;
+  animation:ticker 30s linear infinite;
 }
 .ticker-content{
   white-space:nowrap;
   font-size:26px;
   line-height:70px;
-  color:#fffbff;
+  color:#00ff00;
   padding-right:140px;
 }
 @keyframes ticker{
@@ -307,7 +314,7 @@ body::before{
   </div>
 </div>
 
-<!-- TICKER -->
+<!-- GREEN TICKER -->
 <div class="footer">
   <div class="ticker-wrap">
     <div class="ticker-content">
@@ -386,13 +393,18 @@ async function loadCity(val){
       const temp=document.createElement("span");
       temp.textContent=(period.isDaytime ? "H " : "L ")+period.temperature+"°F";
 
+      const wrap=document.createElement("span");
+      wrap.className="condition-wrapper";
+
       const cond=document.createElement("span");
       cond.className="condition-ticker";
       cond.textContent=period.shortForecast;
 
+      wrap.appendChild(cond);
+
       line.appendChild(day);
       line.appendChild(temp);
-      line.appendChild(cond);
+      line.appendChild(wrap);
 
       forecast.appendChild(line);
     });
