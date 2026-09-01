@@ -22,14 +22,14 @@ html, body{
   align-items:center;
 }
 
-/* Native 1920x1080 + Auto Scale */
+/* AUTO-SCALE WRAPPER */
 #scaleWrapper{
   width:1920px;
   height:1080px;
   transform-origin:center center;
 }
 
-/* Layout */
+/* APP LAYOUT */
 .app{
   width:100%;
   height:100%;
@@ -52,9 +52,6 @@ html, body{
   text-decoration:none;
   font-size:16px;
 }
-.navbar a:hover{
-  color:#FFFFFF;
-}
 
 /* HEADER */
 .header{
@@ -66,14 +63,9 @@ html, body{
   align-items:center;
   padding:0 20px;
 }
-.header-left{
-  display:flex;
-  flex-direction:column;
-}
 .network-title{
   font-size:28px;
   font-weight:bold;
-  letter-spacing:1px;
 }
 .network-sub{
   font-size:15px;
@@ -83,21 +75,12 @@ html, body{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:2px;
 }
-.clock{
-  font-size:22px;
-}
-.date{
-  font-size:15px;
-  color:#E0F0FF;
-}
-.header-temp{
-  font-size:17px;
-  color:#FFEEAA;
-}
+.clock{font-size:22px;}
+.date{font-size:15px;color:#E0F0FF;}
+.header-temp{font-size:17px;color:#FFEEAA;}
 
-/* 2004 Alert Banner */
+/* ALERT BANNER */
 #alertBanner{
   display:none;
   height:42px;
@@ -109,49 +92,26 @@ html, body{
   border-bottom:3px solid #99CCFF;
 }
 
-/* MAIN GRID */
+/* MAIN GRID — NOW FLEX, NOT FIXED HEIGHTS */
 .main{
   flex:1;
-  padding:6px;
-  display:grid;
-  grid-template-columns:1180px 720px;
+  display:flex;
   gap:8px;
+  padding:6px;
 }
 
-/* PANELS */
-.panel{
-  background:#002233;
-  border:3px solid #99CCFF;
+/* LEFT COLUMN (RADAR) */
+.leftCol{
+  flex:1;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
 }
-.panel-title{
-  height:40px;
-  line-height:40px;
-  padding:0 12px;
-  font-size:18px;
-  background:#004477;
-  border-bottom:2px solid #99CCFF;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.panel-content{
-  flex:1;
-  padding:8px 12px;
-  font-size:15px;
-  line-height:1.4;
-}
-
-/* RADAR — aligned perfectly with right column */
 .radar-window{
-  height:860px;
+  flex:1;
   background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
-  overflow:hidden;
 }
 .radar-window img{
   width:100%;
@@ -159,10 +119,43 @@ html, body{
   object-fit:contain;
 }
 
+/* RIGHT COLUMN */
+.rightCol{
+  width:720px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* PANELS */
+.panel{
+  flex:1;
+  background:#002233;
+  border:3px solid #99CCFF;
+  display:flex;
+  flex-direction:column;
+}
+.panel-title{
+  height:40px;
+  background:#004477;
+  border-bottom:2px solid #99CCFF;
+  padding:0 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:18px;
+}
+.panel-content{
+  flex:1;
+  padding:8px 12px;
+  font-size:15px;
+  overflow:hidden;
+}
+
 /* ALERTS */
 .alerts-content .warning{
-  font-size:15px;
   margin-bottom:8px;
+  font-size:15px;
 }
 
 /* DROPDOWN */
@@ -172,24 +165,11 @@ html, body{
   border:2px solid #99CCFF;
   font-size:14px;
   padding:3px 6px;
-  cursor:pointer;
-}
-.city-dropdown option{
-  background:#001522;
-  color:#E0F0FF;
-}
-
-/* CURRENT CONDITIONS */
-.conditions-content{
-  padding:8px 12px;
-  font-size:15px;
-  line-height:1.4;
 }
 
 /* FORECAST */
 .forecast-content{
-  padding:8px 12px;
-  font-size:15px;
+  flex:1;
   display:flex;
   flex-direction:column;
   gap:4px;
@@ -226,7 +206,7 @@ html, body{
   to{transform:translateX(-120%);}
 }
 
-/* FOOTER TICKER — raised + visible */
+/* TICKER */
 .footer{
   height:46px;
   background:#003366;
@@ -248,7 +228,7 @@ html, body{
   to{transform:translateX(-50%);}
 }
 
-/* Storm Desk Mode */
+/* STORM DESK */
 .stormDesk{
   background:linear-gradient(90deg,#660000,#990000,#CC0000) !important;
   animation:stormPulse 2s infinite;
@@ -274,7 +254,7 @@ html, body{
 
     <!-- HEADER -->
     <div class="header">
-      <div class="header-left">
+      <div>
         <div class="network-title">CUMBERLAND WEATHER NETWORK</div>
         <div class="network-sub">2004 WEATHER CENTER</div>
       </div>
@@ -285,22 +265,22 @@ html, body{
       </div>
     </div>
 
-    <!-- 2004 Alert Banner -->
+    <!-- ALERT BANNER -->
     <div id="alertBanner"></div>
 
     <!-- MAIN -->
     <div class="main">
 
-      <!-- LEFT: RADAR -->
-      <div class="panel">
+      <!-- LEFT COLUMN -->
+      <div class="leftCol panel">
         <div class="panel-title">TENNESSEE RADAR</div>
         <div class="radar-window">
-          <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif" alt="Radar">
+          <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
         </div>
       </div>
 
-      <!-- RIGHT: STACK -->
-      <div style="display:grid;grid-template-rows:300px 300px 260px;gap:8px;">
+      <!-- RIGHT COLUMN -->
+      <div class="rightCol">
 
         <!-- ALERTS -->
         <div class="panel">
@@ -316,8 +296,6 @@ html, body{
             <span>CURRENT CONDITIONS</span>
             <select id="citySelect" class="city-dropdown">
               <option value="">Select City</option>
-
-              <!-- FULL CITY LIST -->
               <option value="36.1627,-86.7816">Nashville</option>
               <option value="36.2081,-86.2911">Lebanon</option>
               <option value="36.3342,-86.4467">Gallatin</option>
@@ -347,8 +325,8 @@ html, body{
           </div>
         </div>
 
-        <!-- FORECAST CENTER -->
-        <div class="panel forecast-panel">
+        <!-- FORECAST -->
+        <div class="panel">
           <div class="panel-title">FORECAST CENTER</div>
           <div class="forecast-content" id="forecastPanel">
             Select a city to view forecast.
@@ -376,27 +354,20 @@ html, body{
 <script>
 /* AUTO-SCALE */
 function scaleToFit(){
-  const wrapper = document.getElementById("scaleWrapper");
-  const scaleX = window.innerWidth / 1920;
-  const scaleY = window.innerHeight / 1080;
-  const scale = Math.min(scaleX, scaleY);
-  wrapper.style.transform = `scale(${scale})`;
+  const w=document.getElementById("scaleWrapper");
+  const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+  w.style.transform=`scale(${s})`;
 }
-window.addEventListener("resize", scaleToFit);
-window.addEventListener("load", scaleToFit);
+window.addEventListener("resize",scaleToFit);
+window.addEventListener("load",scaleToFit);
 
-/* CLOCK + DATE */
+/* CLOCK */
 function updateClock(){
-  const now = new Date();
-  document.getElementById("clock").innerHTML =
-    now.toLocaleTimeString('en-US',{hour:'numeric',minute:'numeric'});
-  document.getElementById("date").innerHTML =
-    now.toLocaleDateString('en-US',{
-      weekday:'short',
-      month:'short',
-      day:'numeric',
-      year:'numeric'
-    }).toUpperCase();
+  const now=new Date();
+  document.getElementById("clock").textContent=
+    now.toLocaleTimeString("en-US",{hour:"numeric",minute:"numeric"});
+  document.getElementById("date").textContent=
+    now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
 }
 setInterval(updateClock,1000);
 updateClock();
@@ -404,7 +375,7 @@ updateClock();
 /* STORM DESK MODE */
 function activateStormDesk(){
   document.querySelector(".header").classList.add("stormDesk");
-  document.querySelector(".network-sub").textContent = "STORM DESK — LIVE COVERAGE";
+  document.querySelector(".network-sub").textContent="STORM DESK — LIVE COVERAGE";
 }
 
 /* LOAD CITY WEATHER */
@@ -474,15 +445,11 @@ async function loadCity(val){
         const dateObj=new Date(key);
 
         if(dateObj.toDateString()===now.toDateString()){
-          if(now.getHours()>=18){
-            d.day="Tonight";
-          } else {
-            d.day="Today";
-          }
+          d.day=(now.getHours()>=18)?"Tonight":"Today";
         }
 
-        if(d.high===null && d.low!==null) d.high=d.low;
-        if(d.low===null && d.high!==null) d.low=d.high;
+        if(d.high===null) d.high=d.low;
+        if(d.low===null) d.low=d.high;
 
         return d;
       });
@@ -541,9 +508,9 @@ window.addEventListener("load",()=>{
 
 /* ALERTS WITH COLORS, ICONS, DESCRIPTIONS, BANNER */
 async function updateAlerts(){
-  const container = document.querySelector(".alerts-content");
+  const container=document.querySelector(".alerts-content");
 
-  const middleTN = [
+  const middleTN=[
     "DAVIDSON","CHEATHAM","DICKSON","HICKMAN","HOUSTON","HUMPHREYS",
     "MONTGOMERY","ROBERTSON","STEWART","SUMNER","WILLIAMSON",
     "WILSON","RUTHERFORD","CANNON","COFFEE","BEDFORD","MARSHALL",
@@ -554,4 +521,4 @@ async function updateAlerts(){
   ];
 
   try{
-    const data = await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r
+    const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
