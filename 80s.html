@@ -199,8 +199,10 @@ body::before{
 /* ONLY CONDITIONS SCROLL */
 .condition-ticker{
   display:inline-block;
-  animation:conditionScroll 14s linear infinite;
+  animation:conditionScroll 12s linear infinite;
   padding-left:40px;
+  max-width:300px; /* CUT OFF at temps */
+  overflow:hidden;
 }
 
 .condition-ticker:hover{
@@ -364,7 +366,7 @@ async function loadCity(val){
 
     conditions.innerHTML=
       "<div><strong>"+city+", "+state+"</strong></div>"+
-      "<div>Temperature: "+p.temperature+"°"+p.temperatureUnit+"</div>"+
+      "<div>Temperature: "+p.temperature+"°F</div>"+
       "<div>Condition: "+p.shortForecast+"</div>"+
       "<div>Humidity: "+p.relativeHumidity.value+"%</div>"+
       "<div>Wind: "+p.windSpeed+" "+p.windDirection+"</div>"+
@@ -382,7 +384,7 @@ async function loadCity(val){
       day.textContent=period.name;
 
       const temp=document.createElement("span");
-      temp.textContent=period.temperature+"°"+period.temperatureUnit;
+      temp.textContent=(period.isDaytime ? "H " : "L ")+period.temperature+"°F";
 
       const cond=document.createElement("span");
       cond.className="condition-ticker";
