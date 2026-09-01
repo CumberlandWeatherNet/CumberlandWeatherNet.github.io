@@ -156,7 +156,7 @@ body::before{
 /* SIDEBAR FIXED HEIGHTS */
 .sidebar{
   display:grid;
-  grid-template-rows:300px 300px 300px;
+  grid-template-rows:260px 260px 260px;
   gap:10px;
 }
 
@@ -177,12 +177,15 @@ body::before{
   overflow-y:auto;
 }
 
-/* FORECAST — FIXED HEIGHT + SCROLL */
+/* FORECAST — FIXED HEIGHT + TICKER + SCROLL */
 #forecastPanel{
   height:250px;
   overflow-y:auto;
+  overflow-x:hidden;
   padding:10px;
+  position:relative;
 }
+
 .forecast-line{
   font-size:26px;
   margin-bottom:10px;
@@ -191,6 +194,16 @@ body::before{
   align-items:center;
   white-space:nowrap;
   color:#fdfbff;
+  animation:forecastTicker 18s linear infinite;
+}
+
+.forecast-line:hover{
+  animation-play-state:paused;
+}
+
+@keyframes forecastTicker{
+  from{transform:translateX(0);}
+  to{transform:translateX(-100%);}
 }
 
 /* TICKER */
