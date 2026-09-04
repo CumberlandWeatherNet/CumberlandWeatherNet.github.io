@@ -23,6 +23,22 @@
         border: 4px solid #222;
     }
 
+    /* Directory Bar */
+    #directoryBar {
+        background: #001a33;
+        padding: 10px 20px;
+        font-size: 28px;
+        border-bottom: 4px solid #003366;
+    }
+    #directoryBar a {
+        color: #9fd3ff;
+        text-decoration: none;
+        margin-right: 40px;
+    }
+    #directoryBar a:hover {
+        color: #cce6ff;
+    }
+
     /* Header */
     #header {
         background: linear-gradient(#003366, #001a33);
@@ -34,6 +50,19 @@
         border-bottom: 4px solid #004080;
     }
 
+    /* City Selector */
+    #citySelectBox {
+        margin: 20px;
+        font-size: 28px;
+    }
+    #citySelect {
+        font-size: 26px;
+        padding: 6px 10px;
+        background: #120000;
+        color: #FFCC99;
+        border: 2px solid #FFCC00;
+    }
+
     /* Current Conditions */
     #currentBox {
         background: #1a1a1a;
@@ -41,6 +70,7 @@
         margin: 20px;
         border: 3px solid #333;
         font-size: 32px;
+        min-height: 200px;
     }
 
     /* Weather Window */
@@ -109,6 +139,13 @@
 
 <div id="scaleWrapper">
 
+    <!-- Directory Bar -->
+    <div id="directoryBar">
+        <a href="/80s.html">80s Edition</a>
+        <a href="/1994Severe.html">1994 Severe Edition</a>
+        <a href="/mockup.html">Mockup Page</a>
+    </div>
+
     <div id="header">
         CUMBERLAND WEATHER NETWORK — LIVE MOCKUP
     </div>
@@ -117,29 +154,127 @@
         ⚠️ SEVERE THUNDERSTORM WATCH UNTIL 10 PM — MIDDLE TENNESSEE ⚠️
     </div>
 
-    <div id="currentBox">
-        <strong>Lebanon, TN</strong><br>
-        Temperature: 82°F<br>
-        Conditions: Partly Cloudy<br>
-        Humidity: 55%<br>
-        Wind: SW at 7 mph
+    <!-- City Selector -->
+    <div id="citySelectBox">
+        <label>Select City: </label>
+        <select id="citySelect">
+            <option value="">Choose a City</option>
+            <option value="Lebanon">Lebanon</option>
+            <option value="Nashville">Nashville</option>
+            <option value="Gallatin">Gallatin</option>
+            <option value="Hendersonville">Hendersonville</option>
+            <option value="Murfreesboro">Murfreesboro</option>
+            <option value="Franklin">Franklin</option>
+            <option value="Columbia">Columbia</option>
+            <option value="Cookeville">Cookeville</option>
+            <option value="Clarksville">Clarksville</option>
+            <option value="Springfield">Springfield</option>
+            <option value="Dickson">Dickson</option>
+            <option value="Shelbyville">Shelbyville</option>
+            <option value="Manchester">Manchester</option>
+            <option value="Tullahoma">Tullahoma</option>
+            <option value="McMinnville">McMinnville</option>
+            <option value="Sparta">Sparta</option>
+            <option value="Carthage">Carthage</option>
+            <option value="Lafayette">Lafayette</option>
+            <option value="Hartsville">Hartsville</option>
+            <option value="Livingston">Livingston</option>
+            <option value="Jamestown">Jamestown</option>
+            <option value="Crossville">Crossville</option>
+        </select>
     </div>
 
+    <!-- Current Conditions -->
+    <div id="currentBox">
+        Select a city to view current conditions.
+    </div>
+
+    <!-- Weather Window -->
     <div id="weatherWindow">
         WEATHER WINDOW<br><br>
         Radar Placeholder<br>
         (Insert radar image or animation here)
     </div>
 
+    <!-- Forecast -->
     <div id="forecastGrid">
-        <div class="forecastDay">Fri<br>82° / 64°<br>Cloudy</div>
-        <div class="forecastDay">Sat<br>85° / 66°<br>Sunny</div>
-        <div class="forecastDay">Sun<br>88° / 67°<br>Partly Cloudy</div>
-        <div class="forecastDay">Mon<br>79° / 61°<br>Storms</div>
-        <div class="forecastDay">Tue<br>81° / 63°<br>Clear</div>
-        <div class="forecastDay">Wed<br>83° / 65°<br>Sunny</div>
-        <div class="forecastDay">Thu<br>80° / 62°<br>Cloudy</div>
+        <!-- JS will fill this -->
     </div>
 
+    <!-- Ticker -->
     <div id="ticker">
-        <span>Middle Tennessee Weather Update — Cooler temps arriving early
+        <span>Middle Tennessee Weather Update — Cooler temps arriving early next week — Severe storms possible Monday afternoon — Stay tuned to CWN for updates.</span>
+    </div>
+
+</div>
+
+<script>
+    const currentBox = document.getElementById("currentBox");
+    const forecastGrid = document.getElementById("forecastGrid");
+
+    const fakeWeather = {
+        "Lebanon": { temp: 82, cond: "Partly Cloudy" },
+        "Nashville": { temp: 84, cond: "Sunny" },
+        "Gallatin": { temp: 81, cond: "Cloudy" },
+        "Hendersonville": { temp: 83, cond: "Clear" },
+        "Murfreesboro": { temp: 85, cond: "Hot & Humid" },
+        "Franklin": { temp: 86, cond: "Sunny" },
+        "Columbia": { temp: 87, cond: "Partly Cloudy" },
+        "Cookeville": { temp: 80, cond: "Storms" },
+        "Clarksville": { temp: 79, cond: "Rain" },
+        "Springfield": { temp: 82, cond: "Cloudy" },
+        "Dickson": { temp: 78, cond: "Storms" },
+        "Shelbyville": { temp: 83, cond: "Clear" },
+        "Manchester": { temp: 84, cond: "Sunny" },
+        "Tullahoma": { temp: 82, cond: "Partly Cloudy" },
+        "McMinnville": { temp: 81, cond: "Cloudy" },
+        "Sparta": { temp: 80, cond: "Clear" },
+        "Carthage": { temp: 82, cond: "Sunny" },
+        "Lafayette": { temp: 79, cond: "Storms" },
+        "Hartsville": { temp: 81, cond: "Cloudy" },
+        "Livingston": { temp: 78, cond: "Rain" },
+        "Jamestown": { temp: 77, cond: "Storms" },
+        "Crossville": { temp: 76, cond: "Cloudy" }
+    };
+
+    const fakeForecast = [
+        { day: "Fri", hi: 82, lo: 64, cond: "Cloudy" },
+        { day: "Sat", hi: 85, lo: 66, cond: "Sunny" },
+        { day: "Sun", hi: 88, lo: 67, cond: "Partly Cloudy" },
+        { day: "Mon", hi: 79, lo: 61, cond: "Storms" },
+        { day: "Tue", hi: 81, lo: 63, cond: "Clear" },
+        { day: "Wed", hi: 83, lo: 65, cond: "Sunny" },
+        { day: "Thu", hi: 80, lo: 62, cond: "Cloudy" }
+    ];
+
+    document.getElementById("citySelect").addEventListener("change", function() {
+        const city = this.value;
+
+        if (!city) {
+            currentBox.innerHTML = "Select a city to view current conditions.";
+            forecastGrid.innerHTML = "";
+            return;
+        }
+
+        const w = fakeWeather[city];
+
+        currentBox.innerHTML = `
+            <strong>${city}, TN</strong><br>
+            Temperature: ${w.temp}°F<br>
+            Conditions: ${w.cond}<br>
+            Humidity: 55%<br>
+            Wind: SW at 7 mph
+        `;
+
+        forecastGrid.innerHTML = fakeForecast.map(f => `
+            <div class="forecastDay">
+                ${f.day}<br>
+                ${f.hi}° / ${f.lo}°<br>
+                ${f.cond}
+            </div>
+        `).join("");
+    });
+</script>
+
+</body>
+</html>
