@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Cumberland Weather Network — Mockup</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Native 1920x1080 scaling like your other pages -->
+<meta name="viewport" content="width=1920,height=1080">
 
 <style>
     body {
@@ -11,13 +13,12 @@
         background: #0a0a0a;
         font-family: Arial, sans-serif;
         color: #e6e6e6;
+        overflow: hidden;
     }
 
     #scaleWrapper {
         width: 1920px;
         height: 1080px;
-        transform: scale(0.55);
-        transform-origin: top left;
         background: #111;
         margin: 0 auto;
         border: 4px solid #222;
@@ -196,9 +197,7 @@
     </div>
 
     <!-- Forecast -->
-    <div id="forecastGrid">
-        <!-- JS will fill this -->
-    </div>
+    <div id="forecastGrid"></div>
 
     <!-- Ticker -->
     <div id="ticker">
@@ -210,6 +209,7 @@
 <script>
     const currentBox = document.getElementById("currentBox");
     const forecastGrid = document.getElementById("forecastGrid");
+    const citySelect = document.getElementById("citySelect");
 
     const fakeWeather = {
         "Lebanon": { temp: 82, cond: "Partly Cloudy" },
@@ -246,15 +246,7 @@
         { day: "Thu", hi: 80, lo: 62, cond: "Cloudy" }
     ];
 
-    document.getElementById("citySelect").addEventListener("change", function() {
-        const city = this.value;
-
-        if (!city) {
-            currentBox.innerHTML = "Select a city to view current conditions.";
-            forecastGrid.innerHTML = "";
-            return;
-        }
-
+    function updateWeather(city) {
         const w = fakeWeather[city];
 
         currentBox.innerHTML = `
@@ -272,9 +264,29 @@
                 ${f.cond}
             </div>
         `).join("");
+    }
+
+    citySelect.addEventListener("change", function() {
+        const city = this.value;
+
+        if (!city) {
+            currentBox.innerHTML = "Select a city to view current conditions.";
+            forecastGrid.innerHTML = "";
+            localStorage.removeItem("cwnCity");
+            return;
+        }
+
+        localStorage.setItem("cwnCity", city);
+        updateWeather(city);
     });
+
+    // Load saved city on page load
+    const savedCity = localStorage.getItem("cwnCity");
+    if (savedCity) {
+        citySelect.value = savedCity;
+        updateWeather(savedCity);
+    }
 </script>
 
 </body>
 </html>
-
