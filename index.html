@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <title>Cumberland Weather Network — Live</title>
 
-<!-- Native 1920x1080 scaling (same as 80s + 1994 pages) -->
-<meta name="viewport" content="width=1920,height=1080">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
     body {
@@ -16,12 +15,16 @@
         overflow: hidden;
     }
 
+    /* Outer container that we scale */
     #scaleWrapper {
         width: 1920px;
         height: 1080px;
         background: #111;
-        margin: 0 auto;
         border: 4px solid #222;
+        transform-origin: top left;
+        position: absolute;
+        left: 50%;
+        top: 50%;
     }
 
     /* Directory Bar */
@@ -210,8 +213,27 @@
     const currentBox = document.getElementById("currentBox");
     const forecastGrid = document.getElementById("forecastGrid");
     const citySelect = document.getElementById("citySelect");
+    const scaleWrapper = document.getElementById("scaleWrapper");
 
     const BACKEND_URL = "https://cumberlandweather.net/api/weather.json";
+
+    // Auto-scaling function
+    function resizeCanvas() {
+        const baseWidth = 1920;
+        const baseHeight = 1080;
+
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+
+        const scale = Math.min(winW / baseWidth, winH / baseHeight);
+
+        scaleWrapper.style.transform = `scale(${scale})`;
+        scaleWrapper.style.left = `${(winW - baseWidth * scale) / 2}px`;
+        scaleWrapper.style.top = `${(winH - baseHeight * scale) / 2}px`;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("load", resizeCanvas);
 
     async function loadWeather(city) {
         try {
@@ -234,7 +256,7 @@
                 Wind: ${w.wind}
             `;
 
-            // TEMPORARY FORECAST (until you add forecast.json)
+            // Temporary forecast until you wire a real forecast backend
             const fakeForecast = [
                 { day: "Fri", hi: 82, lo: 64, cond: "Cloudy" },
                 { day: "Sat", hi: 85, lo: 66, cond: "Sunny" },
