@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Cumberland Weather Network — Mockup</title>
+<title>Cumberland Weather Network — Live</title>
 
-<!-- Native 1920x1080 scaling like your other pages -->
+<!-- Native 1920x1080 scaling (same as 80s + 1994 pages) -->
 <meta name="viewport" content="width=1920,height=1080">
 
 <style>
@@ -147,7 +147,7 @@
     </div>
 
     <div id="header">
-        CUMBERLAND WEATHER NETWORK — LIVE MOCKUP
+        CUMBERLAND WEATHER NETWORK — LIVE DATA
     </div>
 
     <div id="alertBanner">
@@ -211,59 +211,52 @@
     const forecastGrid = document.getElementById("forecastGrid");
     const citySelect = document.getElementById("citySelect");
 
-    const fakeWeather = {
-        "Lebanon": { temp: 82, cond: "Partly Cloudy" },
-        "Nashville": { temp: 84, cond: "Sunny" },
-        "Gallatin": { temp: 81, cond: "Cloudy" },
-        "Hendersonville": { temp: 83, cond: "Clear" },
-        "Murfreesboro": { temp: 85, cond: "Hot & Humid" },
-        "Franklin": { temp: 86, cond: "Sunny" },
-        "Columbia": { temp: 87, cond: "Partly Cloudy" },
-        "Cookeville": { temp: 80, cond: "Storms" },
-        "Clarksville": { temp: 79, cond: "Rain" },
-        "Springfield": { temp: 82, cond: "Cloudy" },
-        "Dickson": { temp: 78, cond: "Storms" },
-        "Shelbyville": { temp: 83, cond: "Clear" },
-        "Manchester": { temp: 84, cond: "Sunny" },
-        "Tullahoma": { temp: 82, cond: "Partly Cloudy" },
-        "McMinnville": { temp: 81, cond: "Cloudy" },
-        "Sparta": { temp: 80, cond: "Clear" },
-        "Carthage": { temp: 82, cond: "Sunny" },
-        "Lafayette": { temp: 79, cond: "Storms" },
-        "Hartsville": { temp: 81, cond: "Cloudy" },
-        "Livingston": { temp: 78, cond: "Rain" },
-        "Jamestown": { temp: 77, cond: "Storms" },
-        "Crossville": { temp: 76, cond: "Cloudy" }
-    };
+    const BACKEND_URL = "https://cumberlandweather.net/api/weather.json";
 
-    const fakeForecast = [
-        { day: "Fri", hi: 82, lo: 64, cond: "Cloudy" },
-        { day: "Sat", hi: 85, lo: 66, cond: "Sunny" },
-        { day: "Sun", hi: 88, lo: 67, cond: "Partly Cloudy" },
-        { day: "Mon", hi: 79, lo: 61, cond: "Storms" },
-        { day: "Tue", hi: 81, lo: 63, cond: "Clear" },
-        { day: "Wed", hi: 83, lo: 65, cond: "Sunny" },
-        { day: "Thu", hi: 80, lo: 62, cond: "Cloudy" }
-    ];
+    async function loadWeather(city) {
+        try {
+            const res = await fetch(BACKEND_URL);
+            const data = await res.json();
 
-    function updateWeather(city) {
-        const w = fakeWeather[city];
+            if (!data[city]) {
+                currentBox.innerHTML = "No live data available for this city.";
+                forecastGrid.innerHTML = "";
+                return;
+            }
 
-        currentBox.innerHTML = `
-            <strong>${city}, TN</strong><br>
-            Temperature: ${w.temp}°F<br>
-            Conditions: ${w.cond}<br>
-            Humidity: 55%<br>
-            Wind: SW at 7 mph
-        `;
+            const w = data[city];
 
-        forecastGrid.innerHTML = fakeForecast.map(f => `
-            <div class="forecastDay">
-                ${f.day}<br>
-                ${f.hi}° / ${f.lo}°<br>
-                ${f.cond}
-            </div>
-        `).join("");
+            currentBox.innerHTML = `
+                <strong>${city}, TN</strong><br>
+                Temperature: ${w.temp}°F<br>
+                Conditions: ${w.cond}<br>
+                Humidity: ${w.humidity}%<br>
+                Wind: ${w.wind}
+            `;
+
+            // TEMPORARY FORECAST (until you add forecast.json)
+            const fakeForecast = [
+                { day: "Fri", hi: 82, lo: 64, cond: "Cloudy" },
+                { day: "Sat", hi: 85, lo: 66, cond: "Sunny" },
+                { day: "Sun", hi: 88, lo: 67, cond: "Partly Cloudy" },
+                { day: "Mon", hi: 79, lo: 61, cond: "Storms" },
+                { day: "Tue", hi: 81, lo: 63, cond: "Clear" },
+                { day: "Wed", hi: 83, lo: 65, cond: "Sunny" },
+                { day: "Thu", hi: 80, lo: 62, cond: "Cloudy" }
+            ];
+
+            forecastGrid.innerHTML = fakeForecast.map(f => `
+                <div class="forecastDay">
+                    ${f.day}<br>
+                    ${f.hi}° / ${f.lo}°<br>
+                    ${f.cond}
+                </div>
+            `).join("");
+
+        } catch (err) {
+            currentBox.innerHTML = "Error loading live data.";
+            forecastGrid.innerHTML = "";
+        }
     }
 
     citySelect.addEventListener("change", function() {
@@ -277,14 +270,14 @@
         }
 
         localStorage.setItem("cwnCity", city);
-        updateWeather(city);
+        loadWeather(city);
     });
 
     // Load saved city on page load
     const savedCity = localStorage.getItem("cwnCity");
     if (savedCity) {
         citySelect.value = savedCity;
-        updateWeather(savedCity);
+        loadWeather(savedCity);
     }
 </script>
 
