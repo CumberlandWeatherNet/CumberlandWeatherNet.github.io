@@ -1,0 +1,26 @@
+{
+  "Lebanon": {
+    "temp": 82,
+    "cond": "Partly Cloudy",
+    "humidity": 55,
+    "wind": "SW 7 mph"
+  },
+  "Nashville": {
+    "temp": 84,
+    "cond": "Sunny",
+    "humidity": 52,
+    "wind": "W 5 mph"
+  },
+  "Gallatin": {
+    "temp": 81,
+    "cond": "Cloudy",
+    "humidity": 57,
+    "wind": "NW 6 mph"
+  },
+  "Hendersonville": {
+    "temp": 83,
+    "cond": "Clear",
+    "humidity": 48,
+    "wind": "NE 4 mph"
+  }
+}
