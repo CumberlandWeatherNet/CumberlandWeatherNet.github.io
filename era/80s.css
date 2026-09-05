@@ -1,0 +1,353 @@
+:root {
+  --bg-day: #2b1c10;
+  --bg-night: #0f1018;
+  --card-day: #3b2818;
+  --card-night: #151824;
+  --accent-gold: #d9b15a;
+  --accent-orange: #c46a2b;
+  --accent-blue: #2f5c8a;
+  --text-primary: #f7f3e8;
+  --text-muted: #c3b8a0;
+  --border-outer: #1a0f08;
+  --border-inner: #d9b15a;
+  --radar-frame-blue: #2f5c8a;
+  --radar-frame-gold: #d9b15a;
+  --shadow-soft: 0 0 18px rgba(0, 0, 0, 0.7);
+  --transition-theme: 400ms ease-in-out;
+  --font-pixel: "Press Start 2P", system-ui, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-day);
+  color: var(--text-primary);
+  font-family: var(--font-pixel);
+}
+
+body.era-80s {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#scaleWrapper {
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+  background: radial-gradient(circle at 10% 0%, #3b2818 0%, #1a0f08 45%, #0b0704 100%);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition-theme), color var(--transition-theme);
+}
+
+/* Autoscale (same logic as homepage) */
+@media (max-width: 1920px) {
+  #scaleWrapper {
+    transform: scale(calc(100vw / 1920));
+  }
+}
+@media (max-height: 1080px) {
+  #scaleWrapper {
+    transform: scale(calc(100vh / 1080));
+  }
+}
+
+/* Header */
+
+.cwn-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 32px;
+  border-bottom: 2px solid var(--accent-gold);
+}
+
+.cwn-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cwn-logo-mark {
+  font-size: 20px;
+  letter-spacing: 0.12em;
+  color: var(--accent-gold);
+}
+
+.cwn-logo-text {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.cwn-era-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.cwn-header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.cwn-clock {
+  font-size: 14px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent-gold);
+  background: linear-gradient(to bottom, #3b2818, #24160d);
+}
+
+/* Theme toggle */
+
+.cwn-theme-toggle button {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--accent-gold);
+  background: #24160d;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition-theme), color var(--transition-theme), border-color var(--transition-theme);
+}
+
+.cwn-theme-toggle button:hover {
+  background: #3b2818;
+}
+
+/* Directory */
+
+.cwn-directory {
+  display: flex;
+  gap: 8px;
+}
+
+.dir-btn {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--accent-gold);
+  background: #24160d;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.dir-btn.dir-active {
+  background: var(--accent-blue);
+  border-color: var(--accent-gold);
+}
+
+/* Layout */
+
+.cwn-main {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  padding: 24px 32px;
+}
+
+.cwn-left,
+.cwn-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Cards */
+
+.card {
+  border: 2px solid var(--border-outer);
+  box-shadow: var(--shadow-soft);
+  background: #24160d;
+  position: relative;
+  padding: 12px 16px;
+  transition: background var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--border-inner);
+  pointer-events: none;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.card-header h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-gold);
+}
+
+.card-location,
+.radar-subtitle,
+.radar-time {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.card-body {
+  font-size: 10px;
+}
+
+/* Conditions */
+
+.card-conditions .temp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.temp-value {
+  font-size: 24px;
+  color: var(--accent-gold);
+}
+
+.temp-feels {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.card-conditions .cond-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cond-text {
+  font-size: 10px;
+}
+
+.cond-icon {
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Forecast */
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.forecast-tile {
+  border: 1px solid var(--border-inner);
+  padding: 6px;
+  background: #2b1c10;
+}
+
+.forecast-period {
+  font-size: 9px;
+  color: var(--accent-gold);
+}
+
+.forecast-desc {
+  font-size: 9px;
+  color: var(--text-primary);
+}
+
+.forecast-temp {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* City selector */
+
+.card-city select {
+  width: 100%;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px;
+  border: 1px solid var(--accent-gold);
+  background: #24160d;
+  color: var(--text-primary);
+}
+
+.city-helper {
+  margin-top: 6px;
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* Radar */
+
+.card-radar .radar-header {
+  align-items: center;
+}
+
+.radar-body {
+  margin-top: 6px;
+}
+
+.radar-frame {
+  position: relative;
+  border: 2px solid var(--radar-frame-blue);
+  box-shadow: 0 0 12px rgba(47, 92, 138, 0.7);
+  background: #000;
+}
+
+.radar-frame::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--radar-frame-gold);
+}
+
+#radarImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.crt-scan {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 2%,
+    rgba(255, 255, 255, 0.04) 4%,
+    transparent 6%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Alerts */
+
+#alertsCard {
+  background: #3b1c1c;
+}
+
+/* Day/Night theme states */
+
+body[data-theme="day"] #scaleWrapper {
+  background: radial-gradient(circle at 10% 0%, #3b2818 0%, #1a0f08 45%, #0b0704 100%);
+}
+
+body[data-theme="night"] #scaleWrapper {
+  background: radial-gradient(circle at 10% 0%, #151824 0%, #05060b 45%, #020308 100%);
+}
+
+body[data-theme="night"] .card {
+  background: #151824;
+}
+
+body[data-theme="night"] .cwn-clock {
+  background: linear-gradient(to bottom, #151824, #05060b);
+}
