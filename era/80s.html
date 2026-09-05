@@ -532,6 +532,13 @@ window.addEventListener("load",()=>{
 }
 
 loadWeather();
+  if (!city) {
+  const status = document.getElementById("status");
+  status.style.display = "block";
+  status.textContent = "Please select a city on the main page.";
+  return;
+}
+
 
 </script>
 
