@@ -15,7 +15,6 @@
         overflow: hidden;
     }
 
-    /* Outer container that we scale */
     #scaleWrapper {
         width: 1920px;
         height: 1080px;
@@ -27,7 +26,6 @@
         top: 50%;
     }
 
-    /* Directory Bar */
     #directoryBar {
         background: #001a33;
         padding: 10px 20px;
@@ -39,11 +37,7 @@
         text-decoration: none;
         margin-right: 40px;
     }
-    #directoryBar a:hover {
-        color: #cce6ff;
-    }
 
-    /* Header */
     #header {
         background: linear-gradient(#003366, #001a33);
         padding: 20px;
@@ -54,7 +48,6 @@
         border-bottom: 4px solid #004080;
     }
 
-    /* City Selector */
     #citySelectBox {
         margin: 20px;
         font-size: 28px;
@@ -67,7 +60,6 @@
         border: 2px solid #FFCC00;
     }
 
-    /* Current Conditions */
     #currentBox {
         background: #1a1a1a;
         padding: 20px;
@@ -77,7 +69,6 @@
         min-height: 200px;
     }
 
-    /* Weather Window */
     #weatherWindow {
         background: #000;
         border: 3px solid #444;
@@ -87,7 +78,6 @@
         font-size: 28px;
     }
 
-    /* Forecast Grid */
     #forecastGrid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -103,7 +93,6 @@
         font-size: 24px;
     }
 
-    /* Alert Banner */
     #alertBanner {
         background: #660000;
         color: #ffcccc;
@@ -115,7 +104,6 @@
         margin-top: 20px;
     }
 
-    /* Scrolling Ticker */
     #ticker {
         background: #002244;
         color: #cce6ff;
@@ -143,7 +131,6 @@
 
 <div id="scaleWrapper">
 
-    <!-- Directory Bar -->
     <div id="directoryBar">
         <a href="/80s.html">80s Edition</a>
         <a href="/1994Severe.html">1994 Severe Edition</a>
@@ -154,10 +141,9 @@
     </div>
 
     <div id="alertBanner">
-        ⚠️ SEVERE THUNDERSTORM WATCH UNTIL 10 PM — MIDDLE TENNESSEE ⚠️
+        ⚠️ LIVE WEATHER — DATA FROM NWS ⚠️
     </div>
 
-    <!-- City Selector -->
     <div id="citySelectBox">
         <label>Select City: </label>
         <select id="citySelect">
@@ -187,91 +173,91 @@
         </select>
     </div>
 
-    <!-- Current Conditions -->
     <div id="currentBox">
         Select a city to view current conditions.
     </div>
 
-    <!-- Weather Window -->
     <div id="weatherWindow">
         WEATHER WINDOW<br><br>
         Radar Placeholder<br>
         (Insert radar image or animation here)
     </div>
 
-    <!-- Forecast -->
     <div id="forecastGrid"></div>
 
-    <!-- Ticker -->
     <div id="ticker">
-        <span>Middle Tennessee Weather Update — Cooler temps arriving early next week — Severe storms possible Monday afternoon — Stay tuned to CWN for updates.</span>
+        <span>Live data provided by the National Weather Service — CWN Live System</span>
     </div>
 
 </div>
 
 <script>
+    const BACKEND_URL = "https://raw.githubusercontent.com/CumberlandWeatherNet/CumberlandWeatherNet.github.io/main/api/weather.json";
+
     const currentBox = document.getElementById("currentBox");
     const forecastGrid = document.getElementById("forecastGrid");
     const citySelect = document.getElementById("citySelect");
     const scaleWrapper = document.getElementById("scaleWrapper");
 
-    const BACKEND_URL = "https://cumberlandweather.net/api/weather.json";
-
-    // Auto-scaling function
     function resizeCanvas() {
-        const baseWidth = 1920;
-        const baseHeight = 1080;
-
+        const baseW = 1920;
+        const baseH = 1080;
         const winW = window.innerWidth;
         const winH = window.innerHeight;
-
-        const scale = Math.min(winW / baseWidth, winH / baseHeight);
+        const scale = Math.min(winW / baseW, winH / baseH);
 
         scaleWrapper.style.transform = `scale(${scale})`;
-        scaleWrapper.style.left = `${(winW - baseWidth * scale) / 2}px`;
-        scaleWrapper.style.top = `${(winH - baseHeight * scale) / 2}px`;
+        scaleWrapper.style.left = `${(winW - baseW * scale) / 2}px`;
+        scaleWrapper.style.top = `${(winH - baseH * scale) / 2}px`;
     }
 
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("load", resizeCanvas);
 
+    async function getCityCoordinates(city) {
+        const res = await fetch(BACKEND_URL);
+        const data = await res.json();
+        return data[city];
+    }
+
     async function loadWeather(city) {
         try {
-            const res = await fetch(BACKEND_URL);
-            const data = await res.json();
-
-            if (!data[city]) {
-                currentBox.innerHTML = "No live data available for this city.";
-                forecastGrid.innerHTML = "";
+            const coords = await getCityCoordinates(city);
+            if (!coords) {
+                currentBox.innerHTML = "No data for this city.";
                 return;
             }
 
-            const w = data[city];
+            const pointsURL = `https://api.weather.gov/points/${coords.lat},${coords.lon}`;
+            const pointsResp = await fetch(pointsURL);
+            const pointsData = await pointsResp.json();
+
+            const forecastURL = pointsData.properties.forecast;
+            const hourlyURL = pointsData.properties.forecastHourly;
+
+            const hourlyResp = await fetch(hourlyURL);
+            const hourlyData = await hourlyResp.json();
+
+            const current = hourlyData.properties.periods[0];
 
             currentBox.innerHTML = `
                 <strong>${city}, TN</strong><br>
-                Temperature: ${w.temp}°F<br>
-                Conditions: ${w.cond}<br>
-                Humidity: ${w.humidity}%<br>
-                Wind: ${w.wind}
+                Temperature: ${current.temperature}°F<br>
+                Conditions: ${current.shortForecast}<br>
+                Wind: ${current.windSpeed} ${current.windDirection}<br>
+                Start Time: ${current.startTime}
             `;
 
-            // Temporary forecast until you wire a real forecast backend
-            const fakeForecast = [
-                { day: "Fri", hi: 82, lo: 64, cond: "Cloudy" },
-                { day: "Sat", hi: 85, lo: 66, cond: "Sunny" },
-                { day: "Sun", hi: 88, lo: 67, cond: "Partly Cloudy" },
-                { day: "Mon", hi: 79, lo: 61, cond: "Storms" },
-                { day: "Tue", hi: 81, lo: 63, cond: "Clear" },
-                { day: "Wed", hi: 83, lo: 65, cond: "Sunny" },
-                { day: "Thu", hi: 80, lo: 62, cond: "Cloudy" }
-            ];
+            const forecastResp = await fetch(forecastURL);
+            const forecastData = await forecastResp.json();
 
-            forecastGrid.innerHTML = fakeForecast.map(f => `
+            const periods = forecastData.properties.periods.slice(0, 7);
+
+            forecastGrid.innerHTML = periods.map(p => `
                 <div class="forecastDay">
-                    ${f.day}<br>
-                    ${f.hi}° / ${f.lo}°<br>
-                    ${f.cond}
+                    ${p.name}<br>
+                    ${p.temperature}°F<br>
+                    ${p.shortForecast}
                 </div>
             `).join("");
 
@@ -283,19 +269,16 @@
 
     citySelect.addEventListener("change", function() {
         const city = this.value;
-
         if (!city) {
             currentBox.innerHTML = "Select a city to view current conditions.";
             forecastGrid.innerHTML = "";
             localStorage.removeItem("cwnCity");
             return;
         }
-
         localStorage.setItem("cwnCity", city);
         loadWeather(city);
     });
 
-    // Load saved city on page load
     const savedCity = localStorage.getItem("cwnCity");
     if (savedCity) {
         citySelect.value = savedCity;
@@ -305,3 +288,4 @@
 
 </body>
 </html>
+
