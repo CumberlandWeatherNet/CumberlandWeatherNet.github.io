@@ -1,0 +1,124 @@
+{
+  "Davidson County": {
+    "Nashville": { "lat": 36.1627, "lon": -86.7816 },
+    "Belle Meade": { "lat": 36.0959, "lon": -86.8567 },
+    "Forest Hills": { "lat": 36.0670, "lon": -86.7900 },
+    "Oak Hill": { "lat": 36.0898, "lon": -86.7744 },
+    "Berry Hill": { "lat": 36.1193, "lon": -86.7644 },
+    "Goodlettsville": { "lat": 36.3234, "lon": -86.7133 }
+  },
+
+  "Wilson County": {
+    "Lebanon": { "lat": 36.2081, "lon": -86.2911 },
+    "Mt. Juliet": { "lat": 36.2003, "lon": -86.5189 },
+    "Watertown": { "lat": 36.0998, "lon": -86.1322 }
+  },
+
+  "Sumner County": {
+    "Gallatin": { "lat": 36.3884, "lon": -86.4467 },
+    "Hendersonville": { "lat": 36.3040, "lon": -86.6200 },
+    "Portland": { "lat": 36.5812, "lon": -86.5167 },
+    "White House": { "lat": 36.4700, "lon": -86.6511 },
+    "Westmoreland": { "lat": 36.5612, "lon": -86.2483 }
+  },
+
+  "Robertson County": {
+    "Springfield": { "lat": 36.5092, "lon": -86.8850 },
+    "Greenbrier": { "lat": 36.4270, "lon": -86.8044 },
+    "Cross Plains": { "lat": 36.5489, "lon": -86.6972 },
+    "Orlinda": { "lat": 36.6153, "lon": -86.6922 },
+    "Millersville": { "lat": 36.3748, "lon": -86.7181 }
+  },
+
+  "Macon County": {
+    "Lafayette": { "lat": 36.5212, "lon": -86.0266 },
+    "Red Boiling Springs": { "lat": 36.5267, "lon": -85.8483 }
+  },
+
+  "Trousdale County": {
+    "Hartsville": { "lat": 36.3900, "lon": -86.1683 }
+  },
+
+  "Smith County": {
+    "Carthage": { "lat": 36.2512, "lon": -85.9550 },
+    "South Carthage": { "lat": 36.2389, "lon": -85.9511 },
+    "Gordonsville": { "lat": 36.1748, "lon": -85.9294 }
+  },
+
+  "Jackson County": {
+    "Gainesboro": { "lat": 36.3551, "lon": -85.8072 }
+  },
+
+  "Putnam County": {
+    "Cookeville": { "lat": 36.1628, "lon": -85.5016 },
+    "Baxter": { "lat": 36.1548, "lon": -85.2830 },
+    "Algood": { "lat": 36.1959, "lon": -85.4450 }
+  },
+
+  "Overton County": {
+    "Livingston": { "lat": 36.3834, "lon": -85.3230 }
+  },
+
+  "White County": {
+    "Sparta": { "lat": 35.9259, "lon": -85.4647 }
+  },
+
+  "Cumberland County": {
+    "Crossville": { "lat": 35.9480, "lon": -85.0269 }
+  },
+
+  "DeKalb County": {
+    "Smithville": { "lat": 35.9592, "lon": -85.8150 },
+    "Alexandria": { "lat": 36.0737, "lon": -86.0272 }
+  },
+
+  "Cannon County": {
+    "Woodbury": { "lat": 35.8270, "lon": -86.0711 }
+  },
+
+  "Warren County": {
+    "McMinnville": { "lat": 35.6834, "lon": -85.7697 }
+  },
+
+  "Rutherford County": {
+    "Murfreesboro": { "lat": 35.8456, "lon": -86.3903 },
+    "Smyrna": { "lat": 35.9828, "lon": -86.5186 },
+    "La Vergne": { "lat": 36.0156, "lon": -86.5817 },
+    "Eagleville": { "lat": 35.7417, "lon": -86.6511 }
+  },
+
+  "Williamson County": {
+    "Franklin": { "lat": 35.9251, "lon": -86.8689 },
+    "Brentwood": { "lat": 36.0331, "lon": -86.7828 },
+    "Fairview": { "lat": 35.9820, "lon": -87.1217 },
+    "Nolensville": { "lat": 35.9723, "lon": -86.6694 },
+    "Thompson's Station": { "lat": 35.8020, "lon": -86.9117 },
+    "Spring Hill": { "lat": 35.7442, "lon": -86.9333 }
+  },
+
+  "Maury County": {
+    "Columbia": { "lat": 35.6151, "lon": -87.0353 },
+    "Mount Pleasant": { "lat": 35.5409, "lon": -87.2067 }
+  },
+
+  "Marshall County": {
+    "Lewisburg": { "lat": 35.4492, "lon": -86.7889 },
+    "Chapel Hill": { "lat": 35.6409, "lon": -86.6500 }
+  },
+
+  "Bedford County": {
+    "Shelbyville": { "lat": 35.4834, "lon": -86.4603 },
+    "Bell Buckle": { "lat": 35.5912, "lon": -86.3544 }
+  },
+
+  "Coffee County": {
+    "Manchester": { "lat": 35.4734, "lon": -86.0886 },
+    "Tullahoma": { "lat": 35.3620, "lon": -86.2094 }
+  },
+
+  "Franklin County": {
+    "Winchester": { "lat": 35.1854, "lon": -86.1125 },
+    "Decherd": { "lat": 35.2104, "lon": -86.0780 },
+    "Estill Springs": { "lat": 35.2687, "lon": -86.1294 }
+  }
+}
