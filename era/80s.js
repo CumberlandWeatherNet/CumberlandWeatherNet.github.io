@@ -1,80 +1,107 @@
-/* ============================================================
-   CWN — 1980s Weather Page Script
-   Clean, corrected, and fully compatible with HEART v2.0
-   ============================================================ */
+import { getCWNCore, getDayPeriod, hasEmergency } from "../core/cwn-heart-full.js";
 
-import { 
-    getCWNCore, 
-    getDayPeriod, 
-    hasEmergency 
-} from "../core/cwn-heart-full.js";
-
-/* ------------------------------
-   Load Weather for Selected City
-   ------------------------------ */
 async function loadWeather() {
-
     const city = localStorage.getItem("cwn_city");
 
     if (!city) {
-        document.getElementById("status").textContent =
-            "Please select a city on the main page.";
+        document.getElementById("currentCity").textContent = "Select a city above.";
         return;
     }
 
-    try {
-        const core = await getCWNCore(city);
+    const core = await getCWNCore(city);
 
-        // Emergency redirect
-        if (hasEmergency(core.alerts)) {
-            window.location.href = "../emergency.html";
-            return;
-        }
-
-        renderEra(core);
-
-    } catch (err) {
-        document.getElementById("status").textContent =
-            "Weather data unavailable.";
-        console.error(err);
+    // Emergency redirect
+    if (hasEmergency(core.alerts)) {
+        window.location.href = "../emergency.html";
+        return;
     }
+
+    renderEra(core);
 }
 
-/* ------------------------------
-   Render 1980s CRT Layout
-   ------------------------------ */
 function renderEra(core) {
 
-    document.getElementById("cityName").textContent = core.city_name;
-    document.getElementById("tempValue").textContent = core.temp_f + "°";
-    document.getElementById("descValue").textContent = core.description;
+    /* ============================
+       TOP BAR
+       ============================ */
+    document.getElementById("topClock").textContent = core.clock_time;
 
-    document.getElementById("windValue").textContent =
-        core.wind_mph + " mph " + core.wind_direction;
 
-    document.getElementById("dayPeriod").textContent = getDayPeriod();
+    /* ============================
+       CURRENT CONDITIONS CARD
+       ============================ */
+    document.getElementById("currentCity").textContent =
+        `${core.city_name}, ${core.county_name}`;
 
+    document.getElementById("currentTemp").textContent =
+        `${core.temp_f}°F`;
+
+    document.getElementById("currentDesc").textContent =
+        core.description;
+
+    document.getElementById("currentWind").textContent =
+        `${core.wind_mph} mph ${core.wind_direction}`;
+
+    document.getElementById("currentMeta").textContent =
+        `Live report for ${core.city_name}, ${core.county_name}`;
+
+
+    /* ============================
+       RADAR
+       ============================ */
     document.getElementById("radarImage").src = core.radar_url;
 
-    document.getElementById("clockValue").textContent = core.clock_time;
+
+    /* ============================
+       FORECAST TILES
+       ============================ */
+    if (core.forecast && core.forecast.length >= 6) {
+
+        const tiles = [
+            ["fc1Temp", "fc1Desc", "fc1Rain"],
+            ["fc2Temp", "fc2Desc", "fc2Rain"],
+            ["fc3Temp", "fc3Desc", "fc3Rain"],
+            ["fc4Temp", "fc4Desc", "fc4Rain"],
+            ["fc5Temp", "fc5Desc", "fc5Rain"],
+            ["fc6Temp", "fc6Desc", "fc6Rain"]
+        ];
+
+        core.forecast.slice(0, 6).forEach((f, i) => {
+            document.getElementById(tiles[i][0]).textContent = `${f.temp}°`;
+            document.getElementById(tiles[i][1]).textContent = f.desc;
+            document.getElementById(tiles[i][2]).textContent = `Rain ${f.pop}%`;
+        });
+    }
+
+
+    /* ============================
+       ALERTS + TIMESTAMP
+       ============================ */
+    if (core.alerts && core.alerts.length > 0) {
+        document.getElementById("alerts").textContent =
+            core.alerts.join(" • ");
+    } else {
+        document.getElementById("alerts").textContent = "";
+    }
+
+    document.getElementById("timestamp").textContent = core.timestamp;
 }
 
-/* ------------------------------
-   Autoscaling (Matches Reference)
-   ------------------------------ */
-function autoscale() {
-    const w = window.innerWidth / 1920;
-    const h = window.innerHeight / 1080;
-    const scale = Math.min(w, h);
 
-    document.getElementById("scaleWrapper").style.transform =
-        `scale(${scale})`;
+/* ============================
+   AUTOSCALE
+   ============================ */
+function autoscale() {
+    const w = window.innerWidth / 1100;
+    const scale = Math.min(w, 1);
+    document.getElementById("scaleWrapper").style.transform = `scale(${scale})`;
 }
 
 window.addEventListener("resize", autoscale);
 autoscale();
 
-/* ------------------------------
-   Initialize Page
-   ------------------------------ */
+
+/* ============================
+   INIT
+   ============================ */
 loadWeather();
