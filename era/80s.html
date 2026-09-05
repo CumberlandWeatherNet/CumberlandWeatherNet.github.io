@@ -2,53 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Cumberland Weather Network — 1980s Edition</title>
-<link rel="stylesheet" href="80s.css">
+<title>CWN — 1980s Edition</title>
 
+<style>
+/* 80s CRT theme — aligned with CWN Master System */
+body {
+    margin: 0;
+    padding: 0;
+    background: #3b2a1f;
+    font-family: "Courier New", monospace;
+    color: #f2d28b;
+}
+#scaleWrapper {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+}
+#eraFrame {
+    width: 1920px;
+    height: 1080px;
+    border: 8px solid #d4b46a;
+    padding: 20px;
+    box-sizing: border-box;
+}
+h1, h2 {
+    text-align: center;
+    margin: 0;
+}
+h1 { font-size: 48px; }
+h2 { font-size: 32px; margin-bottom: 20px; }
+
+/* City selector */
+#citySelect {
+    font-size: 24px;
+    padding: 10px;
+    margin: 20px auto;
+    display: block;
+    background: #2e2218;
+    color: #f2d28b;
+    border: 3px solid #d4b46a;
+}
+
+/* Conditions block */
+#conditions {
+    padding-left: 40px;
+    font-size: 36px;
+}
+.dataField { margin: 10px 0; }
+
+/* Radar */
+#radarBox {
+    width: 640px;
+    height: 480px;
+    border: 6px solid #d4b46a;
+    margin: 40px auto;
+    background: black;
+}
+#radarImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Alerts */
+#alerts {
+    text-align: center;
+    font-size: 28px;
+    margin-top: 20px;
+    color: #ff4444;
+}
+
+/* Timestamp */
+#timestamp {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 24px;
+    color: #e8d49a;
+}
+</style>
 </head>
 
 <body>
 
 <div id="scaleWrapper">
-
-    <div id="frame">
+    <div id="eraFrame">
 
         <h1>CUMBERLAND WEATHER NETWORK</h1>
         <h2>1980s Edition</h2>
+
+        <!-- Universal city selector -->
         <select id="citySelect">
-    <option value="">Select a City</option>
-</select>
+            <option value="">Select a City</option>
+        </select>
 
-        <div id="cityName" class="dataField"></div>
+        <!-- Conditions block -->
+        <div id="conditions">
+            <div id="cityName" class="dataField"></div>
+            <div id="tempValue" class="dataField"></div>
+            <div id="descValue" class="dataField"></div>
+            <div id="windValue" class="dataField"></div>
+            <div id="dayPeriod" class="dataField"></div>
+            <div id="clockValue" class="dataField"></div>
+        </div>
 
-        <div id="tempValue" class="dataField"></div>
-        <div id="descValue" class="dataField"></div>
-
-        <div id="windValue" class="dataField"></div>
-
-        <div id="dayPeriod" class="dataField"></div>
-
-        <div id="clockValue" class="dataField"></div>
-
+        <!-- Radar -->
         <div id="radarBox">
             <img id="radarImage" src="" alt="Radar">
         </div>
 
-        <div id="status"></div>
+        <!-- Alerts -->
+        <div id="alerts"></div>
+
+        <!-- Timestamp -->
+        <div id="timestamp"></div>
 
     </div>
-
 </div>
 
 <script type="module" src="../core/cwn-heart-full.js"></script>
 <script type="module" src="80s.js"></script>
 
-</body>
-</html>
-<select id="citySelect">
-    <option value="">Select a City</option>
-</select>
-
+<!-- Universal city selector logic -->
 <script>
 fetch("/api/cities.json")
     .then(r => r.json())
@@ -70,4 +144,7 @@ fetch("/api/cities.json")
         });
     });
 </script>
+
+</body>
+</html>
 
