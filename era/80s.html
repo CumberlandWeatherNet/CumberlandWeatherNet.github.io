@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" data-era="80s" data-theme="auto">
+<html lang="en" data-era="80s">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cumberland Weather Network — 1980s Edition</title>
+  <title>CWN — 1980s Edition</title>
   <link rel="stylesheet" href="80s.css">
-  <script type="module" src="80s.js"></script>
+  <script defer src="80s.js"></script>
 </head>
+
 <body class="era-80s">
   <div id="scaleWrapper">
+
+    <!-- HEADER -->
     <header class="cwn-header">
       <div class="cwn-logo">
         <span class="cwn-logo-mark">CWN</span>
@@ -17,100 +20,118 @@
       </div>
 
       <div class="cwn-header-right">
-        <div class="cwn-clock" id="cwnClock">--:-- --</div>
+        <div id="cwnClock" class="cwn-clock">--:-- --</div>
 
-        <div class="cwn-theme-toggle">
-          <button id="themeToggleBtn" type="button">
-            <span class="theme-label">Mode:</span>
-            <span class="theme-state" id="themeStateLabel">AUTO</span>
-          </button>
-        </div>
+        <button id="themeToggleBtn" class="theme-toggle">
+          Mode: <span id="themeStateLabel">AUTO</span>
+        </button>
 
         <nav class="cwn-directory">
-          <button type="button" class="dir-btn" data-target="home">Home</button>
-          <button type="button" class="dir-btn" data-target="1994">1994 Severe</button>
-          <button type="button" class="dir-btn dir-active" data-target="80s">1980s</button>
+          <button class="dir-btn" data-target="home">Home</button>
+          <button class="dir-btn" data-target="1994">1994 Severe</button>
+          <button class="dir-btn dir-active" data-target="80s">1980s</button>
         </nav>
       </div>
     </header>
 
+    <!-- MAIN -->
     <main class="cwn-main">
+
+      <!-- LEFT SIDE -->
       <section class="cwn-left">
-        <div class="card card-conditions">
-          <header class="card-header">
+
+        <!-- CONDITIONS CARD -->
+        <div class="crt-card">
+          <header class="crt-card-header">
             <h2>Current Conditions</h2>
-            <span class="card-location" id="conditionsLocation">Loading…</span>
+            <span id="conditionsLocation" class="crt-location">Loading…</span>
           </header>
-          <div class="card-body">
+
+          <div class="crt-card-body">
             <div class="temp-row">
-              <span class="temp-value" id="tempValue">--°F</span>
-              <span class="temp-feels" id="feelsLikeValue">Feels like --°F</span>
+              <span id="tempValue" class="temp-value">--°F</span>
+              <span id="feelsLikeValue" class="temp-feels">Feels like --°F</span>
             </div>
+
             <div class="cond-row">
-              <span class="cond-text" id="condText">Loading conditions…</span>
-              <span class="cond-icon" id="condIcon" aria-hidden="true"></span>
+              <span id="condText" class="cond-text">Loading conditions…</span>
+              <span id="condIcon" class="cond-icon"></span>
             </div>
+
             <div class="meta-row">
               <span id="windText">Wind: -- mph --</span>
               <span id="humidityText">Humidity: --%</span>
               <span id="pressureText">Pressure: -- hPa</span>
             </div>
+
             <div class="timestamp-row">
               <span id="obsTime">Last update: --</span>
             </div>
           </div>
         </div>
 
-        <div class="card card-forecast">
-          <header class="card-header">
+        <!-- FORECAST CARD -->
+        <div class="crt-card">
+          <header class="crt-card-header">
             <h2>Forecast</h2>
           </header>
-          <div class="card-body forecast-grid" id="forecastGrid">
-            <!-- Filled by HEART via 80s.js -->
+
+          <div id="forecastGrid" class="forecast-grid">
+            <!-- JS fills tiles -->
           </div>
         </div>
 
-        <div class="card card-city">
-          <header class="card-header">
+        <!-- CITY SELECTOR -->
+        <div class="crt-card">
+          <header class="crt-card-header">
             <h2>Select Reporting City</h2>
           </header>
-          <div class="card-body">
+
+          <div class="crt-card-body">
             <select id="citySelector">
               <option value="">Select a City</option>
-              <!-- Filled from API/MT registry -->
             </select>
-            <p class="city-helper">
-              City selection is saved for future visits.
-            </p>
+            <p class="city-helper">City selection is saved for future visits.</p>
           </div>
         </div>
+
       </section>
 
+      <!-- RIGHT SIDE -->
       <section class="cwn-right">
-        <div class="card card-radar">
-          <header class="card-header radar-header">
+
+        <!-- RADAR CARD -->
+        <div class="crt-card">
+          <header class="crt-card-header">
             <h2>Regional Radar</h2>
-            <span class="radar-subtitle">Middle Tennessee</span>
-            <span class="radar-time" id="radarTime">Radar: --</span>
+            <span class="crt-location">Middle Tennessee</span>
+            <span id="radarTime" class="crt-time">Radar: --</span>
           </header>
-          <div class="card-body radar-body">
+
+          <div class="crt-card-body">
             <div class="radar-frame">
-              <img id="radarImage" src="" alt="Regional radar for Middle Tennessee">
-              <div class="radar-overlay crt-scan"></div>
+              <img id="radarImage" src="" alt="Regional radar">
+              <div class="crt-scanlines"></div>
             </div>
           </div>
         </div>
 
-        <div class="card card-alerts" id="alertsCard" hidden>
-          <header class="card-header">
+        <!-- ALERTS CARD -->
+        <div id="alertsCard" class="crt-card" hidden>
+          <header class="crt-card-header">
             <h2>Active Alerts</h2>
           </header>
-          <div class="card-body" id="alertsBody">
-            <!-- Filled by HEART via 80s.js -->
+
+          <div id="alertsBody" class="crt-card-body">
+            <!-- JS fills alerts -->
           </div>
         </div>
+
       </section>
+
     </main>
+
   </div>
 </body>
 </html>
+
