@@ -141,7 +141,7 @@
     </div>
 
     <div id="alertBanner">
-        ⚠️ LIVE WEATHER — DATA FROM NWS ⚠️
+        ⚠️ LIVE WEATHER — CWN BACKEND ⚠️
     </div>
 
     <div id="citySelectBox">
@@ -186,7 +186,7 @@
     <div id="forecastGrid"></div>
 
     <div id="ticker">
-        <span>Live data provided by the National Weather Service — CWN Live System</span>
+        <span>Live data provided by CWN Backend — Update weather.json to change output</span>
     </div>
 
 </div>
@@ -214,52 +214,44 @@
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("load", resizeCanvas);
 
-    async function getCityCoordinates(city) {
-        const res = await fetch(BACKEND_URL);
-        const data = await res.json();
-        return data[city];
-    }
-
     async function loadWeather(city) {
         try {
-            const coords = await getCityCoordinates(city);
-            if (!coords) {
-                currentBox.innerHTML = "No data for this city.";
+            const res = await fetch(BACKEND_URL);
+            const data = await res.json();
+
+            const w = data[city];
+
+            if (!w) {
+                currentBox.innerHTML = `
+                    <strong>${city}, TN</strong><br>
+                    Temperature: <br>
+                    Conditions: <br>
+                    Humidity: <br>
+                    Wind:
+                `;
+                forecastGrid.innerHTML = "";
                 return;
             }
 
-            const pointsURL = `https://api.weather.gov/points/${coords.lat},${coords.lon}`;
-            const pointsResp = await fetch(pointsURL);
-            const pointsData = await pointsResp.json();
-
-            const forecastURL = pointsData.properties.forecast;
-            const hourlyURL = pointsData.properties.forecastHourly;
-
-            const hourlyResp = await fetch(hourlyURL);
-            const hourlyData = await hourlyResp.json();
-
-            const current = hourlyData.properties.periods[0];
-
             currentBox.innerHTML = `
                 <strong>${city}, TN</strong><br>
-                Temperature: ${current.temperature}°F<br>
-                Conditions: ${current.shortForecast}<br>
-                Wind: ${current.windSpeed} ${current.windDirection}<br>
-                Start Time: ${current.startTime}
+                Temperature: ${w.temp || ""}°F<br>
+                Conditions: ${w.cond || ""}<br>
+                Humidity: ${w.humidity || ""}%<br>
+                Wind: ${w.wind || ""}
             `;
 
-            const forecastResp = await fetch(forecastURL);
-            const forecastData = await forecastResp.json();
-
-            const periods = forecastData.properties.periods.slice(0, 7);
-
-            forecastGrid.innerHTML = periods.map(p => `
-                <div class="forecastDay">
-                    ${p.name}<br>
-                    ${p.temperature}°F<br>
-                    ${p.shortForecast}
-                </div>
-            `).join("");
+            if (w.forecast && Array.isArray(w.forecast)) {
+                forecastGrid.innerHTML = w.forecast.map(p => `
+                    <div class="forecastDay">
+                        ${p.day || ""}<br>
+                        ${p.temp || ""}°F<br>
+                        ${p.cond || ""}
+                    </div>
+                `).join("");
+            } else {
+                forecastGrid.innerHTML = "";
+            }
 
         } catch (err) {
             currentBox.innerHTML = "Error loading live data.";
