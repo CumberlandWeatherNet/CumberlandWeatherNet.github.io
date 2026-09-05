@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#3b2a1f" id="themeColor">
   <title>Cumberland Weather Network</title>
-  <link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" href="favicon.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,6 +184,52 @@
     .theme-toggle:active { border-style: inset; }
     .theme-toggle:focus-visible, .cwn-city-select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
+
+    .directory-nav {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+    }
+    .directory-button {
+      min-height: 46px;
+      padding: 8px 15px;
+      border: 3px outset var(--border-light);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      touch-action: manipulation;
+    }
+    .directory-button:hover { filter: brightness(1.1); }
+    .directory-button:active { border-style: inset; }
+    .directory-button:focus-visible, .directory-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .directory-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      z-index: 30;
+      display: none;
+      min-width: 230px;
+      margin: 0;
+      padding: 6px;
+      list-style: none;
+      background: var(--panel-deep);
+      border: 3px solid var(--border);
+      box-shadow: 0 10px 24px var(--shadow), inset 0 0 0 1px var(--border-light);
+      transform: translateX(-50%);
+    }
+    .directory-nav.open .directory-menu { display: block; }
+    .directory-link {
+      display: block;
+      padding: 10px 12px;
+      color: var(--text);
+      text-align: left;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .directory-link:hover { background: var(--panel); color: var(--accent); }
     .weather-icons {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -291,6 +337,14 @@
       <div class="cwn-header-controls">
         <div class="cwn-time" id="cwnTime" aria-live="polite">--:--</div>
         <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Switch to Night</button>
+        <nav class="directory-nav" id="directoryNav" aria-label="Cumberland Weather Network directory">
+          <button class="directory-button" id="directoryButton" type="button" aria-expanded="false" aria-controls="directoryMenu">Directory</button>
+          <ul class="directory-menu" id="directoryMenu">
+            <li><a class="directory-link" href="https://cumberlandweather.net">Home</a></li>
+            <li><a class="directory-link" href="https://cumberlandweather.net/80s.html">1980s Weather</a></li>
+            <li><a class="directory-link" href="https://cumberlandweather.net/1994Severe.html">1994 Severe Weather</a></li>
+          </ul>
+        </nav>
       </div>
     </header>
 
@@ -335,11 +389,17 @@
   const f=c=>Math.round(c*9/5+32), mph=k=>Math.round(k*.621371);
   function clock(){document.getElementById('cwnTime').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}
   async function locate(v){const [name,county]=v.split('|');const u='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(name+', Tennessee')+'&count=10&language=en&format=json&countryCode=US';const r=await fetch(u);if(!r.ok)throw Error('Location service error');const d=await r.json();const a=(d.results||[]).filter(x=>x.admin1==='Tennessee');const p=a.find(x=>x.name.toLowerCase()===name.toLowerCase())||a[0];if(!p)throw Error('Location not found');return{name,county,lat:p.latitude,lon:p.longitude}}
-  function periods(d){const ht=d.hourly.time.map(x=>new Date(x)), now=new Date(d.current.time), out=[];for(let n=0;n<d.daily.time.length&&out.length<6;n++){const rise=new Date(d.daily.sunrise[n]),set=new Date(d.daily.sunset[n]),next=n+1<d.daily.time.length?new Date(d.daily.sunrise[n+1]):new Date(set.getTime()+43200000),day=new Date(d.daily.time[n]+'T12:00').toLocaleDateString('en-US',{weekday:'short'});for(const q of [{name:n?' '+day:'Today',a:rise,b:set,night:false},{name:n?day+' Night':'Tonight',a:set,b:next,night:true}]){if(q.b<=now)continue;const a=q.a<now?now:q.a,ix=ht.map((t,i)=>({t,i})).filter(x=>x.t>=a&&x.t<q.b).map(x=>x.i);if(!ix.length)continue;const ts=ix.map(i=>d.hourly.temperature_2m[i]),ps=ix.map(i=>d.hourly.precipitation_probability[i]||0),cs=ix.map(i=>d.hourly.weather_code[i]);const code=cs.find(c=>c>=95)||cs.find(c=>c>=80)||cs.find(c=>c>=61)||cs.find(c=>c>=45)||cs[Math.floor(cs.length/2)],w=report(code);out.push({name:q.name.trim(),temp:q.night?Math.min(...ts):Math.max(...ts),rain:Math.max(...ps),text:w[0],icon:w[1]});if(out.length===6)break}}return out}
+  function periods(d){const ht=d.hourly.time.map(x=>new Date(x)), now=new Date(d.current.time), out=[];for(let n=0;n<d.daily.time.length&&out.length<6;n++){const rise=new Date(d.daily.sunrise[n]),set=new Date(d.daily.sunset[n]),next=n+1<d.daily.time.length?new Date(d.daily.sunrise[n+1]):new Date(set.getTime()+43200000),day=new Date(d.daily.time[n]+'T12:00').toLocaleDateString('en-US',{weekday:'short'});for(const q of [{name:n?day:'Today',a:rise,b:set,night:false},{name:n?day:'Tonight',a:set,b:next,night:true}]){if(q.b<=now)continue;const a=q.a<now?now:q.a,ix=ht.map((t,i)=>({t,i})).filter(x=>x.t>=a&&x.t<q.b).map(x=>x.i);if(!ix.length)continue;const ts=ix.map(i=>d.hourly.temperature_2m[i]),ps=ix.map(i=>d.hourly.precipitation_probability[i]||0),cs=ix.map(i=>d.hourly.weather_code[i]);const code=cs.find(c=>c>=95)||cs.find(c=>c>=80)||cs.find(c=>c>=61)||cs.find(c=>c>=45)||cs[Math.floor(cs.length/2)],w=report(code);out.push({name:q.name.trim(),temp:q.night?Math.min(...ts):Math.max(...ts),rain:Math.max(...ps),text:w[0],icon:w[1]});if(out.length===6)break}}return out}
   function renderPeriods(p){document.getElementById('forecastPeriods').innerHTML=p.map(x=>`<article class="icon-card"><div class="period-name">${x.name}</div><div class="live-symbol" aria-hidden="true">${ICON[x.icon]}</div><div class="period-temp">${f(x.temp)}°</div><div class="period-desc">${x.text}</div><div class="period-rain">Rain ${Math.round(x.rain)}%</div></article>`).join('')}
   async function load(v){const st=document.getElementById('weatherStatus');st.textContent='Loading live local forecast...';try{const p=await locate(v),qs=new URLSearchParams({latitude:p.lat,longitude:p.lon,timezone:'America/Chicago',forecast_days:'5',current:'temperature_2m,weather_code,wind_speed_10m',hourly:'temperature_2m,precipitation_probability,weather_code',daily:'sunrise,sunset'}),r=await fetch('https://api.open-meteo.com/v1/forecast?'+qs);if(!r.ok)throw Error('Weather service error');const d=await r.json(),w=report(d.current.weather_code);document.getElementById('cwnTemp').textContent=f(d.current.temperature_2m)+'°F';document.getElementById('cwnWind').textContent='Wind: '+mph(d.current.wind_speed_10m)+' mph';document.getElementById('cwnDesc').textContent=w[0];document.getElementById('currentIconBox').innerHTML='<div class="current-live-symbol">'+ICON[w[1]]+'</div>';st.textContent='Live report for '+p.name+', '+p.county+' County.';renderPeriods(periods(d))}catch(e){console.error(e);st.textContent='The location or weather service could not be reached.';document.getElementById('forecastPeriods').innerHTML='<div class="icon-card">Forecast unavailable</div>'}}
   function radar(){const img=document.getElementById('cwnRadar');document.getElementById('cwnRadarStatus').textContent='Loading radar...';img.src='https://radar.weather.gov/ridge/standard/KOHX_loop.gif?t='+Date.now()}
   const root=document.documentElement,toggle=document.getElementById('themeToggle');function theme(x){root.dataset.theme=x;const n=x==='night';toggle.textContent=n?'Switch to Day':'Switch to Night';toggle.setAttribute('aria-pressed',String(n));document.getElementById('themeColor').content=n?'#15110d':'#3b2a1f';try{localStorage.setItem('cwnTheme',x)}catch(e){}}
+
+  const directoryNav=document.getElementById('directoryNav'),directoryButton=document.getElementById('directoryButton');
+  function closeDirectory(){directoryNav.classList.remove('open');directoryButton.setAttribute('aria-expanded','false')}
+  directoryButton.addEventListener('click',()=>{const open=!directoryNav.classList.contains('open');directoryNav.classList.toggle('open',open);directoryButton.setAttribute('aria-expanded',String(open))});
+  document.addEventListener('click',e=>{if(!directoryNav.contains(e.target))closeDirectory()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDirectory();directoryButton.focus()}});
   fillCities();try{theme(localStorage.getItem('cwnTheme')==='night'?'night':'day')}catch(e){theme('day')}toggle.onclick=()=>theme(root.dataset.theme==='night'?'day':'night');sel.onchange=()=>load(sel.value);document.getElementById('cwnRadar').onload=()=>document.getElementById('cwnRadarStatus').textContent='Radar image updated.';document.getElementById('cwnRadar').onerror=()=>document.getElementById('cwnRadarStatus').textContent='Radar image is currently unavailable.';clock();setInterval(clock,1000);load(sel.value);radar();setInterval(radar,300000);
   </script>
 </body>
