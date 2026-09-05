@@ -1,8 +1,14 @@
+/* ============================================================
+   CUMBERLAND WEATHER NETWORK — 1980s Edition
+   Retro CRT Weather Layout
+   ============================================================ */
+
 body {
     margin: 0;
-    background: #2b1f1a; /* warm analog brown */
-    font-family: "Arial", sans-serif;
-    color: #f2e4c9; /* warm amber */
+    padding: 0;
+    background: #3b2a1f; /* retro brown */
+    font-family: "Courier New", monospace;
+    color: #f2d28b; /* gold CRT text */
 }
 
 #scaleWrapper {
@@ -11,106 +17,69 @@ body {
     transform-origin: top left;
 }
 
-/* 1980s Header */
-.header80s {
-    width: 100%;
+#frame {
+    width: 1920px;
+    height: 1080px;
+    border: 8px solid #d4b46a;
     padding: 20px;
-    background: linear-gradient(to bottom, #5c2e2e, #3b1f1f);
-    border-bottom: 4px solid #c79b63;
-    text-align: center;
+    box-sizing: border-box;
 }
 
-.logoBox {
+h1 {
     font-size: 48px;
-    font-weight: bold;
-    color: #f2e4c9;
-    text-shadow: 2px 2px #000;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #f7e7c1;
 }
 
-.eraTag {
-    font-size: 28px;
-    margin-top: 10px;
-    color: #d9c7a3;
-}
-
-/* CRT Panel */
-.crtPanel {
-    width: 1600px;
-    height: 850px;
-    margin: 40px auto;
-    background: #3a2a25;
-    border: 6px solid #c79b63;
-    box-shadow: inset 0 0 40px #000;
-    padding: 40px;
-    position: relative;
-}
-
-/* City Name */
-.cityName {
-    font-size: 64px;
-    font-weight: bold;
+h2 {
+    font-size: 32px;
     text-align: center;
     margin-bottom: 40px;
-    color: #f2e4c9;
+    color: #e8d49a;
 }
 
-/* Temperature */
-.tempBox {
-    font-size: 180px;
-    font-weight: bold;
-    text-align: center;
-    color: #f2e4c9;
-    text-shadow: 4px 4px #000;
-}
-
-/* Description */
-.descBox {
-    font-size: 48px;
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Wind */
-.windBox {
+/* Data fields */
+.dataField {
     font-size: 36px;
-    text-align: center;
-    margin-top: 20px;
+    margin: 10px 0;
+    padding-left: 40px;
 }
 
-/* Today/Tonight */
-.dayPeriodBox {
-    font-size: 48px;
-    text-align: center;
-    margin-top: 30px;
-    color: #d9c7a3;
-}
-
-/* Radar */
-.radarBox {
-    width: 600px;
-    height: 400px;
+/* Radar box */
+#radarBox {
+    width: 640px;
+    height: 480px;
+    border: 6px solid #d4b46a;
     margin: 40px auto;
-    border: 4px solid #c79b63;
-    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: black;
 }
 
-.radarBox img {
+#radarImage {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
-/* Clock */
-.clockBox {
-    font-size: 48px;
-    text-align: center;
-    margin-top: 40px;
-    color: #f2e4c9;
+/* City dropdown */
+#citySelect {
+    font-size: 24px;
+    padding: 10px;
+    margin: 20px auto;
+    display: block;
+    background: #2e2218;
+    color: #f2d28b;
+    border: 3px solid #d4b46a;
 }
 
-/* Status Message */
+/* Status text */
 #status {
-    font-size: 32px;
-    color: #ffdfdf;
     text-align: center;
     margin-top: 20px;
+    font-size: 28px;
+    color: #e8d49a;
 }
+
