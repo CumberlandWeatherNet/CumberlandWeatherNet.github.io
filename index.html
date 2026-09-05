@@ -133,15 +133,16 @@
 
     <div id="directoryBar">
         <a href="/80s.html">80s Edition</a>
-        <a href="/1994Severe.html">19994 Severe Edition</a>
+        <a href="/1994Severe.html">1994 Severe Edition</a>
     </div>
 
     <div id="header">
         CUMBERLAND WEATHER NETWORK — LIVE DATA
     </div>
 
+    <!-- ⭐ UPDATED RED BANNER TEXT -->
     <div id="alertBanner">
-        ⚠️ LIVE WEATHER — REAL METAR OBSERVATIONS ⚠️
+        ⚠️ LIVE WEATHER-DATA FROM NWS — REAL CONDITIONS UPDATED AUTOMATICALLY ⚠️
     </div>
 
     <div id="citySelectBox">
@@ -186,7 +187,7 @@
     <div id="forecastGrid"></div>
 
     <div id="ticker">
-        <span>Live METAR data provided by NOAA/NWS — CWN Live System</span>
+        <span>Live NWS data — CWN Live System</span>
     </div>
 
 </div>
@@ -195,7 +196,6 @@
     const BACKEND_URL = "https://raw.githubusercontent.com/CumberlandWeatherNet/CumberlandWeatherNet.github.io/main/api/weather.json";
 
     const currentBox = document.getElementById("currentBox");
-    const forecastGrid = document.getElementById("forecastGrid");
     const citySelect = document.getElementById("citySelect");
     const scaleWrapper = document.getElementById("scaleWrapper");
 
@@ -217,46 +217,35 @@
     async function loadWeather(city) {
         try {
             const res = await fetch(BACKEND_URL);
-            const stations = await res.json();
+            const coords = await res.json();
 
-            const station = stations[city];
+            const { lat, lon } = coords[city];
 
-            if (!station) {
-                currentBox.innerHTML = `
-                    <strong>${city}, TN</strong><br>
-                    Temperature: <br>
-                    Conditions: <br>
-                    Humidity: <br>
-                    Wind:
-                `;
-                return;
-            }
+            const pointsURL = `https://api.weather.gov/points/${lat},${lon}`;
+            const pointsResp = await fetch(pointsURL);
+            const pointsData = await pointsResp.json();
 
-            const obsURL = `https://api.weather.gov/stations/${station}/observations/latest`;
-            const obsResp = await fetch(obsURL);
-            const obsData = await obsResp.json();
+            const hourlyURL = pointsData.properties.forecastHourly;
+            const hourlyResp = await fetch(hourlyURL);
+            const hourlyData = await hourlyResp.json();
 
-            const props = obsData.properties;
+            const current = hourlyData.properties.periods[0];
 
-            const temp = props.temperature?.value ? Math.round((props.temperature.value * 9/5) + 32) : "";
-            const cond = props.textDescription || "";
-            const humidity = props.relativeHumidity?.value ? Math.round(props.relativeHumidity.value) : "";
-            const windSpeed = props.windSpeed?.value ? Math.round(props.windSpeed.value * 0.621371) + " mph" : "";
-            const windDir = props.windDirection?.value ? props.windDirection.value + "°" : "";
+            const temp = current.temperature || "";
+            const cond = current.shortForecast || "";
+            const humidity = current.relativeHumidity?.value || "";
+            const wind = current.windSpeed || "";
 
             currentBox.innerHTML = `
                 <strong>${city}, TN</strong><br>
                 Temperature: ${temp}<br>
                 Conditions: ${cond}<br>
                 Humidity: ${humidity}<br>
-                Wind: ${windSpeed} ${windDir}
+                Wind: ${wind}
             `;
-
-            forecastGrid.innerHTML = "";
 
         } catch (err) {
             currentBox.innerHTML = "Error loading live data.";
-            forecastGrid.innerHTML = "";
         }
     }
 
@@ -264,7 +253,6 @@
         const city = this.value;
         if (!city) {
             currentBox.innerHTML = "Select a city to view current conditions.";
-            forecastGrid.innerHTML = "";
             localStorage.removeItem("cwnCity");
             return;
         }
