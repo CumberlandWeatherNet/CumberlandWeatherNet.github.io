@@ -78,8 +78,3 @@ autoscale();
    Initialize Page
    ------------------------------ */
 loadWeather();
-
-window.addEventListener("resize", autoscale);
-autoscale();
-
-loadWeather();
