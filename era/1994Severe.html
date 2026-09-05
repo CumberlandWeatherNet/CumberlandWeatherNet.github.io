@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>CWN — 1994 SEVERE WEATHER BULLETIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <div id="status"></div>
+
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -310,7 +312,6 @@ html, body{
       <option value="35.9489,-85.0269">Crossville</option>
     </select>
   </div>
-
   <div class="location-content" id="locationPanel">
     <div class="location-line">Select a city to view conditions.</div>
   </div>
@@ -454,6 +455,27 @@ function activateCrawl(text){
   crawl.textContent=text;
   box.style.display="block";
 }
+  async function loadWeather() {
+  const city = localStorage.getItem("cwn_city");
+
+  if (!city) {
+    // If no city is selected, tell the user to go back to index.html
+    const status = document.getElementById("status");
+    if (status) {
+      status.textContent = "Please select a city on the main page.";
+    }
+    return;
+  }
+
+  // Pull live data from HEART v2.0
+  const core = await getCWNCore(city);
+
+  // Send the unified HEART object into the era renderer
+  renderEra(core);
+}
+
+loadWeather();
+
 </script>
 
 </body>
