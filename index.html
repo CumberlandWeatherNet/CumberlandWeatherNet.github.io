@@ -78,21 +78,6 @@
         font-size: 28px;
     }
 
-    #forecastGrid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 10px;
-        margin: 20px;
-    }
-
-    .forecastDay {
-        background: #1c1c1c;
-        border: 3px solid #333;
-        padding: 15px;
-        text-align: center;
-        font-size: 24px;
-    }
-
     #alertBanner {
         background: #660000;
         color: #ffcccc;
@@ -140,7 +125,6 @@
         CUMBERLAND WEATHER NETWORK — LIVE DATA
     </div>
 
-    <!-- ⭐ UPDATED RED BANNER TEXT -->
     <div id="alertBanner">
         ⚠️ LIVE WEATHER-DATA FROM NWS — REAL CONDITIONS UPDATED AUTOMATICALLY ⚠️
     </div>
@@ -184,87 +168,122 @@
         (Insert radar image or animation here)
     </div>
 
-    <div id="forecastGrid"></div>
-
     <div id="ticker">
         <span>Live NWS data — CWN Live System</span>
     </div>
 
 </div>
 
+<!-- ⭐ CWN ALERT TONE ENGINE -->
 <script>
-    const BACKEND_URL = "https://raw.githubusercontent.com/CumberlandWeatherNet/CumberlandWeatherNet.github.io/main/api/weather.json";
+// (alert tone engine code goes here — same block I gave you earlier)
+</script>
 
-    const currentBox = document.getElementById("currentBox");
-    const citySelect = document.getElementById("citySelect");
-    const scaleWrapper = document.getElementById("scaleWrapper");
+<!-- ⭐ CWN ALERT MAPPER + CHECKER -->
+<script>
+async function checkAlerts() {
+    const resp = await fetch("https://api.weather.gov/alerts/active?area=TN");
+    const data = await resp.json();
+    const alerts = data.features;
 
-    function resizeCanvas() {
-        const baseW = 1920;
-        const baseH = 1080;
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-        const scale = Math.min(winW / baseW, winH / baseH);
+    if (!alerts.length) return;
 
-        scaleWrapper.style.transform = `scale(${scale})`;
-        scaleWrapper.style.left = `${(winW - baseW * scale) / 2}px`;
-        scaleWrapper.style.top = `${(winH - baseH * scale) / 2}px`;
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("load", resizeCanvas);
-
-    async function loadWeather(city) {
-        try {
-            const res = await fetch(BACKEND_URL);
-            const coords = await res.json();
-
-            const { lat, lon } = coords[city];
-
-            const pointsURL = `https://api.weather.gov/points/${lat},${lon}`;
-            const pointsResp = await fetch(pointsURL);
-            const pointsData = await pointsResp.json();
-
-            const hourlyURL = pointsData.properties.forecastHourly;
-            const hourlyResp = await fetch(hourlyURL);
-            const hourlyData = await hourlyResp.json();
-
-            const current = hourlyData.properties.periods[0];
-
-            const temp = current.temperature || "";
-            const cond = current.shortForecast || "";
-            const humidity = current.relativeHumidity?.value || "";
-            const wind = current.windSpeed || "";
-
-            currentBox.innerHTML = `
-                <strong>${city}, TN</strong><br>
-                Temperature: ${temp}<br>
-                Conditions: ${cond}<br>
-                Humidity: ${humidity}<br>
-                Wind: ${wind}
-            `;
-
-        } catch (err) {
-            currentBox.innerHTML = "Error loading live data.";
-        }
-    }
-
-    citySelect.addEventListener("change", function() {
-        const city = this.value;
-        if (!city) {
-            currentBox.innerHTML = "Select a city to view current conditions.";
-            localStorage.removeItem("cwnCity");
-            return;
-        }
-        localStorage.setItem("cwnCity", city);
-        loadWeather(city);
+    alerts.forEach(alert => {
+        const event = alert.properties.event;
+        triggerCwnAlertTone(event);
     });
+}
 
-    const savedCity = localStorage.getItem("cwnCity");
-    if (savedCity) {
-        citySelect.value = savedCity;
-        loadWeather(savedCity);
+function triggerCwnAlertTone(event) {
+    event = event.toLowerCase();
+
+    if (event.includes("tornado")) playCwnTornadoAlert();
+    else if (event.includes("severe thunderstorm")) playCwnSevereThunderstormAlert();
+    else if (event.includes("flash flood")) playCwnFlashFloodAlert();
+    else if (event.includes("winter storm") || event.includes("blizzard") || event.includes("ice storm"))
+        playCwnWinterStormAlert();
+    else if (event.includes("amber")) playCwnAmberAlert();
+    else playCwnBreakingWeatherSweep();
+}
+
+setInterval(checkAlerts, 60000);
+checkAlerts();
+</script>
+
+<!-- ⭐ CWN LIVE WEATHER DATA -->
+<script>
+const BACKEND_URL = "https://raw.githubusercontent.com/CumberlandWeatherNet/CumberlandWeatherNet.github.io/main/api/weather.json";
+
+const currentBox = document.getElementById("currentBox");
+const citySelect = document.getElementById("citySelect");
+const scaleWrapper = document.getElementById("scaleWrapper");
+
+function resizeCanvas() {
+    const baseW = 1920;
+    const baseH = 1080;
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+    const scale = Math.min(winW / baseW, winH / baseH);
+
+    scaleWrapper.style.transform = `scale(${scale})`;
+    scaleWrapper.style.left = `${(winW - baseW * scale) / 2}px`;
+    scaleWrapper.style.top = `${(winH - baseH * scale) / 2}px`;
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("load", resizeCanvas);
+
+async function loadWeather(city) {
+    try {
+        const res = await fetch(BACKEND_URL);
+        const coords = await res.json();
+
+        const { lat, lon } = coords[city];
+
+        const pointsURL = `https://api.weather.gov/points/${lat},${lon}`;
+        const pointsResp = await fetch(pointsURL);
+        const pointsData = await pointsResp.json();
+
+        const hourlyURL = pointsData.properties.forecastHourly;
+        const hourlyResp = await fetch(hourlyURL);
+        const hourlyData = await hourlyResp.json();
+
+        const current = hourlyData.properties.periods[0];
+
+        const temp = current.temperature || "";
+        const cond = current.shortForecast || "";
+        const humidity = current.relativeHumidity?.value || "";
+        const wind = current.windSpeed || "";
+
+        currentBox.innerHTML = `
+            <strong>${city}, TN</strong><br>
+            Temperature: ${temp}<br>
+            Conditions: ${cond}<br>
+            Humidity: ${humidity}<br>
+            Wind: ${wind}
+        `;
+
+    } catch (err) {
+        currentBox.innerHTML = "Error loading live data.";
     }
+}
+
+citySelect.addEventListener("change", function() {
+    const city = this.value;
+    if (!city) {
+        currentBox.innerHTML = "Select a city to view current conditions.";
+        localStorage.removeItem("cwnCity");
+        return;
+    }
+    localStorage.setItem("cwnCity", city);
+    loadWeather(city);
+});
+
+const savedCity = localStorage.getItem("cwnCity");
+if (savedCity) {
+    citySelect.value = savedCity;
+    loadWeather(savedCity);
+}
 </script>
 
 </body>
