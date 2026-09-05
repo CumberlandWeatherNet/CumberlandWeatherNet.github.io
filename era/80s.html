@@ -2,60 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>CWN — 1980s Weather</title>
-
-<!-- 80s CSS -->
+<title>Cumberland Weather Network — 1980s Edition</title>
 <link rel="stylesheet" href="80s.css">
-
-<!-- HEART v2.0 (correct path!) -->
-<script type="module" src="../core/cwn-heart-full.js"></script>
-
 </head>
+
 <body>
 
 <div id="scaleWrapper">
 
-    <!-- Status message -->
-    <div id="status"></div>
+    <div id="frame">
 
-    <!-- 1980s Header -->
-    <div class="header80s">
-        <div class="logoBox">
-            <span class="logoText">CUMBERLAND WEATHER NETWORK</span>
-        </div>
-        <div class="eraTag">1980s Edition</div>
-    </div>
+        <h1>CUMBERLAND WEATHER NETWORK</h1>
+        <h2>1980s Edition</h2>
 
-    <!-- CRT Panel -->
-    <div class="crtPanel">
+        <div id="cityName" class="dataField"></div>
 
-        <div class="cityName" id="cityName"></div>
+        <div id="tempValue" class="dataField"></div>
+        <div id="descValue" class="dataField"></div>
 
-        <div class="tempBox">
-            <span id="tempValue"></span>
-        </div>
+        <div id="windValue" class="dataField"></div>
 
-        <div class="descBox" id="descValue"></div>
+        <div id="dayPeriod" class="dataField"></div>
 
-        <div class="windBox">
-            <span id="windValue"></span>
+        <div id="clockValue" class="dataField"></div>
+
+        <div id="radarBox">
+            <img id="radarImage" src="" alt="Radar">
         </div>
 
-        <div class="dayPeriodBox" id="dayPeriod"></div>
-
-        <div class="radarBox">
-            <img id="radarImage" alt="Radar">
-        </div>
-
-        <div class="clockBox" id="clockValue"></div>
+        <div id="status"></div>
 
     </div>
 
 </div>
 
-<!-- 80s JS -->
+<script type="module" src="../core/cwn-heart-full.js"></script>
 <script type="module" src="80s.js"></script>
 
 </body>
