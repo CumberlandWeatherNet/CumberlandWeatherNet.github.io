@@ -1,368 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-era="80s" data-theme="auto">
 <head>
-<meta charset="UTF-8">
-<title>CWN — 1980s Edition</title>
-
-<!-- STEP 1: Pixel Font (WeatherStar-style) -->
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-<style>
-/* ===== 80s Theme: Colors, Background, Typography ===== */
-body {
-    margin: 0;
-    padding: 0;
-    background: radial-gradient(circle at top, #3b2a1f 0%, #2f241c 40%, #1c140f 100%);
-    font-family: "Press Start 2P", monospace; /* STEP 1 APPLIED HERE */
-    color: #f2d28b;
-}
-
-/* CRT scanlines */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: linear-gradient(rgba(0,0,0,0.18) 1px, transparent 2px);
-    background-size: 100% 3px;
-    mix-blend-mode: multiply;
-    opacity: 0.7;
-}
-
-/* Top bar */
-#topBar {
-    max-width: 1100px;
-    margin: 20px auto 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #f7e7c1;
-}
-
-#topTitle {
-    font-size: 20px;
-}
-
-#topClock {
-    font-size: 16px;
-}
-
-#topButtons {
-    display: flex;
-    gap: 10px;
-}
-
-.topButton {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 2px solid #d9a441;
-    background: #3b2a1f;
-    color: #f2d28b;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-/* Main card frame */
-#pageFrame {
-    max-width: 1100px;
-    margin: 0 auto 30px;
-    border: 6px solid #d9a441;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
-    background: linear-gradient(180deg, #3b2a1f 0%, #2f241c 60%, #3b2a1f 100%);
-    position: relative;
-}
-
-#pageFrame::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 14px;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.7);
-    pointer-events: none;
-}
-
-/* Main row: conditions + radar */
-#mainRow {
-    display: grid;
-    grid-template-columns: 1.1fr 1.4fr;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-/* Card base */
-.card {
-    border: 4px solid #d9a441;
-    border-radius: 10px;
-    padding: 16px;
-    background: #3b2a1f;
-}
-
-/* Card headers */
-.cardTitle {
-    font-size: 14px;
-    margin-bottom: 10px;
-    color: #f7e7c1;
-}
-
-/* Current conditions content */
-#currentCity {
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-#currentTemp {
-    font-size: 24px;
-    margin-bottom: 6px;
-}
-
-#currentDesc {
-    font-size: 14px;
-    margin-bottom: 6px;
-}
-
-#currentWind {
-    font-size: 12px;
-    margin-bottom: 6px;
-}
-
-#currentMeta {
-    font-size: 10px;
-    color: #e8d49a;
-}
-
-/* Radar card */
-#radarBox {
-    position: relative;
-    height: 260px;
-    background: black;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-#radarBox svg {
-    position: absolute;
-    inset: 0;
-}
-
-#radarImage {
-    position: absolute;
-    inset: 6px;
-    width: calc(100% - 12px);
-    height: calc(100% - 12px);
-    object-fit: cover;
-}
-
-/* Forecast row */
-#forecastRow {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.forecastTile {
-    border: 3px solid #d9a441;
-    border-radius: 8px;
-    padding: 8px;
-    background: #2e2218;
-    font-size: 12px;
-}
-
-.forecastTitle {
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #f7e7c1;
-}
-
-.forecastTemp {
-    font-size: 16px;
-    margin-bottom: 2px;
-}
-
-.forecastDesc {
-    font-size: 10px;
-    margin-bottom: 2px;
-}
-
-.forecastRain {
-    font-size: 10px;
-    color: #e8d49a;
-}
-
-/* Alerts + timestamp */
-#alerts {
-    text-align: center;
-    font-size: 12px;
-    color: #c44a4a;
-    margin-bottom: 6px;
-}
-
-#timestamp {
-    text-align: center;
-    font-size: 10px;
-    color: #e8d49a;
-}
-
-/* Bottom city selector */
-#citySelectorWrapper {
-    margin-top: 16px;
-    font-size: 12px;
-}
-
-#citySelect {
-    width: 100%;
-    font-size: 12px;
-    padding: 10px;
-    margin-top: 8px;
-    background: #2e2218;
-    color: #f2d28b;
-    border: 3px solid #d9a441;
-    border-radius: 8px;
-}
-
-/* Autoscale wrapper */
-#scaleWrapper {
-    transform-origin: top center;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cumberland Weather Network — 1980s Edition</title>
+  <link rel="stylesheet" href="80s.css">
+  <script defer src="80s.js"></script>
 </head>
+<body class="era-80s">
+  <div id="scaleWrapper">
+    <header class="cwn-header">
+      <div class="cwn-logo">
+        <span class="cwn-logo-mark">CWN</span>
+        <span class="cwn-logo-text">Cumberland Weather Network</span>
+        <span class="cwn-era-tag">1980s Edition</span>
+      </div>
 
-<body>
+      <div class="cwn-header-right">
+        <div class="cwn-clock" id="cwnClock">--:-- --</div>
 
-<!-- Hidden SVGs for icons + radar frame -->
-<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="radar-frame" viewBox="0 0 100 100">
-    <rect x="2" y="2" width="96" height="96" fill="none" stroke="#D9A441" stroke-width="3"/>
-    <rect x="6" y="6" width="88" height="88" fill="none" stroke="#E07A2D" stroke-width="2"/>
-    <rect x="10" y="10" width="80" height="80" fill="none" stroke="#3A6EA5" stroke-width="1"/>
-  </symbol>
-</svg>
-
-<!-- Top bar -->
-<div id="topBar">
-    <div id="topTitle">CUMBERLAND WEATHER NETWORK</div>
-    <div id="topClock"></div>
-    <div id="topButtons">
-        <button class="topButton">SWITCH TO DAY</button>
-        <button class="topButton" onclick="window.location.href='https://cumberlandweather.net'">DIRECTORY</button>
-    </div>
-</div>
-
-<!-- Main frame -->
-<div id="scaleWrapper">
-<div id="pageFrame">
-
-    <!-- Main row -->
-    <div id="mainRow">
-        <!-- Current conditions card -->
-        <div class="card">
-            <div class="cardTitle">CURRENT CONDITIONS</div>
-            <div id="currentCity"></div>
-            <div id="currentTemp"></div>
-            <div id="currentDesc"></div>
-            <div id="currentWind"></div>
-            <div id="currentMeta"></div>
+        <div class="cwn-theme-toggle">
+          <button id="themeToggleBtn" type="button">
+            <span class="theme-label">Mode:</span>
+            <span class="theme-state" id="themeStateLabel">AUTO</span>
+          </button>
         </div>
 
-        <!-- Radar card -->
-        <div class="card">
-            <div class="cardTitle">REGIONAL RADAR</div>
-            <div id="radarBox">
-                <svg width="100%" height="100%" preserveAspectRatio="none">
-                    <use href="#radar-frame"/>
-                </svg>
-                <img id="radarImage" src="" alt="Radar">
+        <nav class="cwn-directory">
+          <button type="button" class="dir-btn" data-target="home">Home</button>
+          <button type="button" class="dir-btn" data-target="1994">1994 Severe</button>
+          <button type="button" class="dir-btn dir-active" data-target="80s">1980s</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="cwn-main">
+      <section class="cwn-left">
+        <div class="card card-conditions">
+          <header class="card-header">
+            <h2>Current Conditions</h2>
+            <span class="card-location" id="conditionsLocation">Loading…</span>
+          </header>
+          <div class="card-body">
+            <div class="temp-row">
+              <span class="temp-value" id="tempValue">--°F</span>
+              <span class="temp-feels" id="feelsLikeValue">Feels like --°F</span>
             </div>
+            <div class="cond-row">
+              <span class="cond-text" id="condText">Loading conditions…</span>
+              <span class="cond-icon" id="condIcon" aria-hidden="true"></span>
+            </div>
+            <div class="meta-row">
+              <span id="windText">Wind: -- mph --</span>
+              <span id="humidityText">Humidity: --%</span>
+              <span id="pressureText">Pressure: -- hPa</span>
+            </div>
+            <div class="timestamp-row">
+              <span id="obsTime">Last update: --</span>
+            </div>
+          </div>
         </div>
-    </div>
 
-    <!-- Forecast row -->
-    <div id="forecastRow">
-        <div class="forecastTile">
-            <div class="forecastTitle">Today</div>
-            <div id="fc1Temp" class="forecastTemp"></div>
-            <div id="fc1Desc" class="forecastDesc"></div>
-            <div id="fc1Rain" class="forecastRain"></div>
+        <div class="card card-forecast">
+          <header class="card-header">
+            <h2>Forecast</h2>
+          </header>
+          <div class="card-body forecast-grid" id="forecastGrid">
+            <!-- Filled by HEART via 80s.js -->
+          </div>
         </div>
-        <div class="forecastTile">
-            <div class="forecastTitle">Tonight</div>
-            <div id="fc2Temp" class="forecastTemp"></div>
-            <div id="fc2Desc" class="forecastDesc"></div>
-            <div id="fc2Rain" class="forecastRain"></div>
+
+        <div class="card card-city">
+          <header class="card-header">
+            <h2>Select Reporting City</h2>
+          </header>
+          <div class="card-body">
+            <select id="citySelector">
+              <option value="">Select a City</option>
+              <!-- Filled from API/MT registry -->
+            </select>
+            <p class="city-helper">
+              City selection is saved for future visits.
+            </p>
+          </div>
         </div>
-        <div class="forecastTile">
-            <div class="forecastTitle">Sun</div>
-            <div id="fc3Temp" class="forecastTemp"></div>
-            <div id="fc3Desc" class="forecastDesc"></div>
-            <div id="fc3Rain" class="forecastRain"></div>
+      </section>
+
+      <section class="cwn-right">
+        <div class="card card-radar">
+          <header class="card-header radar-header">
+            <h2>Regional Radar</h2>
+            <span class="radar-subtitle">Middle Tennessee</span>
+            <span class="radar-time" id="radarTime">Radar: --</span>
+          </header>
+          <div class="card-body radar-body">
+            <div class="radar-frame">
+              <img id="radarImage" src="" alt="Regional radar for Middle Tennessee">
+              <div class="radar-overlay crt-scan"></div>
+            </div>
+          </div>
         </div>
-        <div class="forecastTile">
-            <div class="forecastTitle">Sun</div>
-            <div id="fc4Temp" class="forecastTemp"></div>
-            <div id="fc4Desc" class="forecastDesc"></div>
-            <div id="fc4Rain" class="forecastRain"></div>
+
+        <div class="card card-alerts" id="alertsCard" hidden>
+          <header class="card-header">
+            <h2>Active Alerts</h2>
+          </header>
+          <div class="card-body" id="alertsBody">
+            <!-- Filled by HEART via 80s.js -->
+          </div>
         </div>
-        <div class="forecastTile">
-            <div class="forecastTitle">Mon</div>
-            <div id="fc5Temp" class="forecastTemp"></div>
-            <div id="fc5Desc" class="forecastDesc"></div>
-            <div id="fc5Rain" class="forecastRain"></div>
-        </div>
-        <div class="forecastTile">
-            <div class="forecastTitle">Mon</div>
-            <div id="fc6Temp" class="forecastTemp"></div>
-            <div id="fc6Desc" class="forecastDesc"></div>
-            <div id="fc6Rain" class="forecastRain"></div>
-        </div>
-    </div>
-
-    <!-- Alerts + timestamp -->
-    <div id="alerts"></div>
-    <div id="timestamp"></div>
-
-    <!-- City selector -->
-    <div id="citySelectorWrapper">
-        <div>SELECT REPORTING CITY</div>
-        <select id="citySelect">
-            <option value="">Select a City</option>
-        </select>
-    </div>
-
-</div>
-</div>
-
-<script type="module" src="../core/cwn-heart-full.js"></script>
-<script type="module" src="80s.js"></script>
-
-<script>
-fetch("/api/cities.json")
-    .then(r => r.json())
-    .then(data => {
-        const dropdown = document.getElementById("citySelect");
-        for (const county in data) {
-            for (const city in data[county]) {
-                const opt = document.createElement("option");
-                opt.value = city;
-                opt.textContent = `${city} (${county})`;
-                dropdown.appendChild(opt);
-            }
-        }
-        dropdown.addEventListener("change", () => {
-            localStorage.setItem("cwn_city", dropdown.value);
-            location.reload();
-        });
-    });
-
-function autoscale() {
-    const w = window.innerWidth / 1100;
-    const scale = Math.min(w, 1);
-    document.getElementById("scaleWrapper").style.transform = `scale(${scale})`;
-}
-window.addEventListener("resize", autoscale);
-autoscale();
-</script>
-
+      </section>
+    </main>
+  </div>
 </body>
 </html>
