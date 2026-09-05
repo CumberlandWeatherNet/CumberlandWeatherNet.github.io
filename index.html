@@ -133,7 +133,7 @@
 
     <div id="directoryBar">
         <a href="/80s.html">80s Edition</a>
-        <a href="/1994Severe.html">1994 Severe Edition</a>
+        <a href="/1994Severe.html">19994 Severe Edition</a>
     </div>
 
     <div id="header">
@@ -141,7 +141,7 @@
     </div>
 
     <div id="alertBanner">
-        ⚠️ LIVE WEATHER — CWN BACKEND ⚠️
+        ⚠️ LIVE WEATHER — REAL METAR OBSERVATIONS ⚠️
     </div>
 
     <div id="citySelectBox">
@@ -186,7 +186,7 @@
     <div id="forecastGrid"></div>
 
     <div id="ticker">
-        <span>Live data provided by CWN Backend — Update weather.json to change output</span>
+        <span>Live METAR data provided by NOAA/NWS — CWN Live System</span>
     </div>
 
 </div>
@@ -217,11 +217,11 @@
     async function loadWeather(city) {
         try {
             const res = await fetch(BACKEND_URL);
-            const data = await res.json();
+            const stations = await res.json();
 
-            const w = data[city];
+            const station = stations[city];
 
-            if (!w) {
+            if (!station) {
                 currentBox.innerHTML = `
                     <strong>${city}, TN</strong><br>
                     Temperature: <br>
@@ -229,29 +229,30 @@
                     Humidity: <br>
                     Wind:
                 `;
-                forecastGrid.innerHTML = "";
                 return;
             }
 
+            const obsURL = `https://api.weather.gov/stations/${station}/observations/latest`;
+            const obsResp = await fetch(obsURL);
+            const obsData = await obsResp.json();
+
+            const props = obsData.properties;
+
+            const temp = props.temperature?.value ? Math.round((props.temperature.value * 9/5) + 32) : "";
+            const cond = props.textDescription || "";
+            const humidity = props.relativeHumidity?.value ? Math.round(props.relativeHumidity.value) : "";
+            const windSpeed = props.windSpeed?.value ? Math.round(props.windSpeed.value * 0.621371) + " mph" : "";
+            const windDir = props.windDirection?.value ? props.windDirection.value + "°" : "";
+
             currentBox.innerHTML = `
                 <strong>${city}, TN</strong><br>
-                Temperature: ${w.temp || ""}°F<br>
-                Conditions: ${w.cond || ""}<br>
-                Humidity: ${w.humidity || ""}%<br>
-                Wind: ${w.wind || ""}
+                Temperature: ${temp}<br>
+                Conditions: ${cond}<br>
+                Humidity: ${humidity}<br>
+                Wind: ${windSpeed} ${windDir}
             `;
 
-            if (w.forecast && Array.isArray(w.forecast)) {
-                forecastGrid.innerHTML = w.forecast.map(p => `
-                    <div class="forecastDay">
-                        ${p.day || ""}<br>
-                        ${p.temp || ""}°F<br>
-                        ${p.cond || ""}
-                    </div>
-                `).join("");
-            } else {
-                forecastGrid.innerHTML = "";
-            }
+            forecastGrid.innerHTML = "";
 
         } catch (err) {
             currentBox.innerHTML = "Error loading live data.";
@@ -280,4 +281,3 @@
 
 </body>
 </html>
-
