@@ -401,6 +401,38 @@
   document.addEventListener('click',e=>{if(!directoryNav.contains(e.target))closeDirectory()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDirectory();directoryButton.focus()}});
   fillCities();try{theme(localStorage.getItem('cwnTheme')==='night'?'night':'day')}catch(e){theme('day')}toggle.onclick=()=>theme(root.dataset.theme==='night'?'day':'night');sel.onchange=()=>load(sel.value);document.getElementById('cwnRadar').onload=()=>document.getElementById('cwnRadarStatus').textContent='Radar image updated.';document.getElementById('cwnRadar').onerror=()=>document.getElementById('cwnRadarStatus').textContent='Radar image is currently unavailable.';clock();setInterval(clock,1000);load(sel.value);radar();setInterval(radar,300000);
+ async function loadCities() {
+  const res = await fetch("api/cities.json");
+  const data = await res.json();
+
+  const dropdown = document.getElementById("citySelector");
+
+  // Clear existing options
+  dropdown.innerHTML = `<option value="">Select City</option>`;
+
+  // Loop counties → cities
+  for (const county in data) {
+    const group = document.createElement("optgroup");
+    group.label = county;
+
+    for (const city in data[county]) {
+      const option = document.createElement("option");
+      option.value = city;
+      option.textContent = city;
+      group.appendChild(option);
+    }
+
+    dropdown.appendChild(group);
+  }
+}
+
+loadCities();
+document.getElementById("citySelector").addEventListener("change", (e) => {
+  const city = e.target.value;
+  localStorage.setItem("cwn_city", city);
+});
+
+
   </script>
 </body>
 </html>
