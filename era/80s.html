@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Cumberland Weather Network — 1980s Edition</title>
 <link rel="stylesheet" href="80s.css">
+
 </head>
 
 <body>
@@ -14,6 +15,9 @@
 
         <h1>CUMBERLAND WEATHER NETWORK</h1>
         <h2>1980s Edition</h2>
+        <select id="citySelect">
+    <option value="">Select a City</option>
+</select>
 
         <div id="cityName" class="dataField"></div>
 
@@ -41,4 +45,29 @@
 
 </body>
 </html>
+<select id="citySelect">
+    <option value="">Select a City</option>
+</select>
+
+<script>
+fetch("/api/cities.json")
+    .then(r => r.json())
+    .then(data => {
+        const dropdown = document.getElementById("citySelect");
+
+        for (const county in data) {
+            for (const city in data[county]) {
+                const opt = document.createElement("option");
+                opt.value = city;
+                opt.textContent = `${city} (${county})`;
+                dropdown.appendChild(opt);
+            }
+        }
+
+        dropdown.addEventListener("change", () => {
+            localStorage.setItem("cwn_city", dropdown.value);
+            location.reload();
+        });
+    });
+</script>
 
