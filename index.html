@@ -1,290 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Cumberland Weather Network — Live</title>
+  <meta charset="UTF-8" />
+  <title>Cumberland Weather Network — Prototype Core</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
     body {
-        margin: 0;
-        background: #0a0a0a;
-        font-family: Arial, sans-serif;
-        color: #e6e6e6;
-        overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020814;
+      color: #f4f4f4;
     }
 
-    #scaleWrapper {
-        width: 1920px;
-        height: 1080px;
-        background: #111;
-        border: 4px solid #222;
-        transform-origin: top left;
-        position: absolute;
-        left: 50%;
-        top: 50%;
+    .cwn-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+      grid-template-rows: auto 1fr 160px;
+      grid-template-areas:
+        "header header header"
+        "sidebar main alerts"
+        "footer footer footer";
+      height: 100vh;
+      padding: 12px;
+      gap: 10px;
     }
 
-    #directoryBar {
-        background: #001a33;
-        padding: 10px 20px;
-        font-size: 28px;
-        border-bottom: 4px solid #003366;
-    }
-    #directoryBar a {
-        color: #9fd3ff;
-        text-decoration: none;
-        margin-right: 40px;
-    }
-
-    #header {
-        background: linear-gradient(#003366, #001a33);
-        padding: 20px;
-        text-align: center;
-        color: #9fd3ff;
-        font-size: 48px;
-        font-weight: bold;
-        border-bottom: 4px solid #004080;
+    /* Header / Channel bug */
+    .cwn-header {
+      grid-area: header;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: 1px solid #1b2a3a;
+      background: radial-gradient(circle at top left, #1b3b6b 0%, #020814 60%);
     }
 
-    #citySelectBox {
-        margin: 20px;
-        font-size: 28px;
-    }
-    #citySelect {
-        font-size: 26px;
-        padding: 6px 10px;
-        background: #120000;
-        color: #FFCC99;
-        border: 2px solid #FFCC00;
+    .cwn-logo {
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
     }
 
-    #currentBox {
-        background: #1a1a1a;
-        padding: 20px;
-        margin: 20px;
-        border: 3px solid #333;
-        font-size: 32px;
-        min-height: 200px;
+    .cwn-logo span {
+      color: #ffd54f;
     }
 
-    #weatherWindow {
-        background: #000;
-        border: 3px solid #444;
-        margin: 20px;
-        padding: 20px;
-        height: 300px;
-        font-size: 28px;
+    .cwn-clock {
+      font-family: "Segoe UI Mono", monospace;
+      font-size: 0.9rem;
     }
 
-    #alertBanner {
-        background: #660000;
-        color: #ffcccc;
-        padding: 15px;
-        text-align: center;
-        font-size: 32px;
-        border-top: 4px solid #990000;
-        border-bottom: 4px solid #990000;
-        margin-top: 20px;
+    /* Sidebar: city selector + current conditions */
+    .cwn-sidebar {
+      grid-area: sidebar;
+      border: 1px solid #1b2a3a;
+      background: #050b16;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    #ticker {
-        background: #002244;
-        color: #cce6ff;
-        padding: 10px;
-        font-size: 24px;
-        overflow: hidden;
-        white-space: nowrap;
-        box-sizing: border-box;
+    .cwn-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9fb4d9;
     }
 
-    #ticker span {
-        display: inline-block;
-        padding-left: 100%;
-        animation: scroll 18s linear infinite;
+    .cwn-city-select {
+      width: 100%;
+      padding: 6px;
+      background: #020814;
+      border: 1px solid #30435c;
+      color: #f4f4f4;
+      font-size: 0.85rem;
     }
 
-    @keyframes scroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-100%); }
+    .cwn-current {
+      margin-top: 6px;
+      padding: 8px;
+      border: 1px solid #24344b;
+      background: linear-gradient(180deg, #071020 0%, #020814 100%);
     }
-</style>
+
+    .cwn-temp {
+      font-size: 2.4rem;
+      font-weight: 600;
+    }
+
+    .cwn-desc {
+      font-size: 0.9rem;
+      color: #c3d4f5;
+    }
+
+    .cwn-meta {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: #9fb4d9;
+    }
+
+    /* Main: CWN Weather Window (Local on the 8s) + Radar */
+    .cwn-main {
+      grid-area: main;
+      border: 1px solid #1b2a3a;
+      background: #050b16;
+      padding: 10px;
+      display: grid;
+      grid-template-rows: 40px 1fr 140px;
+      gap: 8px;
+    }
+
+    .cwn-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cwn-main-header-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #9fb4d9;
+    }
+
+    .cwn-main-header-mode {
+      font-size: 0.8rem;
+      color: #ffd54f;
+    }
+
+    .cwn-weather-window {
+      border: 1px solid #24344b;
+      background: radial-gradient(circle at center, #0b1a33 0%, #020814 70%);
+      position: relative;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .cwn-weather-window-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(#0b1a33 1px, transparent 1px),
+        linear-gradient(90deg, #0b1a33 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .cwn-weather-window-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .cwn-ww-left {
+      flex: 1;
+    }
+
+    .cwn-ww-right {
+      width: 40%;
+      font-size: 0.8rem;
+      color: #c3d4f5;
+    }
+
+    .cwn-ww-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 4px;
+    }
+
+    .cwn-ww-city {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .cwn-ww-temp {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .cwn-ww-desc {
+      font-size: 0.9rem;
+      color: #c3d4f5;
+    }
+
+    .cwn-radar {
+      border: 1px solid #24344b;
+      background: #020814;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #9fb4d9;
+    }
+
+    /* Alerts panel */
+    .cwn-alerts {
+      grid-area: alerts;
+      border: 1px solid #1b2a3a;
+      background: #050b16;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cwn-alert-banner {
+      padding: 6px 8px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      background: #5b0b0b;
+      border: 1px solid #ff5252;
+      color: #ffdede;
+    }
+
+    .cwn-alert-list {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+
+    .cwn-alert-item {
+      padding: 6px 8px;
+      border-bottom: 1px solid #24344b;
+    }
+
+    .cwn-alert-item strong {
+      color: #ffb74d;
+    }
+
+    /* Footer: status + era mode */
+    .cwn-footer {
+      grid-area: footer;
+      border: 1px solid #1b2a3a;
+      background: #050b16;
+      padding: 6px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #9fb4d9;
+    }
+
+    .cwn-era-mode {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .cwn-status {
+      font-family: "Segoe UI Mono", monospace;
+    }
+
+    /* Simple buttons */
+    .cwn-button {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border: 1px solid #30435c;
+      background: #020814;
+      color: #f4f4f4;
+      cursor: pointer;
+    }
+
+    .cwn-button:hover {
+      background: #0b1a33;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="cwn-shell">
+    <!-- HEADER -->
+    <header class="cwn-header">
+      <div class="cwn-logo">
+        <span>Cumberland</span> Weather Network
+      </div>
+      <div class="cwn-clock" id="cwnClock">--:--:--</div>
+    </header>
 
-<div id="scaleWrapper">
-
-    <div id="directoryBar">
-        <a href="/80s.html">80s Edition</a>
-        <a href="/1994Severe.html">1994 Severe Edition</a>
-    </div>
-
-    <div id="header">
-        CUMBERLAND WEATHER NETWORK — LIVE DATA
-    </div>
-
-    <div id="alertBanner">
-        ⚠️ LIVE WEATHER-DATA FROM NWS — REAL CONDITIONS UPDATED AUTOMATICALLY ⚠️
-    </div>
-
-    <div id="citySelectBox">
-        <label>Select City: </label>
-        <select id="citySelect">
-            <option value="">Choose a City</option>
-            <option value="Lebanon">Lebanon</option>
-            <option value="Nashville">Nashville</option>
-            <option value="Gallatin">Gallatin</option>
-            <option value="Hendersonville">Hendersonville</option>
-            <option value="Murfreesboro">Murfreesboro</option>
-            <option value="Franklin">Franklin</option>
-            <option value="Columbia">Columbia</option>
-            <option value="Cookeville">Cookeville</option>
-            <option value="Clarksville">Clarksville</option>
-            <option value="Springfield">Springfield</option>
-            <option value="Dickson">Dickson</option>
-            <option value="Shelbyville">Shelbyville</option>
-            <option value="Manchester">Manchester</option>
-            <option value="Tullahoma">Tullahoma</option>
-            <option value="McMinnville">McMinnville</option>
-            <option value="Sparta">Sparta</option>
-            <option value="Carthage">Carthage</option>
-            <option value="Lafayette">Lafayette</option>
-            <option value="Hartsville">Hartsville</option>
-            <option value="Livingston">Livingston</option>
-            <option value="Jamestown">Jamestown</option>
-            <option value="Crossville">Crossville</option>
+    <!-- SIDEBAR -->
+    <aside class="cwn-sidebar">
+      <div>
+        <div class="cwn-section-title">City selection</div>
+        <select id="cwnCitySelect" class="cwn-city-select">
+          <option value="Lebanon,TN">Lebanon, TN</option>
+          <option value="Nashville,TN">Nashville, TN</option>
+          <option value="Gallatin,TN">Gallatin, TN</option>
+          <option value="Cookeville,TN">Cookeville, TN</option>
+          <option value="Murfreesboro,TN">Murfreesboro, TN</option>
         </select>
-    </div>
+      </div>
 
-    <div id="currentBox">
-        Select a city to view current conditions.
-    </div>
+      <div class="cwn-current">
+        <div class="cwn-section-title">Current conditions</div>
+        <div class="cwn-temp" id="cwnCurrentTemp">--°</div>
+        <div class="cwn-desc" id="cwnCurrentDesc">Loading…</div>
+        <div class="cwn-meta" id="cwnCurrentMeta">Wind -- • Humidity --%</div>
+      </div>
+    </aside>
 
-    <div id="weatherWindow">
-        WEATHER WINDOW<br><br>
-        Radar Placeholder<br>
-        (Insert radar image or animation here)
-    </div>
+    <!-- MAIN -->
+    <main class="cwn-main">
+      <div class="cwn-main-header">
+        <div class="cwn-main-header-title">
+          CWN Weather Window (Local on the 8s)
+        </div>
+        <div class="cwn-main-header-mode" id="cwnModeLabel">
+          Mode: Normal
+        </div>
+      </div>
 
-    <div id="ticker">
-        <span>Live NWS data — CWN Live System</span>
-    </div>
+      <section class="cwn-weather-window">
+        <div class="cwn-weather-window-grid"></div>
+        <div class="cwn-weather-window-content">
+          <div class="cwn-ww-left">
+            <div class="cwn-ww-title">Local Forecast</div>
+            <div class="cwn-ww-city" id="cwnWWCity">Lebanon, Tennessee</div>
+            <div class="cwn-ww-temp" id="cwnWWTemp">--°</div>
+            <div class="cwn-ww-desc" id="cwnWWDesc">Loading forecast…</div>
+          </div>
+          <div class="cwn-ww-right">
+            <div class="cwn-section-title">Next segments</div>
+            <ul id="cwnSegmentList">
+              <li>Local on the 8s — Current Conditions</li>
+              <li>Regional Radar Overview</li>
+              <li>Short-Term Forecast (Today/Tonight)</li>
+              <li>Extended Outlook</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-</div>
+      <section class="cwn-radar" id="cwnRadar">
+        CWN Radar Placeholder — plug in your radar tiles/composite here.
+      </section>
+    </main>
 
-<!-- ⭐ CWN ALERT TONE ENGINE -->
-<script>
-// (alert tone engine code goes here — same block I gave you earlier)
-</script>
+    <!-- ALERTS -->
+    <aside class="cwn-alerts">
+      <div class="cwn-section-title">Alerts</div>
+      <div class="cwn-alert-banner" id="cwnAlertBanner">
+        No active alerts
+      </div>
+      <div class="cwn-alert-list" id="cwnAlertList"></div>
 
-<!-- ⭐ CWN ALERT MAPPER + CHECKER -->
-<script>
-async function checkAlerts() {
-    const resp = await fetch("https://api.weather.gov/alerts/active?area=TN");
-    const data = await resp.json();
-    const alerts = data.features;
+      <button class="cwn-button" id="cwnSimSevere">
+        Simulate Severe Thunderstorm Warning
+      </button>
+      <button class="cwn-button" id="cwnClearAlerts">
+        Clear Alerts
+      </button>
+    </aside>
 
-    if (!alerts.length) return;
+    <!-- FOOTER -->
+    <footer class="cwn-footer">
+      <div class="cwn-era-mode" id="cwnEraMode">
+        Era: Hybrid CWN Core
+      </div>
+      <div class="cwn-status" id="cwnStatus">
+        STATUS: Idle • No active events
+      </div>
+    </footer>
+  </div>
 
-    alerts.forEach(alert => {
-        const event = alert.properties.event;
-        triggerCwnAlertTone(event);
+  <script>
+    // --- CLOCK ---
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("cwnClock").textContent =
+        now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // --- SIMPLE MOCK WEATHER CORE ---
+    const MOCK_WEATHER = {
+      "Lebanon,TN": {
+        cityLabel: "Lebanon, Tennessee",
+        temp: 78,
+        desc: "Partly cloudy",
+        meta: "Wind 6 mph • Humidity 62%",
+        forecast: "Partly cloudy this evening with a slight chance of showers overnight.",
+      },
+      "Nashville,TN": {
+        cityLabel: "Nashville, Tennessee",
+        temp: 81,
+        desc: "Mostly clear",
+        meta: "Wind 4 mph • Humidity 55%",
+        forecast: "Mostly clear tonight, warm and humid with light winds.",
+      },
+      "Gallatin,TN": {
+        cityLabel: "Gallatin, Tennessee",
+        temp: 79,
+        desc: "Scattered clouds",
+        meta: "Wind 5 mph • Humidity 60%",
+        forecast: "Scattered clouds with mild temperatures through the evening.",
+      },
+      "Cookeville,TN": {
+        cityLabel: "Cookeville, Tennessee",
+        temp: 74,
+        desc: "Cloudy",
+        meta: "Wind 8 mph • Humidity 70%",
+        forecast: "Cloudy with a chance of light rain late tonight.",
+      },
+      "Murfreesboro,TN": {
+        cityLabel: "Murfreesboro, Tennessee",
+        temp: 80,
+        desc: "Partly cloudy",
+        meta: "Wind 7 mph • Humidity 58%",
+        forecast: "Partly cloudy and warm, staying dry overnight.",
+      },
+    };
+
+    function applyWeather(cityKey) {
+      const data = MOCK_WEATHER[cityKey];
+      if (!data) return;
+
+      document.getElementById("cwnCurrentTemp").textContent = data.temp + "°";
+      document.getElementById("cwnCurrentDesc").textContent = data.desc;
+      document.getElementById("cwnCurrentMeta").textContent = data.meta;
+
+      document.getElementById("cwnWWCity").textContent = data.cityLabel;
+      document.getElementById("cwnWWTemp").textContent = data.temp + "°";
+      document.getElementById("cwnWWDesc").textContent = data.forecast;
+
+      document.getElementById("cwnStatus").textContent =
+        "STATUS: Live • City set to " + data.cityLabel;
+    }
+
+    const citySelect = document.getElementById("cwnCitySelect");
+    citySelect.addEventListener("change", (e) => {
+      applyWeather(e.target.value);
     });
-}
 
-function triggerCwnAlertTone(event) {
-    event = event.toLowerCase();
+    // Initialize with default
+    applyWeather(citySelect.value);
 
-    if (event.includes("tornado")) playCwnTornadoAlert();
-    else if (event.includes("severe thunderstorm")) playCwnSevereThunderstormAlert();
-    else if (event.includes("flash flood")) playCwnFlashFloodAlert();
-    else if (event.includes("winter storm") || event.includes("blizzard") || event.includes("ice storm"))
-        playCwnWinterStormAlert();
-    else if (event.includes("amber")) playCwnAmberAlert();
-    else playCwnBreakingWeatherSweep();
-}
+    // --- ALERT AI MOCK ---
+    const alertBanner = document.getElementById("cwnAlertBanner");
+    const alertList = document.getElementById("cwnAlertList");
+    const modeLabel = document.getElementById("cwnModeLabel");
+    const statusLabel = document.getElementById("cwnStatus");
 
-setInterval(checkAlerts, 60000);
-checkAlerts();
-</script>
-
-<!-- ⭐ CWN LIVE WEATHER DATA -->
-<script>
-const BACKEND_URL = "https://raw.githubusercontent.com/CumberlandWeatherNet/CumberlandWeatherNet.github.io/main/api/weather.json";
-
-const currentBox = document.getElementById("currentBox");
-const citySelect = document.getElementById("citySelect");
-const scaleWrapper = document.getElementById("scaleWrapper");
-
-function resizeCanvas() {
-    const baseW = 1920;
-    const baseH = 1080;
-    const winW = window.innerWidth;
-    const winH = window.innerHeight;
-    const scale = Math.min(winW / baseW, winH / baseH);
-
-    scaleWrapper.style.transform = `scale(${scale})`;
-    scaleWrapper.style.left = `${(winW - baseW * scale) / 2}px`;
-    scaleWrapper.style.top = `${(winH - baseH * scale) / 2}px`;
-}
-
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener("load", resizeCanvas);
-
-async function loadWeather(city) {
-    try {
-        const res = await fetch(BACKEND_URL);
-        const coords = await res.json();
-
-        const { lat, lon } = coords[city];
-
-        const pointsURL = `https://api.weather.gov/points/${lat},${lon}`;
-        const pointsResp = await fetch(pointsURL);
-        const pointsData = await pointsResp.json();
-
-        const hourlyURL = pointsData.properties.forecastHourly;
-        const hourlyResp = await fetch(hourlyURL);
-        const hourlyData = await hourlyResp.json();
-
-        const current = hourlyData.properties.periods[0];
-
-        const temp = current.temperature || "";
-        const cond = current.shortForecast || "";
-        const humidity = current.relativeHumidity?.value || "";
-        const wind = current.windSpeed || "";
-
-        currentBox.innerHTML = `
-            <strong>${city}, TN</strong><br>
-            Temperature: ${temp}<br>
-            Conditions: ${cond}<br>
-            Humidity: ${humidity}<br>
-            Wind: ${wind}
-        `;
-
-    } catch (err) {
-        currentBox.innerHTML = "Error loading live data.";
+    function pushAlert(type, text) {
+      const item = document.createElement("div");
+      item.className = "cwn-alert-item";
+      item.innerHTML = `<strong>${type}</strong><br>${text}`;
+      alertList.prepend(item);
     }
-}
 
-citySelect.addEventListener("change", function() {
-    const city = this.value;
-    if (!city) {
-        currentBox.innerHTML = "Select a city to view current conditions.";
-        localStorage.removeItem("cwnCity");
-        return;
+    function setSevereMode() {
+      alertBanner.textContent = "Severe Thunderstorm Warning in effect";
+      alertBanner.style.background = "#7b1111";
+      alertBanner.style.borderColor = "#ff8a65";
+      modeLabel.textContent = "Mode: Severe Takeover";
+      statusLabel.textContent =
+        "STATUS: Severe • CWN Weather Window in takeover mode";
     }
-    localStorage.setItem("cwnCity", city);
-    loadWeather(city);
-});
 
-const savedCity = localStorage.getItem("cwnCity");
-if (savedCity) {
-    citySelect.value = savedCity;
-    loadWeather(savedCity);
-}
-</script>
+    function clearAlerts() {
+      alertBanner.textContent = "No active alerts";
+      alertBanner.style.background = "#5b0b0b";
+      alertBanner.style.borderColor = "#ff5252";
+      modeLabel.textContent = "Mode: Normal";
+      statusLabel.textContent = "STATUS: Idle • No active events";
+      alertList.innerHTML = "";
+    }
 
+    document.getElementById("cwnSimSevere").addEventListener("click", () => {
+      setSevereMode();
+      pushAlert(
+        "Severe Thunderstorm Warning",
+        "Strong storms capable of gusty winds and heavy rain are moving through Middle Tennessee."
+      );
+    });
+
+    document.getElementById("cwnClearAlerts").addEventListener("click", () => {
+      clearAlerts();
+    });
+
+    // --- RADAR PLACEHOLDER ---
+    const radarEl = document.getElementById("cwnRadar");
+    radarEl.textContent =
+      "CWN Radar: plug in your live tiles/composite here (iframe, canvas, or image).";
+  </script>
 </body>
 </html>
