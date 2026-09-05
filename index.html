@@ -1,181 +1,345 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
-<meta charset="UTF-8">
-<title>Cumberland Weather Network — 1970s Test Page</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#3b2a1f" id="themeColor">
+  <title>Cumberland Weather Network</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
 
-body{
-  background:#3b2a1f;
-  font-family:"Georgia", serif;
-  color:#f7e7c1;
-  padding:20px;
-}
+  <style>
+    :root {
+      --page: #3b2a1f;
+      --frame: #4a372b;
+      --panel: #5a4335;
+      --panel-deep: #342319;
+      --border: #a67c52;
+      --border-light: #d2a968;
+      --text: #f7e7c1;
+      --muted: #d8c397;
+      --accent: #efa11d;
+      --accent-deep: #b84b0c;
+      --shadow: rgba(0, 0, 0, 0.58);
+      --scanline: rgba(255, 244, 206, 0.035);
+    }
 
-/* 70s Frame */
-.cwn-frame{
-  max-width:900px;
-  margin:0 auto;
-  border:8px solid #a67c52;
-  background:#4a372b;
-  padding:20px;
-  box-shadow:0 0 40px rgba(0,0,0,0.6);
-}
+    html[data-theme="night"] {
+      --page: #15110d;
+      --frame: #211a14;
+      --panel: #2d241c;
+      --panel-deep: #100d0a;
+      --border: #80603a;
+      --border-light: #b5894e;
+      --text: #efcf78;
+      --muted: #c3aa72;
+      --accent: #dc8b16;
+      --accent-deep: #8f390b;
+      --shadow: rgba(0, 0, 0, 0.78);
+      --scanline: rgba(238, 193, 94, 0.025);
+    }
 
-/* Header */
-.cwn-header{
-  text-align:center;
-  padding-bottom:20px;
-  border-bottom:4px solid #a67c52;
-}
-.cwn-title{
-  font-size:2rem;
-  letter-spacing:0.1em;
-  text-transform:uppercase;
-  color:#f7e7c1;
-}
-.cwn-time{
-  margin-top:6px;
-  font-size:1.1rem;
-}
+    * { box-sizing: border-box; }
 
-/* City Selector */
-.cwn-city-select{
-  margin-top:20px;
-  width:100%;
-  padding:10px;
-  background:#3b2a1f;
-  border:3px solid #a67c52;
-  color:#f7e7c1;
-  font-size:1rem;
-}
+    html { -webkit-text-size-adjust: 100%; }
 
-/* Forecast Box */
-.cwn-forecast-box{
-  margin-top:20px;
-  padding:20px;
-  background:#5a4335;
-  border:4px solid #a67c52;
-}
-.cwn-forecast-title{
-  font-size:1.2rem;
-  margin-bottom:10px;
-  text-transform:uppercase;
-  letter-spacing:0.1em;
-}
-.cwn-forecast-item{
-  margin:8px 0;
-  font-size:1rem;
-}
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: clamp(0px, 3vw, 24px);
+      background: var(--page);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      transition: background-color 180ms ease, color 180ms ease;
+    }
 
-/* Radar Box */
-.cwn-radar-box{
-  margin-top:20px;
-  padding:20px;
-  background:#5a4335;
-  border:4px solid #a67c52;
-}
-.cwn-radar-title{
-  font-size:1.2rem;
-  margin-bottom:10px;
-  text-transform:uppercase;
-  letter-spacing:0.1em;
-}
-.cwn-radar-img{
-  width:100%;
-  border:3px solid #a67c52;
-}
-</style>
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 3px,
+        var(--scanline) 4px
+      );
+      opacity: 0.55;
+    }
+
+    button, select { font: inherit; }
+
+    .cwn-frame {
+      width: min(100%, 1000px);
+      margin: 0 auto;
+      padding: clamp(12px, 3vw, 24px);
+      overflow: hidden;
+      background: var(--frame);
+      border: clamp(4px, 1vw, 8px) solid var(--border);
+      box-shadow: 0 18px 55px var(--shadow), inset 0 0 0 2px var(--border-light);
+      transition: background-color 180ms ease, border-color 180ms ease;
+    }
+
+    .cwn-header {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      text-align: center;
+      border-bottom: 4px double var(--border);
+    }
+
+    .cwn-logo-wrap { width: min(100%, 760px); }
+
+    .cwn70 {
+      --cwn70-top: #ffd96f;
+      --cwn70-middle: #efa11d;
+      --cwn70-bottom: #b84b0c;
+      --cwn70-keyline: #fff0bd;
+      --cwn70-outline: #351b0b;
+      --cwn70-shadow: #692b10;
+      --cwn70-edge: #762c08;
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    html[data-theme="night"] .cwn70 {
+      --cwn70-top: #efc252;
+      --cwn70-middle: #c77812;
+      --cwn70-bottom: #77300d;
+      --cwn70-keyline: #d9bd79;
+      --cwn70-outline: #160c06;
+      --cwn70-shadow: #351707;
+      --cwn70-edge: #522006;
+    }
+
+    .cwn70__stop-top { stop-color: var(--cwn70-top); }
+    .cwn70__stop-middle { stop-color: var(--cwn70-middle); }
+    .cwn70__stop-bottom { stop-color: var(--cwn70-bottom); }
+    .cwn70__shadow { fill: var(--cwn70-shadow); stroke: var(--cwn70-shadow); stroke-width: 28; stroke-linecap: round; stroke-linejoin: round; filter: url(#cwn70-soft-shadow); }
+    .cwn70__outline { fill: url(#cwn70-letter-fill); stroke: var(--cwn70-outline); stroke-width: 29; stroke-linecap: round; stroke-linejoin: round; paint-order: stroke fill; }
+    .cwn70__keyline { fill: url(#cwn70-letter-fill); stroke: var(--cwn70-keyline); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; paint-order: stroke fill; }
+    .cwn70__gloss { fill: url(#cwn70-gloss); opacity: 0.55; pointer-events: none; }
+    .cwn70__lower-shade { fill: url(#cwn70-lower-shade); pointer-events: none; }
+    .cwn70__inner-edge { fill: none; stroke: var(--cwn70-edge); stroke-width: 2.5; stroke-opacity: 0.58; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+
+    .cwn-title {
+      margin: 0;
+      font-family: "Limelight", Georgia, serif;
+      font-size: clamp(1.35rem, 5vw, 2.55rem);
+      font-weight: 400;
+      line-height: 1.12;
+      letter-spacing: clamp(0.03em, 0.8vw, 0.09em);
+      text-transform: uppercase;
+      text-shadow: 3px 3px 0 #2a180d;
+    }
+
+    .cwn-station-line {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(0.72rem, 2.4vw, 0.95rem);
+      letter-spacing: clamp(0.08em, 1vw, 0.24em);
+      text-transform: uppercase;
+    }
+
+    .cwn-header-controls {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px 18px;
+    }
+
+    .cwn-time {
+      min-width: 120px;
+      padding: 9px 14px;
+      background: var(--panel-deep);
+      border: 3px inset var(--border);
+      color: var(--accent);
+      font-family: "Courier New", monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+    }
+
+    .theme-toggle {
+      min-height: 46px;
+      padding: 8px 15px;
+      border: 3px outset var(--border-light);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      touch-action: manipulation;
+    }
+
+    .theme-toggle:hover { filter: brightness(1.1); }
+    .theme-toggle:active { border-style: inset; }
+    .theme-toggle:focus-visible, .cwn-city-select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .weather-icons {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .icon-card {
+      min-width: 0;
+      padding: 10px 5px 8px;
+      text-align: center;
+      background: var(--panel);
+      border: 3px solid var(--border);
+      box-shadow: inset 0 0 0 1px var(--border-light);
+    }
+
+    .weather-icon { display: block; width: 54px; height: 54px; margin: 0 auto 6px; color: var(--accent); }
+    .weather-icon .cloud { fill: var(--text); stroke: var(--panel-deep); }
+    .weather-icon .sun { fill: var(--accent); stroke: var(--accent-deep); }
+    .weather-icon .rain { stroke: #7cb0bd; }
+    .weather-icon .snow { stroke: var(--text); }
+    .weather-icon .bolt { fill: var(--accent); stroke: var(--accent-deep); }
+    .icon-label { font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .period-name{min-height:2.1em;color:var(--muted);font-size:.72rem;line-height:1.05;letter-spacing:.05em;text-transform:uppercase}.live-symbol{height:54px;line-height:54px;color:var(--accent);font-size:2.5rem}.current-live-symbol{color:var(--accent);font-size:3.5rem}.period-temp{margin:3px 0;color:var(--accent);font:700 1.2rem "Courier New",monospace}.period-desc{min-height:2.6em;font-size:.68rem;line-height:1.25}.period-rain{margin-top:4px;color:var(--muted);font-size:.66rem}
+
+    .field-label { display: block; margin: 20px 0 7px; color: var(--muted); font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; }
+    .cwn-city-select { display: block; width: 100%; min-height: 50px; padding: 10px 12px; border: 3px solid var(--border); border-radius: 0; background: var(--panel-deep); color: var(--text); font-size: 1rem; }
+
+    .content-grid { display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 20px; margin-top: 20px; }
+    .panel { min-width: 0; padding: clamp(14px, 3vw, 20px); background: var(--panel); border: 4px solid var(--border); box-shadow: inset 0 0 0 1px var(--border-light); }
+    .panel-title { margin: 0 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border); font-family: "Limelight", Georgia, serif; font-size: clamp(1.05rem, 3vw, 1.35rem); font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .current-layout { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 14px; }
+    .current-icon-box { display: grid; place-items: center; width: 90px; height: 90px; background: var(--panel-deep); border: 3px inset var(--border); }
+    #currentIcon { width: 72px; height: 72px; }
+    .forecast-item { margin: 8px 0; line-height: 1.45; overflow-wrap: anywhere; }
+    .temperature { color: var(--accent); font-family: "Courier New", monospace; font-size: clamp(1.65rem, 6vw, 2.5rem); font-weight: 700; }
+
+    .radar-img { display: block; width: 100%; max-width: 100%; height: auto; min-height: 180px; object-fit: contain; background: #151d19; border: 3px inset var(--border); }
+    .status { margin: 10px 0 0; color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+    .cwn-footer { margin-top: 22px; padding-top: 16px; text-align: center; border-top: 4px double var(--border); color: var(--muted); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; }
+
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 760px) {
+      .weather-icons { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0; }
+      .cwn-frame { min-height: 100vh; border-left: 0; border-right: 0; box-shadow: none; }
+      .weather-icons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cwn-header-controls { flex-direction: column; }
+      .cwn-time, .theme-toggle { width: 100%; }
+      .current-layout { grid-template-columns: 72px 1fr; }
+      .current-icon-box { width: 72px; height: 72px; }
+      #currentIcon { width: 58px; height: 58px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
 </head>
-
 <body>
-<div class="cwn-frame">
+  <main class="cwn-frame">
+    <header class="cwn-header">
+      <div class="cwn-logo-wrap">
+        <svg class="cwn70" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="cwn70-title cwn70-description" xmlns="http://www.w3.org/2000/svg">
+          <title id="cwn70-title">1970s-inspired CWN wordmark</title>
+          <desc id="cwn70-description">Rounded golden-orange CWN letters with a cream keyline, dark-brown border, glossy highlight, and offset brown shadow.</desc>
+          <defs>
+            <g id="cwn70-letterforms">
+              <path d="M246 68H139C80 68 44 100 44 150C44 201 80 233 139 233H246V187H149C119 187 101 174 101 150C101 126 119 113 149 113H246Z"/>
+              <path d="M282 68H337L371 188L408 68H459L496 188L530 68H586L530 233H478L434 121L390 233H338Z"/>
+              <path d="M617 68H670L789 176V68H845V233H792L673 125V233H617Z"/>
+            </g>
+            <linearGradient id="cwn70-letter-fill" gradientUnits="userSpaceOnUse" x1="0" y1="62" x2="0" y2="238">
+              <stop class="cwn70__stop-top" offset="0"/><stop class="cwn70__stop-middle" offset="0.48"/><stop class="cwn70__stop-bottom" offset="1"/>
+            </linearGradient>
+            <linearGradient id="cwn70-gloss" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0.82"/><stop offset="0.55" stop-color="#fff9dc" stop-opacity="0.28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="cwn70-lower-shade" gradientUnits="userSpaceOnUse" x1="0" y1="135" x2="0" y2="242">
+              <stop offset="0" stop-color="#5e2008" stop-opacity="0"/><stop offset="1" stop-color="#5e2008" stop-opacity="0.28"/>
+            </linearGradient>
+            <filter id="cwn70-soft-shadow" x="-15%" y="-20%" width="145%" height="175%" color-interpolation-filters="sRGB">
+              <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#3b1b0b" flood-opacity="0.45"/>
+            </filter>
+            <clipPath id="cwn70-letter-clip"><use href="#cwn70-letterforms"/></clipPath>
+          </defs>
+          <g aria-hidden="true">
+            <use href="#cwn70-letterforms" class="cwn70__shadow" transform="translate(10 14)"/>
+            <use href="#cwn70-letterforms" class="cwn70__outline"/>
+            <use href="#cwn70-letterforms" class="cwn70__keyline"/>
+            <rect class="cwn70__gloss" x="32" y="74" width="830" height="64" rx="25" clip-path="url(#cwn70-letter-clip)"/>
+            <rect class="cwn70__lower-shade" x="32" y="128" width="830" height="112" clip-path="url(#cwn70-letter-clip)"/>
+            <use href="#cwn70-letterforms" class="cwn70__inner-edge"/>
+          </g>
+        </svg>
+      </div>
 
-  <div class="cwn-header">
-    <div class="cwn-title">Cumberland Weather Network</div>
-    <div class="cwn-time" id="cwnTime">--:--</div>
-  </div>
+      <h1 class="cwn-title">Cumberland Weather Network</h1>
+      <p class="cwn-station-line">Middle Tennessee Weather</p>
 
-  <select id="cwnCitySelect" class="cwn-city-select">
-    <option value="Lebanon,TN">Lebanon, TN</option>
-    <option value="Nashville,TN">Nashville, TN</option>
-    <option value="Gallatin,TN">Gallatin, TN</option>
-    <option value="Cookeville,TN">Cookeville, TN</option>
-    <option value="Murfreesboro,TN">Murfreesboro, TN</option>
-  </select>
+      <div class="cwn-header-controls">
+        <div class="cwn-time" id="cwnTime" aria-live="polite">--:--</div>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Switch to Night</button>
+      </div>
+    </header>
 
-  <div class="cwn-forecast-box">
-    <div class="cwn-forecast-title">Current Conditions</div>
-    <div class="cwn-forecast-item" id="cwnTemp">Temperature: --°F</div>
-    <div class="cwn-forecast-item" id="cwnWind">Wind: -- mph</div>
-    <div class="cwn-forecast-item" id="cwnDesc">Conditions: --</div>
-  </div>
+    <section aria-labelledby="outlookTitle"><h2 class="visually-hidden" id="outlookTitle">Location forecast periods</h2><div class="weather-icons" id="forecastPeriods" aria-live="polite"><div class="icon-card">Loading forecast...</div></div></section>
 
-  <div class="cwn-radar-box">
-    <div class="cwn-radar-title">Regional Radar</div>
-    <img id="cwnRadar" class="cwn-radar-img" src="" alt="Radar">
-  </div>
+    <label class="field-label" for="cwnCitySelect">Select reporting city</label>
+    <select id="cwnCitySelect" class="cwn-city-select" aria-label="Select a Middle Tennessee city"><option>Loading cities...</option></select>
 
-</div>
+    <div class="content-grid">
+      <section class="panel" aria-labelledby="conditionsTitle">
+        <h2 class="panel-title" id="conditionsTitle">Current Conditions</h2>
+        <div class="current-layout">
+          <div class="current-icon-box" id="currentIconBox" aria-hidden="true"></div>
+          <div>
+            <div class="temperature" id="cwnTemp">--&deg;F</div>
+            <div class="forecast-item" id="cwnWind">Wind: -- mph</div>
+            <div class="forecast-item" id="cwnDesc" aria-live="polite">Loading report...</div>
+          </div>
+        </div>
+        <p class="status" id="weatherStatus">Connecting to weather service...</p>
+      </section>
 
-<script>
-/* TIME (NO SECONDS) */
-function updateTime(){
-  const now=new Date();
-  document.getElementById("cwnTime").textContent=
-    now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
-}
-setInterval(updateTime,1000);
-updateTime();
+      <section class="panel" aria-labelledby="radarTitle">
+        <h2 class="panel-title" id="radarTitle">Regional Radar</h2>
+        <img id="cwnRadar" class="radar-img" src="" alt="Regional weather radar loop for Middle Tennessee">
+        <p class="status" id="cwnRadarStatus" aria-live="polite">Loading radar...</p>
+      </section>
+    </div>
 
-/* CITY COORDS */
-const CITY_COORDS={
-  "Lebanon,TN":{lat:36.2081,lon:-86.2911},
-  "Nashville,TN":{lat:36.1627,lon:-86.7816},
-  "Gallatin,TN":{lat:36.3884,lon:-86.4467},
-  "Cookeville,TN":{lat:36.1628,lon:-85.5016},
-  "Murfreesboro,TN":{lat:35.8456,lon:-86.3903}
-};
+    <footer class="cwn-footer">Cumberland Weather Network &bull; Middle Tennessee</footer>
+  </main>
 
-/* LIVE WEATHER (Open-Meteo) */
-async function fetchWeather(cityKey){
-  const c=CITY_COORDS[cityKey];
-  const url=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current_weather=true`;
-
-  try{
-    const res=await fetch(url);
-    const data=await res.json();
-    const cw=data.current_weather;
-
-    const tempF = Math.round((cw.temperature * 9/5) + 32);
-
-    document.getElementById("cwnTemp").textContent=`Temperature: ${tempF}°F`;
-    document.getElementById("cwnWind").textContent=`Wind: ${Math.round(cw.windspeed)} mph`;
-    document.getElementById("cwnDesc").textContent=`Conditions: Live`;
-  }catch(e){
-    document.getElementById("cwnDesc").textContent="Conditions: Unavailable";
-  }
-}
-
-/* LIVE RADAR (NOAA static tile) */
-function updateRadar(){
-  const url="https://radar.weather.gov/ridge/standard/KOHX_loop.gif";
-  document.getElementById("cwnRadar").src=url+"?t="+Date.now();
-}
-
-/* CITY CHANGE */
-document.getElementById("cwnCitySelect").addEventListener("change",e=>{
-  fetchWeather(e.target.value);
-});
-
-/* INITIAL LOAD */
-fetchWeather("Lebanon,TN");
-updateRadar();
-setInterval(updateRadar,300000); // refresh every 5 min
-</script>
-
+  <script>
+  "use strict";
+  const ICON={sunny:'☀',cloudy:'☁',rain:'☂',storm:'⚡',snow:'✻'};
+  const WX={0:['Clear','sunny'],1:['Mostly clear','sunny'],2:['Partly cloudy','cloudy'],3:['Overcast','cloudy'],45:['Fog','cloudy'],48:['Freezing fog','cloudy'],51:['Light drizzle','rain'],53:['Drizzle','rain'],55:['Heavy drizzle','rain'],56:['Freezing drizzle','rain'],57:['Freezing drizzle','rain'],61:['Light rain','rain'],63:['Rain','rain'],65:['Heavy rain','rain'],66:['Freezing rain','rain'],67:['Freezing rain','rain'],71:['Light snow','snow'],73:['Snow','snow'],75:['Heavy snow','snow'],77:['Snow grains','snow'],80:['Rain showers','rain'],81:['Rain showers','rain'],82:['Heavy showers','rain'],85:['Snow showers','snow'],86:['Heavy snow','snow'],95:['Thunderstorms','storm'],96:['Storms with hail','storm'],99:['Severe storms','storm']};
+  const MT={
+  Bedford:['Bell Buckle','Normandy','Shelbyville','Wartrace'],Cannon:['Auburntown','Woodbury'],Cheatham:['Ashland City','Kingston Springs','Pegram','Pleasant View'],Clay:['Celina'],Coffee:['Manchester','Tullahoma'],Cumberland:['Crab Orchard','Crossville','Pleasant Hill'],Davidson:['Belle Meade','Berry Hill','Forest Hills','Goodlettsville','Nashville','Oak Hill','Ridgetop'],DeKalb:['Alexandria','Dowelltown','Liberty','Smithville'],Dickson:['Burns','Charlotte','Dickson','Slayden','Vanleer','White Bluff'],Fentress:['Allardt','Jamestown'],Franklin:['Cowan','Decherd','Estill Springs','Huntland','Monteagle','Tullahoma','Winchester'],Giles:['Ardmore','Elkton','Lynnville','Minor Hill','Pulaski'],Grundy:['Altamont','Beersheba Springs','Coalmont','Gruetli-Laager','Monteagle','Palmer','Tracy City'],Hickman:['Centerville'],Houston:['Erin','Tennessee Ridge'],Humphreys:['McEwen','New Johnsonville','Waverly'],Jackson:['Gainesboro'],Lawrence:['Ethridge','Lawrenceburg','Loretto','St. Joseph'],Lewis:['Hohenwald'],Lincoln:['Ardmore','Fayetteville'],Macon:['Lafayette','Red Boiling Springs'],Marshall:['Chapel Hill','Cornersville','Lewisburg'],Maury:['Columbia','Mount Pleasant','Spring Hill'],Montgomery:['Clarksville'],Moore:['Lynchburg'],Overton:['Livingston'],Perry:['Linden','Lobelville'],Pickett:['Byrdstown'],Putnam:['Algood','Baxter','Cookeville','Monterey'],Robertson:['Adams','Cedar Hill','Coopertown','Cross Plains','Greenbrier','Millersville','Orlinda','Portland','Ridgetop','Springfield','White House'],Rutherford:['Eagleville','La Vergne','Murfreesboro','Smyrna'],Sequatchie:['Dunlap'],Smith:['Carthage','Gordonsville','South Carthage'],Stewart:['Cumberland City','Dover'],Sumner:['Gallatin','Goodlettsville','Hendersonville','Millersville','Mitchellville','Portland','Westmoreland','White House'],Trousdale:['Hartsville'],Van_Buren:['Spencer'],Warren:['Centertown','McMinnville','Morrison','Viola'],Wayne:['Clifton','Collinwood','Waynesboro'],White:['Doyle','Sparta'],Williamson:['Brentwood','Fairview','Franklin','Nolensville','Spring Hill',"Thompson's Station"],Wilson:['Lebanon','Mount Juliet','Watertown']};
+  const sel=document.getElementById('cwnCitySelect');
+  function fillCities(){sel.innerHTML='';Object.entries(MT).sort().forEach(([county,cities])=>{const g=document.createElement('optgroup');g.label=county.replace('_',' ')+' County';cities.forEach(name=>{const o=document.createElement('option');o.value=name+'|'+county.replace('_',' ');o.textContent=name+', TN';if(name==='Lebanon'&&county==='Wilson')o.selected=true;g.append(o)});sel.append(g)})}
+  const report=c=>WX[c]||['Forecast available','cloudy'];
+  const f=c=>Math.round(c*9/5+32), mph=k=>Math.round(k*.621371);
+  function clock(){document.getElementById('cwnTime').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}
+  async function locate(v){const [name,county]=v.split('|');const u='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(name+', Tennessee')+'&count=10&language=en&format=json&countryCode=US';const r=await fetch(u);if(!r.ok)throw Error('Location service error');const d=await r.json();const a=(d.results||[]).filter(x=>x.admin1==='Tennessee');const p=a.find(x=>x.name.toLowerCase()===name.toLowerCase())||a[0];if(!p)throw Error('Location not found');return{name,county,lat:p.latitude,lon:p.longitude}}
+  function periods(d){const ht=d.hourly.time.map(x=>new Date(x)), now=new Date(d.current.time), out=[];for(let n=0;n<d.daily.time.length&&out.length<6;n++){const rise=new Date(d.daily.sunrise[n]),set=new Date(d.daily.sunset[n]),next=n+1<d.daily.time.length?new Date(d.daily.sunrise[n+1]):new Date(set.getTime()+43200000),day=new Date(d.daily.time[n]+'T12:00').toLocaleDateString('en-US',{weekday:'short'});for(const q of [{name:n?' '+day:'Today',a:rise,b:set,night:false},{name:n?day+' Night':'Tonight',a:set,b:next,night:true}]){if(q.b<=now)continue;const a=q.a<now?now:q.a,ix=ht.map((t,i)=>({t,i})).filter(x=>x.t>=a&&x.t<q.b).map(x=>x.i);if(!ix.length)continue;const ts=ix.map(i=>d.hourly.temperature_2m[i]),ps=ix.map(i=>d.hourly.precipitation_probability[i]||0),cs=ix.map(i=>d.hourly.weather_code[i]);const code=cs.find(c=>c>=95)||cs.find(c=>c>=80)||cs.find(c=>c>=61)||cs.find(c=>c>=45)||cs[Math.floor(cs.length/2)],w=report(code);out.push({name:q.name.trim(),temp:q.night?Math.min(...ts):Math.max(...ts),rain:Math.max(...ps),text:w[0],icon:w[1]});if(out.length===6)break}}return out}
+  function renderPeriods(p){document.getElementById('forecastPeriods').innerHTML=p.map(x=>`<article class="icon-card"><div class="period-name">${x.name}</div><div class="live-symbol" aria-hidden="true">${ICON[x.icon]}</div><div class="period-temp">${f(x.temp)}°</div><div class="period-desc">${x.text}</div><div class="period-rain">Rain ${Math.round(x.rain)}%</div></article>`).join('')}
+  async function load(v){const st=document.getElementById('weatherStatus');st.textContent='Loading live local forecast...';try{const p=await locate(v),qs=new URLSearchParams({latitude:p.lat,longitude:p.lon,timezone:'America/Chicago',forecast_days:'5',current:'temperature_2m,weather_code,wind_speed_10m',hourly:'temperature_2m,precipitation_probability,weather_code',daily:'sunrise,sunset'}),r=await fetch('https://api.open-meteo.com/v1/forecast?'+qs);if(!r.ok)throw Error('Weather service error');const d=await r.json(),w=report(d.current.weather_code);document.getElementById('cwnTemp').textContent=f(d.current.temperature_2m)+'°F';document.getElementById('cwnWind').textContent='Wind: '+mph(d.current.wind_speed_10m)+' mph';document.getElementById('cwnDesc').textContent=w[0];document.getElementById('currentIconBox').innerHTML='<div class="current-live-symbol">'+ICON[w[1]]+'</div>';st.textContent='Live report for '+p.name+', '+p.county+' County.';renderPeriods(periods(d))}catch(e){console.error(e);st.textContent='The location or weather service could not be reached.';document.getElementById('forecastPeriods').innerHTML='<div class="icon-card">Forecast unavailable</div>'}}
+  function radar(){const img=document.getElementById('cwnRadar');document.getElementById('cwnRadarStatus').textContent='Loading radar...';img.src='https://radar.weather.gov/ridge/standard/KOHX_loop.gif?t='+Date.now()}
+  const root=document.documentElement,toggle=document.getElementById('themeToggle');function theme(x){root.dataset.theme=x;const n=x==='night';toggle.textContent=n?'Switch to Day':'Switch to Night';toggle.setAttribute('aria-pressed',String(n));document.getElementById('themeColor').content=n?'#15110d':'#3b2a1f';try{localStorage.setItem('cwnTheme',x)}catch(e){}}
+  fillCities();try{theme(localStorage.getItem('cwnTheme')==='night'?'night':'day')}catch(e){theme('day')}toggle.onclick=()=>theme(root.dataset.theme==='night'?'day':'night');sel.onchange=()=>load(sel.value);document.getElementById('cwnRadar').onload=()=>document.getElementById('cwnRadarStatus').textContent='Radar image updated.';document.getElementById('cwnRadar').onerror=()=>document.getElementById('cwnRadarStatus').textContent='Radar image is currently unavailable.';clock();setInterval(clock,1000);load(sel.value);radar();setInterval(radar,300000);
+  </script>
 </body>
 </html>
