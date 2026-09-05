@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    background: #2b1f1a; /* warm analog brown */
+    font-family: "Arial", sans-serif;
+    color: #f2e4c9; /* warm amber */
+}
+
+#scaleWrapper {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+}
+
+/* 1980s Header */
+.header80s {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to bottom, #5c2e2e, #3b1f1f);
+    border-bottom: 4px solid #c79b63;
+    text-align: center;
+}
+
+.logoBox {
+    font-size: 48px;
+    font-weight: bold;
+    color: #f2e4c9;
+    text-shadow: 2px 2px #000;
+}
+
+.eraTag {
+    font-size: 28px;
+    margin-top: 10px;
+    color: #d9c7a3;
+}
+
+/* CRT Panel */
+.crtPanel {
+    width: 1600px;
+    height: 850px;
+    margin: 40px auto;
+    background: #3a2a25;
+    border: 6px solid #c79b63;
+    box-shadow: inset 0 0 40px #000;
+    padding: 40px;
+    position: relative;
+}
+
+/* City Name */
+.cityName {
+    font-size: 64px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #f2e4c9;
+}
+
+/* Temperature */
+.tempBox {
+    font-size: 180px;
+    font-weight: bold;
+    text-align: center;
+    color: #f2e4c9;
+    text-shadow: 4px 4px #000;
+}
+
+/* Description */
+.descBox {
+    font-size: 48px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Wind */
+.windBox {
+    font-size: 36px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Today/Tonight */
+.dayPeriodBox {
+    font-size: 48px;
+    text-align: center;
+    margin-top: 30px;
+    color: #d9c7a3;
+}
+
+/* Radar */
+.radarBox {
+    width: 600px;
+    height: 400px;
+    margin: 40px auto;
+    border: 4px solid #c79b63;
+    background: #000;
+}
+
+.radarBox img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Clock */
+.clockBox {
+    font-size: 48px;
+    text-align: center;
+    margin-top: 40px;
+    color: #f2e4c9;
+}
+
+/* Status Message */
+#status {
+    font-size: 32px;
+    color: #ffdfdf;
+    text-align: center;
+    margin-top: 20px;
+}
