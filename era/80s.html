@@ -2,545 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Cumberland Weather Network — 80s Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <div id="status"></div>
 
+<title>CWN — 1980s Weather</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
+<link rel="stylesheet" href="80s.css">
+<script type="module" src="core/cwn-heart-full.js"></script>
 
-html, body{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000814;
-  font-family:'VT323', monospace;
-  color:#F8F7FF;
-}
-
-/* TRUE CENTER + AUTO SCALE */
-body{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  margin:0;
-  padding:0;
-}
-#scaleWrapper{
-  width:1920px;
-  height:1080px;
-  transform-origin:center center;
-}
-
-/* CRT EFFECTS */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:repeating-linear-gradient(
-    0deg,
-    rgba(255,255,255,.04) 0px,
-    rgba(255,255,255,.04) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  z-index:9998;
-}
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:radial-gradient(
-    ellipse at center,
-    rgba(0,0,0,.0) 40%,
-    rgba(0,0,0,.7) 100%
-  );
-  z-index:9997;
-}
-
-/* NAV BAR */
-.navbar{
-  height:40px;
-  background:#001326;
-  border-bottom:3px solid #00c8ff;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding-left:20px;
-}
-.navbar a{
-  color:#b4e9ff;
-  text-decoration:none;
-  font-size:20px;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
-}
-.navbar a:hover{
-  color:#fff;
-}
-
-/* HEADER */
-.header{
-  height:100px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 25px;
-  background:linear-gradient(90deg,#001a33,#004b8c,#00c8ff);
-  border-bottom:4px solid #fffb00;
-  box-shadow:0 0 18px rgba(0,200,255,.6);
-}
-.logo{
-  font-size:50px;
-  letter-spacing:3px;
-  color:#fffbff;
-  text-shadow:2px 0 #ff006e, -2px 0 #00c8ff;
-}
-.tagline{
-  font-size:22px;
-  color:#b4e9ff;
-}
-
-/* CLOCK */
-.clock-box{
-  width:360px;
-  height:72px;
-  background:#000010;
-  border:3px solid #00c8ff;
-  box-shadow:0 0 14px rgba(0,200,255,.7);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-.clock{
-  font-size:36px;
-  color:#fffb00;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
-}
-.date{
-  font-size:20px;
-  color:#b4e9ff;
-}
-
-/* MAIN GRID */
-.main{
-  height:900px;
-  padding:10px;
-  display:grid;
-  grid-template-columns:1320px 570px;
-  gap:10px;
-}
-
-/* PANELS */
-.panel{
-  background:linear-gradient(135deg,#001326,#001f3f);
-  border:4px solid #00c8ff;
-  box-shadow:0 0 12px rgba(0,200,255,.4);
-  overflow:hidden;
-}
-.panel-title{
-  height:50px;
-  line-height:50px;
-  padding-left:15px;
-  font-size:30px;
-  background:linear-gradient(90deg,#001f3f,#004b8c);
-  border-bottom:2px solid #ff006e;
-  color:#fffbff;
-  text-shadow:2px 0 #ff006e, -2px 0 #00c8ff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-/* RETRO DROPDOWN */
-#citySelect{
-  margin-right:15px;
-  background:#001326;
-  border:3px solid #00c8ff;
-  color:#fffbff;
-  font-family:'VT323', monospace;
-  font-size:22px;
-  padding:6px 12px;
-  border-radius:4px;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
-  box-shadow:0 0 12px rgba(0,200,255,.5);
-}
-#citySelect option{
-  background:#000814;
-  color:#b4e9ff;
-}
-
-/* RADAR */
-.radar-window{
-  width:100%;
-  height:820px;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
-}
-.radar-window img{
-  width:115%;
-  height:115%;
-  object-fit:cover;
-}
-
-/* SIDEBAR */
-.sidebar{
-  display:grid;
-  grid-template-rows:250px 250px 250px;
-  gap:10px;
-}
-
-/* CONDITIONS */
-.conditions-content{
-  padding:10px;
-  font-size:24px;
-  color:#b4e9ff;
-  line-height:1.6;
-  overflow-y:auto;
-}
-
-/* FORECAST */
-#forecastPanel{
-  height:240px;
-  overflow-y:auto;
-  padding:10px;
-}
-.forecast-line{
-  font-size:26px;
-  margin-bottom:10px;
-  display:flex;
-  gap:20px;
-  align-items:center;
-  white-space:nowrap;
-  color:#fdfbff;
-}
-.day-label{
-  width:170px;
-  font-weight:bold;
-  color:#fffb00;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
-}
-.temp-label{
-  width:190px;
-  color:#b4e9ff;
-}
-
-/* SCROLLER */
-.scroll-info{
-  overflow:hidden;
-  flex:1;
-  padding-left:40px;
-  mask-image:linear-gradient(to right, transparent 0px, black 40px);
-}
-.scroll-info span{
-  display:inline-block;
-  white-space:nowrap;
-  animation:scrollInfo 30s linear infinite;
-}
-@keyframes scrollInfo{
-  from{transform:translateX(100%);}
-  to{transform:translateX(-120%);}
-}
-
-/* TICKER */
-.footer{
-  height:70px;
-  background:linear-gradient(90deg,#001326,#001f3f);
-  border-top:4px solid #ff006e;
-  overflow:hidden;
-  box-shadow:0 -4px 16px rgba(0,200,255,.6);
-}
-.ticker-wrap{
-  display:flex;
-  width:max-content;
-  animation:ticker 30s linear infinite;
-}
-.ticker-content{
-  white-space:nowrap;
-  font-size:26px;
-  color:#fffbff;
-  text-shadow:1px 0 #ff006e, -1px 0 #00c8ff;
-  padding-right:140px;
-}
-@keyframes ticker{
-  from{transform:translateX(0);}
-  to{transform:translateX(-50%);}
-}
-</style>
 </head>
-
 <body>
+
 <div id="scaleWrapper">
 
-<!-- NAV -->
-<div class="navbar">
-  <a href="80s.html">80s Weather</a>
-  <a href="1994Severe.html">1994 Severe</a>
-</div>
+    <!-- STATUS MESSAGE (if no city selected) -->
+    <div id="status"></div>
 
-<!-- HEADER -->
-<div class="header">
-  <div>
-    <div class="logo">CUMBERLAND WEATHER NET</div>
-    <div class="tagline">80s WEATHER CENTER</div>
-  </div>
-  <div class="clock-box">
-    <div class="clock" id="clock">--:-- --</div>
-    <div class="date" id="date">Loading...</div>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- RADAR -->
-  <div class="panel">
-    <div class="panel-title">TENNESSEE RADAR</div>
-    <div class="radar-window">
-      <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
-    </div>
-  </div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-
-    <!-- CONDITIONS -->
-    <div class="panel">
-      <div class="panel-title">
-        <span>CURRENT CONDITIONS</span>
-        <select id="citySelect">
-          <option value="">Select City</option>
-          <option value="36.1627,-86.7816">Nashville</option>
-          <option value="36.2081,-86.2911">Lebanon</option>
-          <option value="36.3342,-86.4467">Gallatin</option>
-          <option value="36.3040,-86.6200">Hendersonville</option>
-          <option value="35.8456,-86.3903">Murfreesboro</option>
-          <option value="35.9251,-86.8689">Franklin</option>
-          <option value="35.6151,-87.0353">Columbia</option>
-          <option value="36.1628,-85.5016">Cookeville</option>
-          <option value="36.5298,-87.3595">Clarksville</option>
-          <option value="36.5092,-86.8850">Springfield</option>
-          <option value="36.0770,-87.3878">Dickson</option>
-          <option value="35.4834,-86.4603">Shelbyville</option>
-          <option value="35.4734,-86.0886">Manchester</option>
-          <option value="35.3620,-86.2094">Tullahoma</option>
-          <option value="35.6860,-85.7791">McMinnville</option>
-          <option value="35.9256,-85.4644">Sparta</option>
-          <option value="36.2515,-85.9511">Carthage</option>
-          <option value="36.5212,-86.0266">Lafayette</option>
-          <option value="36.3900,-86.1600">Hartsville</option>
-          <option value="36.3851,-85.3230">Livingston</option>
-          <option value="36.4345,-84.9372">Jamestown</option>
-          <option value="35.9489,-85.0269">Crossville</option>
-        </select>
-      </div>
-      <div class="conditions-content" id="conditionsPanel">
-        Select a city to view conditions.
-      </div>
+    <!-- 1980s HEADER -->
+    <div class="header80s">
+        <div class="logoBox">
+            <span class="logoText">CUMBERLAND WEATHER NETWORK</span>
+        </div>
+        <div class="eraTag">1980s Edition</div>
     </div>
 
-    <!-- FORECAST -->
-    <div class="panel">
-      <div class="panel-title">7-DAY FORECAST</div>
-      <div id="forecastPanel">Select a city to view forecast.</div>
-    </div>
+    <!-- MAIN CRT PANEL -->
+    <div class="crtPanel">
 
-  </div>
-</div>
+        <div class="cityName" id="cityName"></div>
 
-<!-- TICKER -->
-<div class="footer">
-  <div class="ticker-wrap">
-    <div class="ticker-content">
-      CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
+        <div class="tempBox">
+            <span id="tempValue"></span>
+        </div>
+
+        <div class="descBox" id="descValue"></div>
+
+        <div class="windBox">
+            <span id="windValue"></span>
+        </div>
+
+        <div class="dayPeriodBox" id="dayPeriod"></div>
+
+        <div class="radarBox">
+            <img id="radarImage" alt="Radar">
+        </div>
+
+        <div class="clockBox" id="clockValue"></div>
+
     </div>
-    <div class="ticker-content">
-      CUMBERLAND WEATHER NET ◆ 80s WEATHER CENTER ◆ LIVE RADAR ◆ FORECAST ◆ CONDITIONS ◆
-    </div>
-  </div>
-</div>
 
 </div>
 
-<script>
-/* AUTO SCALE (final, stable) */
-function scaleToFit(){
-  const w=document.getElementById("scaleWrapper");
-  const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
-  w.style.transform="scale("+s+")";
-}
-window.addEventListener("resize",scaleToFit);
-window.addEventListener("load",scaleToFit);
-
-/* CLOCK + "Tonight" logic */
-function updateClock(){
-  const now=new Date();
-  document.getElementById("clock").textContent=
-    now.toLocaleTimeString("en-US",{hour:"numeric",minute:"numeric"});
-  document.getElementById("date").textContent=
-    now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-}
-setInterval(updateClock,1000);
-updateClock();
-
-/* LOAD CITY WEATHER */
-async function loadCity(val){
-  const conditions=document.getElementById("conditionsPanel");
-  const forecast=document.getElementById("forecastPanel");
-
-  if(!val){
-    conditions.textContent="Select a city to view conditions.";
-    forecast.textContent="Select a city to view forecast.";
-    return;
-  }
-
-  const [lat,lon]=val.split(",");
-
-  try{
-    const points=await fetch("https://api.weather.gov/points/"+lat+","+lon).then(r=>r.json());
-    const city=points.properties.relativeLocation.properties.city;
-    const state=points.properties.relativeLocation.properties.state;
-
-    const hourly=await fetch(points.properties.forecastHourly).then(r=>r.json());
-    const p=hourly.properties.periods[0];
-
-    conditions.innerHTML=
-      "<div><strong>"+city+", "+state+"</strong></div>"+
-      "<div>Temperature: "+p.temperature+"°F</div>"+
-      "<div>Condition: "+p.shortForecast+"</div>"+
-      "<div>Humidity: "+p.relativeHumidity.value+"%</div>"+
-      "<div>Wind: "+p.windSpeed+" "+p.windDirection+"</div>"+
-      "<div>Precipitation Chance: "+p.probabilityOfPrecipitation.value+"%</div>";
-
-    const daily=await fetch(points.properties.forecast).then(r=>r.json());
-    const periods=daily.properties.periods;
-
-    const daysMap={};
-
-    periods.forEach(period=>{
-      const start=new Date(period.startTime);
-      const dateKey=start.toDateString();
-      const isNight=!period.isDaytime;
-
-      if(!daysMap[dateKey]){
-        daysMap[dateKey]={
-          day:period.name,
-          high:null,
-          low:null,
-          cond:period.shortForecast
-        };
-      }
-
-      if(period.isDaytime){
-        daysMap[dateKey].high=period.temperature;
-      }else{
-        daysMap[dateKey].low=period.temperature;
-      }
-    });
-
-    const now=new Date();
-    const finalDays=Object.keys(daysMap)
-      .sort((a,b)=>new Date(a)-new Date(b))
-      .slice(0,7)
-      .map(key=>{
-        const d=daysMap[key];
-        const dateObj=new Date(key);
-
-        if(dateObj.toDateString()===now.toDateString() && now.getHours()>=18){
-          d.day="Tonight";
-        }
-
-        if(d.high===null && d.low!==null) d.high=d.low;
-        if(d.low===null && d.high!==null) d.low=d.high;
-
-        return d;
-      });
-
-    forecast.innerHTML="";
-
-    finalDays.forEach(d=>{
-      const line=document.createElement("div");
-      line.className="forecast-line";
-
-      const day=document.createElement("span");
-      day.className="day-label";
-      day.textContent=d.day;
-
-      const temp=document.createElement("span");
-      temp.className="temp-label";
-      temp.textContent="H "+d.high+"°F  L "+d.low+"°F";
-
-      const scroll=document.createElement("span");
-      scroll.className="scroll-info";
-
-      const inner=document.createElement("span");
-      inner.textContent=d.cond;
-
-      scroll.appendChild(inner);
-
-      line.appendChild(day);
-      line.appendChild(temp);
-      line.appendChild(scroll);
-
-      forecast.appendChild(line);
-    });
-
-  }catch(e){
-    conditions.textContent="Unable to load data.";
-    forecast.textContent="Unable to load forecast.";
-  }
-}
-
-/* CITY SELECT + AUTO SAVE */
-document.getElementById("citySelect").addEventListener("change",function(){
-  const val=this.value;
-  localStorage.setItem("savedCity80s",val);
-  loadCity(val);
-});
-
-/* LOAD SAVED CITY */
-window.addEventListener("load",()=>{
-  const saved=localStorage.getItem("savedCity80s");
-  if(saved){
-    document.getElementById("citySelect").value=saved;
-    loadCity(saved);
-  }
-});
-  async function loadWeather() {
-  const city = localStorage.getItem("cwn_city");
-
-  if (!city) {
-    // If no city is selected, tell the user to go back to index.html
-    const status = document.getElementById("status");
-    if (status) {
-      status.textContent = "Please select a city on the main page.";
-    }
-    return;
-  }
-
-  // Pull live data from HEART v2.0
-  const core = await getCWNCore(city);
-
-  // Send the unified HEART object into the era renderer
-  renderEra(core);
-}
-
-loadWeather();
-  if (!city) {
-  const status = document.getElementById("status");
-  status.style.display = "block";
-  status.textContent = "Please select a city on the main page.";
-  return;
-}
-
-
-</script>
+<script src="80s.js" type="module"></script>
 
 </body>
 </html>
