@@ -2,48 +2,44 @@
    Cumberland Weather Network — 1980s Edition
    80s.css · VT323 font · CRT phosphor aesthetic
    ───────────────────────────────────────────────────────────────
-   DAY   — amber phosphor terminal · warm dark amber backgrounds
-   NIGHT — blue CRT phosphor · electric cyan · current look
+   DAY   — Miami Vice pastels · lavender · teal · hot pink
+   NIGHT — Blue CRT phosphor · electric cyan · current look
 ═══════════════════════════════════════════════════════════════ */
 
-/* ══ DAY PALETTE — Amber phosphor terminal ══ */
+/* ══ DAY PALETTE — Miami Vice / 80s Pastel ══ */
 :root {
-  --page:          #1c1000;
-  --frame:         #241400;
-  --panel:         #2e1a00;
-  --panel-deep:    #140c00;
-  --border:        #7a5200;
-  --border-light:  #c88800;
-  --text:          #ffc840;
-  --muted:         #a07820;
-  --accent:        #ffaa00;
-  --yellow:        #ffe040;
-  --pink:          #ff7700;
-  --scan-color:    rgba(255,160,0,.04);
-  --scan-dark:     rgba(0,0,0,.35);
-  --flicker-lo:    0.92;
-  --flicker-hi:    1.0;
-  --meta-color:    #1c1000;
+  --page:         #ddd4f4;
+  --frame:        #e8e0fa;
+  --panel:        #f0ecff;
+  --panel-deep:   #c4b8e8;
+  --border:       #5c3aaa;
+  --border-light: #8c58e0;
+  --text:         #150820;
+  --muted:        #4a2898;
+  --accent:       #008878;
+  --yellow:       #9a6000;
+  --pink:         #c00050;
+  --scan-color:   rgba(90,50,200,.025);
+  --scan-dark:    rgba(0,0,0,.06);
+  --meta-color:   #ddd4f4;
 }
 
-/* ══ NIGHT PALETTE — Blue CRT phosphor (current look) ══ */
+/* ══ NIGHT PALETTE — Blue CRT phosphor ══ */
 html[data-theme="night"] {
-  --page:          #030d18;
-  --frame:         #060f20;
-  --panel:         #081528;
-  --panel-deep:    #030a14;
-  --border:        #005f99;
-  --border-light:  #00aaee;
-  --text:          #c8f0ff;
-  --muted:         #7ec8e3;
-  --accent:        #00ffb0;
-  --yellow:        #ffe600;
-  --pink:          #ff006e;
-  --scan-color:    rgba(0,180,255,.04);
-  --scan-dark:     rgba(0,0,0,.45);
-  --flicker-lo:    0.88;
-  --flicker-hi:    1.0;
-  --meta-color:    #030d18;
+  --page:         #030d18;
+  --frame:        #060f20;
+  --panel:        #081528;
+  --panel-deep:   #030a14;
+  --border:       #005f99;
+  --border-light: #00aaee;
+  --text:         #c8f0ff;
+  --muted:        #7ec8e3;
+  --accent:       #00ffb0;
+  --yellow:       #ffe600;
+  --pink:         #ff006e;
+  --scan-color:   rgba(0,180,255,.04);
+  --scan-dark:    rgba(0,0,0,.45);
+  --meta-color:   #030d18;
 }
 
 /* ══ RESET ══ */
@@ -51,7 +47,7 @@ html[data-theme="night"] {
 html { -webkit-text-size-adjust: 100% }
 button, select { font: inherit }
 
-/* ══ BODY + CRT SCANLINES ══ */
+/* ══ BODY + SCANLINES ══ */
 body {
   min-height: 100vh;
   padding: clamp(10px, 2.5vw, 24px);
@@ -61,10 +57,8 @@ body {
   font-size: 18px;
   line-height: 1.4;
   transition: background 600ms ease, color 600ms ease;
-  animation: crt-flicker 6s ease-in-out infinite;
 }
 
-/* Scanline overlay */
 body::before {
   content: '';
   position: fixed;
@@ -78,15 +72,6 @@ body::before {
     transparent 1px,
     transparent 3px
   );
-}
-
-@keyframes crt-flicker {
-  0%,100% { opacity: 1 }
-  92%     { opacity: 1 }
-  93%     { opacity: var(--flicker-lo) }
-  94%     { opacity: 1 }
-  96%     { opacity: var(--flicker-lo) }
-  97%     { opacity: var(--flicker-hi) }
 }
 
 /* ══ OUTER FRAME ══ */
@@ -114,7 +99,6 @@ body::before {
   transition: border-color 600ms ease;
 }
 
-/* ── CRT logo ── */
 .cwn-logo-wrap { width: 100% }
 
 .cwn-crt-logo {
@@ -122,21 +106,14 @@ body::before {
   line-height: 1;
   letter-spacing: .08em;
   white-space: nowrap;
-  /* Chromatic aberration shifts per theme */
   text-shadow:
     -3px 0 var(--pink),
      3px 0 var(--border-light);
   transition: text-shadow 600ms ease;
 }
 
-.crt-logo-cwn {
-  color: var(--yellow);
-  transition: color 600ms ease;
-}
-.crt-logo-bracket {
-  color: var(--pink);
-  transition: color 600ms ease;
-}
+.crt-logo-cwn     { color: var(--yellow);   transition: color 600ms ease }
+.crt-logo-bracket { color: var(--pink);     transition: color 600ms ease }
 
 .cwn-title {
   font-size: clamp(1rem, 3vw, 1.5rem);
@@ -175,7 +152,6 @@ body::before {
   transition: background 600ms ease, color 600ms ease, box-shadow 600ms ease;
 }
 
-/* Shared button style */
 .cwn-btn {
   min-height: 38px;
   padding: 6px 16px;
@@ -192,8 +168,8 @@ body::before {
   transition: background 600ms ease, color 100ms ease,
               box-shadow 100ms ease, border-color 600ms ease;
 }
-.cwn-btn:hover  { color: var(--accent); box-shadow: 0 0 10px var(--accent); border-color: var(--accent) }
-.cwn-btn:active { opacity: .7 }
+.cwn-btn:hover        { color: var(--accent); box-shadow: 0 0 10px var(--accent); border-color: var(--accent) }
+.cwn-btn:active       { opacity: .7 }
 .cwn-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px }
 
 /* ══ DIRECTORY DROPDOWN ══ */
@@ -228,10 +204,10 @@ body::before {
   border-bottom: 1px solid var(--border);
   transition: background 80ms ease, color 80ms ease, border-color 80ms ease;
 }
-.directory-link:last-child            { border-bottom: none }
-.directory-link:hover                 { background: var(--panel); color: var(--accent); border-left-color: var(--accent) }
-.directory-link[aria-current="page"]  { color: var(--accent); background: var(--panel); border-left-color: var(--accent) }
-.directory-link:focus-visible         { outline: 1px solid var(--accent); outline-offset: -2px }
+.directory-link:last-child           { border-bottom: none }
+.directory-link:hover                { background: var(--panel); color: var(--accent); border-left-color: var(--accent) }
+.directory-link[aria-current="page"] { color: var(--accent); background: var(--panel); border-left-color: var(--accent) }
+.directory-link:focus-visible        { outline: 1px solid var(--accent); outline-offset: -2px }
 
 /* ══ FORECAST STRIP ══ */
 .weather-icons {
@@ -297,9 +273,8 @@ body::before {
   animation: alert-blink 1.2s step-end infinite;
   transition: border-color 600ms ease, color 600ms ease;
 }
-.alert-strip[hidden]   { display: none }
+.alert-strip[hidden] { display: none }
 @keyframes alert-blink { 0%,100%{opacity:1} 50%{opacity:.55} }
-
 .alert-flash { font-size: 1.2rem; animation: alert-blink 0.8s step-end infinite }
 
 /* ══ FIELD LABEL ══ */
@@ -355,7 +330,6 @@ body::before {
   font-weight: 400;
   letter-spacing: .18em;
   text-transform: uppercase;
-  /* Chromatic aberration on titles */
   color: var(--accent);
   text-shadow: -2px 0 var(--pink), 2px 0 var(--border-light);
   transition: color 600ms ease, text-shadow 600ms ease, border-color 600ms ease;
@@ -387,94 +361,4 @@ body::before {
 }
 
 .temperature {
-  font-size: clamp(2rem, 6vw, 3rem);
-  line-height: 1;
-  color: var(--yellow);
-  letter-spacing: .04em;
-  transition: color 600ms ease;
-}
-.forecast-item {
-  font-size: .9rem;
-  line-height: 1.5;
-  letter-spacing: .05em;
-  color: var(--text);
-}
-.status {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: .72rem;
-  letter-spacing: .06em;
-  line-height: 1.5;
-  transition: color 600ms ease;
-}
-
-/* ══ ALERTS INLINE ══ */
-.alerts-inline { margin-top: 10px }
-.alert-inline-row {
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  background: var(--panel-deep);
-  border-left: 3px solid var(--pink);
-  font-size: .8rem;
-  letter-spacing: .04em;
-  line-height: 1.45;
-  transition: background 600ms ease;
-}
-.alert-event {
-  color: var(--pink);
-  font-size: .84rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-  transition: color 600ms ease;
-}
-
-/* ══ RADAR ══ */
-.radar-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  min-height: 180px;
-  object-fit: contain;
-  background: #000;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 0 8px var(--border-light);
-  transition: border-color 600ms ease, box-shadow 600ms ease;
-}
-
-/* ══ FOOTER ══ */
-.cwn-footer {
-  margin-top: 16px;
-  padding-top: 12px;
-  text-align: center;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: .82rem;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  transition: color 600ms ease, border-color 600ms ease;
-}
-
-/* ══ A11Y ══ */
-.visually-hidden {
-  position: absolute; width: 1px; height: 1px; padding: 0;
-  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
-}
-
-/* ══ RESPONSIVE ══ */
-@media(max-width:760px){
-  .weather-icons { grid-template-columns: repeat(3, minmax(0,1fr)) }
-  .content-grid  { grid-template-columns: 1fr }
-}
-@media(max-width:480px){
-  body                  { padding: 6px 0 }
-  .cwn-header-controls  { flex-direction: column; align-items: stretch }
-  .cwn-time, .cwn-btn   { width: 100% }
-  .weather-icons        { grid-template-columns: repeat(2, minmax(0,1fr)) }
-  .current-layout       { grid-template-columns: 70px 1fr }
-  .current-icon-box     { width: 70px; height: 70px }
-}
-@media(prefers-reduced-motion:reduce){
-  *, *::before, *::after { animation: none !important; transition: none !important }
-}
+  font
