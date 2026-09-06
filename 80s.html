@@ -3,107 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CWN — 1980s Edition</title>
+  <title>Cumberland Weather Network — 1980s Edition</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="80s.css">
 </head>
-
 <body>
-  <div id="scaleWrapper">
-    <div class="cwn-80s-shell">
 
-      <!-- HEADER -->
-      <header class="cwn-80s-header">
-        <div class="cwn-80s-logo-block">
-          <div class="cwn-80s-logo-main">CWN</div>
-          <div class="cwn-80s-logo-sub">Cumberland Weather Network</div>
-          <div class="cwn-80s-logo-era">1980s Edition</div>
+  <main class="cwn-frame">
+
+    <!-- ══════════════════════════════════════════
+         HEADER
+    ══════════════════════════════════════════ -->
+    <header class="cwn-header">
+
+      <!-- CRT wordmark (text-based, no SVG) -->
+      <div class="cwn-logo-wrap" aria-label="Cumberland Weather Network 1980s Edition">
+        <div class="cwn-crt-logo" aria-hidden="true">
+          <span class="crt-logo-bracket">[</span><!--
+       --><span class="crt-logo-cwn">CWN</span><!--
+       --><span class="crt-logo-bracket">]</span>
         </div>
+      </div>
 
-        <div class="cwn-80s-nav-block">
-          <button class="cwn-80s-nav-btn" onclick="location.href='index.html'">Home</button>
-          <button class="cwn-80s-nav-btn cwn-80s-nav-active">1980s</button>
-          <button class="cwn-80s-nav-btn" onclick="location.href='1994.html'">1994</button>
-          <button class="cwn-80s-nav-btn" onclick="location.href='2004.html'">2004</button>
+      <h1 class="cwn-title">Cumberland Weather Network</h1>
+      <p class="cwn-station-line">Middle Tennessee Regional Weather &bull; 1980s Edition</p>
+
+      <div class="cwn-header-controls">
+        <div class="cwn-time" id="cwnTime" aria-live="polite">--:--</div>
+
+        <!-- Directory dropdown — same pattern as home page -->
+        <nav class="directory-nav" id="directoryNav" aria-label="Cumberland Weather Network directory">
+          <button class="directory-button" id="directoryButton" type="button"
+                  aria-expanded="false" aria-controls="directoryMenu">
+            Directory
+          </button>
+          <ul class="directory-menu" id="directoryMenu" role="menu">
+            <li role="none"><a class="directory-link" role="menuitem" href="/">Home</a></li>
+            <li role="none"><a class="directory-link" role="menuitem" href="/80s.html">1980s Weather</a></li>
+            <li role="none"><a class="directory-link" role="menuitem" href="/1994Severe.html">1994 Severe Weather</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         FORECAST PERIOD STRIP (6 cards — above city select)
+    ══════════════════════════════════════════ -->
+    <section aria-labelledby="outlookTitle">
+      <h2 class="visually-hidden" id="outlookTitle">Location forecast periods</h2>
+      <div class="weather-icons" id="forecastPeriods" aria-live="polite">
+        <div class="icon-card">
+          <div class="period-name">Loading...</div>
+          <div class="live-symbol" aria-hidden="true">◌</div>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Awaiting data</div>
+          <div class="period-rain">Precip --%</div>
         </div>
-      </header>
+      </div>
+    </section>
 
-      <!-- MAIN GRID -->
-      <main class="cwn-80s-main-grid">
-
-        <!-- CONDITIONS -->
-        <section class="cwn-80s-panel cwn-80s-panel-conditions">
-          <h2 class="cwn-80s-panel-title">Current Conditions</h2>
-          <div class="cwn-80s-panel-body">
-            <div id="conditionsLocation" class="cwn-80s-location">Loading…</div>
-
-            <div class="cwn-80s-temp-row">
-              <span id="tempValue">--°F</span>
-              <span id="feelsLikeValue">Feels like --°F</span>
-            </div>
-
-            <div id="condText" class="cwn-80s-cond-text">Loading…</div>
-
-            <div class="cwn-80s-meta-row">
-              <span id="windText">Wind: -- mph</span>
-              <span id="humidityText">Humidity: --%</span>
-              <span id="pressureText">Pressure: -- hPa</span>
-            </div>
-
-            <div class="cwn-80s-time-row">
-              <span id="obsTime">Last update: --</span>
-              <span id="cwnClock">--:-- --</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- FORECAST -->
-        <section class="cwn-80s-panel cwn-80s-panel-forecast">
-          <h2 class="cwn-80s-panel-title">Forecast</h2>
-          <div id="forecastGrid" class="cwn-80s-panel-body"></div>
-        </section>
-
-        <!-- RADAR -->
-        <section class="cwn-80s-panel cwn-80s-panel-radar">
-          <h2 class="cwn-80s-panel-title">Regional Radar</h2>
-          <div class="cwn-80s-panel-body">
-            <div id="radarTime" class="cwn-80s-radar-label">Middle Tennessee Radar: --</div>
-
-            <div class="cwn-80s-radar-frame">
-              <img id="radarImage" alt="Radar" />
-            </div>
-
-            <button class="cwn-80s-nav-btn"
-              onclick="window.open('https://radar.weather.gov', '_blank')">
-              Open Full Radar
-            </button>
-          </div>
-        </section>
-
-        <!-- ALERTS -->
-        <section id="alertsCard" class="cwn-80s-panel cwn-80s-panel-alerts" hidden>
-          <h2 class="cwn-80s-panel-title">Active Alerts</h2>
-          <div id="alertsBody" class="cwn-80s-panel-body"></div>
-        </section>
-
-        <!-- CITY SELECTOR -->
-        <section class="cwn-80s-panel cwn-80s-panel-city">
-          <h2 class="cwn-80s-panel-title">Select Reporting City</h2>
-          <div class="cwn-80s-panel-body">
-            <select id="citySelector" class="cwn-80s-select">
-              <option value="">Loading cities…</option>
-            </select>
-            <div class="cwn-80s-note">City selection is saved for future visits.</div>
-          </div>
-        </section>
-
-      </main>
+    <!-- ══════════════════════════════════════════
+         ACTIVE ALERTS (inline — hidden when none)
+    ══════════════════════════════════════════ -->
+    <div class="alert-strip" id="alertStrip" role="alert" aria-live="assertive" hidden>
+      <span class="alert-flash" aria-hidden="true">⚠</span>
+      <span id="alertStripText">ACTIVE WEATHER ALERT</span>
+      <span class="alert-flash" aria-hidden="true">⚠</span>
     </div>
-  </div>
 
-  <!-- HEART ENGINE + 80s LOGIC -->
-  <script type="module" src="/core/cwn-heart-full.js"></script>
+    <!-- ══════════════════════════════════════════
+         CITY SELECT
+    ══════════════════════════════════════════ -->
+    <label class="field-label" for="cwnCitySelect">Select reporting city</label>
+    <select id="cwnCitySelect" class="cwn-city-select" aria-label="Select a Middle Tennessee city">
+      <option>Loading cities...</option>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         CONTENT GRID — Conditions LEFT · Radar RIGHT
+         (mirrors home page: 0.82fr / 1.18fr)
+    ══════════════════════════════════════════ -->
+    <div class="content-grid">
+
+      <!-- LEFT — CURRENT CONDITIONS -->
+      <section class="panel" aria-labelledby="conditionsTitle">
+        <h2 class="panel-title" id="conditionsTitle">Current Conditions</h2>
+
+        <div class="current-layout">
+          <div class="current-icon-box" id="currentIconBox" aria-hidden="true">
+            <div class="current-live-symbol" id="currentIcon">◌</div>
+          </div>
+          <div>
+            <div class="temperature" id="cwnTemp">--&deg;F</div>
+            <div class="forecast-item" id="cwnWind">Wind: -- mph</div>
+            <div class="forecast-item" id="cwnDesc" aria-live="polite">Loading report...</div>
+          </div>
+        </div>
+
+        <!-- Inline alerts within conditions panel -->
+        <div class="alerts-inline" id="alertsInline" aria-live="polite"></div>
+
+        <p class="status" id="weatherStatus">Connecting to weather service...</p>
+      </section>
+
+      <!-- RIGHT — REGIONAL RADAR -->
+      <section class="panel" aria-labelledby="radarTitle">
+        <h2 class="panel-title" id="radarTitle">Regional Radar</h2>
+        <img id="cwnRadar" class="radar-img" src=""
+             alt="Regional weather radar loop for Middle Tennessee — KOHX Nashville">
+        <p class="status" id="cwnRadarStatus" aria-live="polite">Loading radar...</p>
+      </section>
+
+    </div><!-- end content-grid -->
+
+    <!-- ══════════════════════════════════════════
+         FOOTER
+    ══════════════════════════════════════════ -->
+    <footer class="cwn-footer">
+      Cumberland Weather Network &bull; Middle Tennessee &bull; 1980s Edition
+    </footer>
+
+  </main>
+
   <script type="module" src="80s.js"></script>
-
 </body>
 </html>
 
