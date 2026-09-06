@@ -508,13 +508,15 @@ body::before {
   100% { transform: translateX(-100%) }
 }
 
-/* ══ RADAR FRAME (FIXED) ══ */
+/* ══ RADAR FRAME — SCALED ══ */
 .cwn-radar-frame {
   width: 100%;
   aspect-ratio: 4 / 3;
-  max-height: 100%;
+  /* clamp prevents overflow when parent has no fixed height */
+  max-height: clamp(220px, 45vw, 480px);
   overflow: hidden;
   position: relative;
+  align-self: start;            /* stops it from stretching to grid row height */
   background: var(--panel-deep);
   border: 1px solid var(--border-light);
   box-shadow: 0 0 10px var(--border-light);
@@ -522,10 +524,25 @@ body::before {
 }
 
 #cwnRadar {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block;
+  object-fit: contain;          /* preserves KOHX GIF proportions, no clipping */
+  object-position: center;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .cwn-radar-frame {
+    max-height: clamp(180px, 70vw, 340px);
+  }
+}
+
+/* ── Very small phones ── */
+@media (max-width: 380px) {
+  .cwn-radar-frame {
+    max-height: 200px;
+  }
 }
 
 /* ══ RADAR CONTROLS ══ */
