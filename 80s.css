@@ -361,4 +361,136 @@ body::before {
 }
 
 .temperature {
-  font
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  color: var(--yellow);
+  letter-spacing: .05em;
+  transition: color 600ms ease;
+}
+
+.feels-like {
+  margin-top: -4px;
+  color: var(--muted);
+  font-size: clamp(.9rem, 2.5vw, 1.1rem);
+  letter-spacing: .08em;
+  transition: color 600ms ease;
+}
+
+.summary {
+  margin-top: 8px;
+  color: var(--text);
+  font-size: clamp(.9rem, 2.5vw, 1.1rem);
+  letter-spacing: .05em;
+  transition: color 600ms ease;
+}
+
+.metrics {
+  margin-top: 12px;
+  font-size: clamp(.85rem, 2.5vw, 1rem);
+  color: var(--muted);
+  letter-spacing: .05em;
+  transition: color 600ms ease;
+}
+
+.metrics dt {
+  float: left;
+  width: 90px;
+  color: var(--accent);
+  transition: color 600ms ease;
+}
+
+.metrics dd {
+  margin-left: 90px;
+  color: var(--text);
+  transition: color 600ms ease;
+}
+
+.last-update {
+  margin-top: 10px;
+  font-size: .85rem;
+  color: var(--muted);
+  letter-spacing: .05em;
+  transition: color 600ms ease;
+}
+
+/* ══ ALERT PANEL ══ */
+#alertsPanel {
+  margin-top: 12px;
+  padding: clamp(12px, 2vw, 18px);
+  background: var(--panel-deep);
+  border: 1px solid var(--pink);
+  box-shadow: 0 0 10px var(--pink);
+  transition: background 600ms ease, border-color 600ms ease, box-shadow 600ms ease;
+}
+
+.alert-card {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 600ms ease;
+}
+
+.alert-card:last-child { border-bottom: none }
+
+.alert-title {
+  color: var(--pink);
+  font-size: 1.2rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  transition: color 600ms ease;
+}
+
+.alert-area {
+  color: var(--muted);
+  font-size: .9rem;
+  margin-bottom: 4px;
+  transition: color 600ms ease;
+}
+
+.alert-text {
+  color: var(--text);
+  font-size: .9rem;
+  line-height: 1.4;
+  transition: color 600ms ease;
+}
+
+/* ══ FOOTER TICKER ══ */
+.ticker-wrap {
+  margin-top: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  transition: border-color 600ms ease;
+}
+
+.ticker-content {
+  display: inline-block;
+  padding-right: 50px;
+  animation: ticker 18s linear infinite;
+  color: var(--muted);
+  letter-spacing: .12em;
+  transition: color 600ms ease;
+}
+
+@keyframes ticker {
+  0%   { transform: translateX(0) }
+  100% { transform: translateX(-100%) }
+}
+
+/* ══ RADAR FIX — Seamless scaling inside autoscale wrapper ══ */
+.cwn-radar-frame {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: block;
+}
+
+/* Radar image scales perfectly and never escapes its CRT box */
+#cwnRadar {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
