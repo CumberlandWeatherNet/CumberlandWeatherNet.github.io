@@ -1,24 +1,29 @@
 // ------------------------------------------------------
-// CONFIG — MUST MATCH MOBILE PAGE EXACTLY
+// CONFIG — HEART + CITY REGISTRY
 // ------------------------------------------------------
-const HEART_BASE = "/api/mobile-heart";   // <-- CHANGE THIS TO MATCH MOBILE
-const CITIES_URL = "/api/cities.json";    // shared registry
+
+const HEART_BASE = "/api/heart";        // mission-critical HEART endpoint
+const CITIES_URL = "/api/cities.json";  // unified city registry
 const CITY_KEY = "cwn_city";
 
 
 // ------------------------------------------------------
-// HEART FETCH — EXACT SAME PIPE AS MOBILE
+// HEART FETCH
 // ------------------------------------------------------
 async function fetchHeart(city) {
   const url = `${HEART_BASE}?city=${encodeURIComponent(city)}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HEART fetch failed: ${res.status}`);
+
+  if (!res.ok) {
+    throw new Error(`HEART fetch failed: ${res.status}`);
+  }
+
   return await res.json();
 }
 
 
 // ------------------------------------------------------
-// CITY LOADER — USE SHARED REGISTRY, NO FALLBACKS
+// CITY LOADER — NO MT FALLBACK, NO HARDCODE
 // ------------------------------------------------------
 async function loadCities() {
   const selector = document.getElementById("citySelector");
@@ -27,11 +32,13 @@ async function loadCities() {
   try {
     const res = await fetch(CITIES_URL);
     if (!res.ok) throw new Error("cities.json missing");
+
     const data = await res.json();
 
-    // Supports both flat and grouped structures
+    // Supports flat list or counties[]
     if (Array.isArray(data)) {
       const byCounty = {};
+
       data.forEach(rec => {
         const county = rec.county || "Middle Tennessee";
         if (!byCounty[county]) byCounty[county] = [];
@@ -41,12 +48,14 @@ async function loadCities() {
       Object.keys(byCounty).sort().forEach(county => {
         const group = document.createElement("optgroup");
         group.label = `${county} County`;
+
         byCounty[county].forEach(rec => {
           const opt = document.createElement("option");
           opt.value = rec.name;
           opt.textContent = rec.display_name || rec.name;
           group.appendChild(opt);
         });
+
         selector.appendChild(group);
       });
 
@@ -54,12 +63,14 @@ async function loadCities() {
       data.counties.forEach(c => {
         const group = document.createElement("optgroup");
         group.label = `${c.name} County`;
+
         c.cities.forEach(rec => {
           const opt = document.createElement("option");
           opt.value = rec.name;
           opt.textContent = rec.display_name || rec.name;
           group.appendChild(opt);
         });
+
         selector.appendChild(group);
       });
     }
@@ -90,12 +101,16 @@ function render(core) {
     `Feels like ${Math.round(core.apparent_temperature)}°F`;
 
   document.getElementById("condText").textContent = core.condition_text;
+
   document.getElementById("windText").textContent =
     `Wind: ${Math.round(core.wind_mph)} mph ${core.wind_direction}`;
+
   document.getElementById("humidityText").textContent =
     `Humidity: ${Math.round(core.humidity_2m)}%`;
+
   document.getElementById("pressureText").textContent =
     `Pressure: ${Math.round(core.pressure_msl)} hPa`;
+
   document.getElementById("obsTime").textContent =
     `Last update: ${core.local_time}`;
 
@@ -107,16 +122,19 @@ function render(core) {
   // Forecast
   const grid = document.getElementById("forecastGrid");
   grid.innerHTML = "";
-  core.forecast_daily.slice(0, 5).forEach(p => {
-    const tile = document.createElement("div");
-    tile.className = "forecast-tile";
-    tile.innerHTML = `
-      <div class="forecast-period">${p.label}</div>
-      <div class="forecast-desc">${p.description}</div>
-      <div class="forecast-temp">${Math.round(p.high_f)}° / ${Math.round(p.low_f)}°</div>
-    `;
-    grid.appendChild(tile);
-  });
+
+  if (core.forecast_daily && core.forecast_daily.length) {
+    core.forecast_daily.slice(0, 5).forEach(p => {
+      const tile = document.createElement("div");
+      tile.className = "forecast-tile";
+      tile.innerHTML = `
+        <div class="forecast-period">${p.label}</div>
+        <div class="forecast-desc">${p.description}</div>
+        <div class="forecast-temp">${Math.round(p.high_f)}° / ${Math.round(p.low_f)}°</div>
+      `;
+      grid.appendChild(tile);
+    });
+  }
 
   // Alerts
   const alertsCard = document.getElementById("alertsCard");
@@ -125,15 +143,18 @@ function render(core) {
 
   if (core.active_alerts && core.active_alerts.length) {
     alertsCard.hidden = false;
+
     core.active_alerts.forEach(a => {
       const div = document.createElement("div");
       div.textContent = `${a.event}: ${a.headline}`;
       alertsBody.appendChild(div);
     });
+
   } else {
     alertsCard.hidden = true;
   }
 
+  // Clock
   document.getElementById("cwnClock").textContent = core.local_time;
 }
 
@@ -162,7 +183,7 @@ async function load(city) {
 
 
 // ------------------------------------------------------
-// AUTOSCALE — SAME AS MAIN PAGE
+// AUTOSCALE — MASTER SPEC
 // ------------------------------------------------------
 function scaleToFit() {
   const wrapper = document.getElementById("scaleWrapper");
@@ -172,6 +193,7 @@ function scaleToFit() {
   wrapper.style.transform = `scale(${scale})`;
   wrapper.style.transformOrigin = "top left";
 }
+
 window.addEventListener("resize", scaleToFit);
 
 
@@ -187,4 +209,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     load(city);
   }
 });
-
