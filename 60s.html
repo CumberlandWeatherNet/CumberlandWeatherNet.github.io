@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" id="themeColor" content="#0d0900" />
+  <title>1960s Edition — Cumberland Weather Network</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="60s.css" />
+</head>
+<body>
+<main class="cwn-frame">
+
+  <!-- ══ HEADER ══ -->
+  <header class="cwn-header">
+    <div class="cwn-logo-wrap">
+
+      <!-- 1960s SVG Logo — retro sunburst + bold mod CWN wordmark -->
+      <svg class="cwn60s-svg" viewBox="0 0 860 160" xmlns="http://www.w3.org/2000/svg"
+           role="img" aria-label="CWN">
+        <defs>
+          <!-- Day gradient: warm harvest gold -->
+          <linearGradient id="cwn60-fill-day" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#ffe680"/>
+            <stop offset="40%"  stop-color="#c8780a"/>
+            <stop offset="80%"  stop-color="#8b4c00"/>
+            <stop offset="100%" stop-color="#5a2800"/>
+          </linearGradient>
+          <!-- Night gradient: amber glow -->
+          <linearGradient id="cwn60-fill-night" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#ffe040"/>
+            <stop offset="45%"  stop-color="#e09818"/>
+            <stop offset="100%" stop-color="#8b5c00"/>
+          </linearGradient>
+          <!-- Shared shine -->
+          <linearGradient id="cwn60-shine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="rgba(255,255,200,.45)"/>
+            <stop offset="50%" stop-color="rgba(255,240,100,0)"/>
+          </linearGradient>
+          <!-- Sunburst ray gradient -->
+          <radialGradient id="cwn60-ray-day" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#f0b020" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#c8780a" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="cwn60-ray-night" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#e09818" stop-opacity=".45"/>
+            <stop offset="100%" stop-color="#7a4800" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="cwn60-glow" x="-15%" y="-35%" width="130%" height="170%">
+            <feGaussianBlur stdDeviation="7" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="cwn60-drop" x="-8%" y="-15%" width="120%" height="148%">
+            <feDropShadow dx="5" dy="5" stdDeviation="4"
+                          flood-color="rgba(40,10,0,.70)" flood-opacity="1"/>
+          </filter>
+          <style>
+            #cwn60-main-text { fill: url(#cwn60-fill-night) }
+            #cwn60-ray       { fill: url(#cwn60-ray-night) }
+            html[data-theme="day"] #cwn60-main-text { fill: url(#cwn60-fill-day) }
+            html[data-theme="day"] #cwn60-ray       { fill: url(#cwn60-ray-day) }
+          </style>
+        </defs>
+
+        <!-- Sunburst rays (24 rays, centered on logo) -->
+        <g id="cwn60-ray" transform="translate(430,82)">
+          <!-- Each ray is a thin triangle -->
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(0)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(15)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(30)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(45)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(60)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(75)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(90)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(105)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(120)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(135)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(150)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(165)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(180)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(195)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(210)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(225)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(240)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(255)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(270)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(285)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(300)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(315)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(330)"/>
+          <polygon points="0,-72  -5,0  5,0"   transform="rotate(345)"/>
+        </g>
+
+        <!-- Glow halo text -->
+        <text x="430" y="126" text-anchor="middle"
+              font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
+              fill="rgba(220,150,10,.22)" filter="url(#cwn60-glow)">CWN</text>
+        <!-- Drop shadow text -->
+        <text x="430" y="126" text-anchor="middle"
+              font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
+              fill="rgba(30,8,0,.60)" filter="url(#cwn60-drop)">CWN</text>
+        <!-- Main fill text -->
+        <text id="cwn60-main-text" x="430" y="126" text-anchor="middle"
+              font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
+              letter-spacing="6">CWN</text>
+        <!-- Shine overlay -->
+        <text x="430" y="126" text-anchor="middle"
+              font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
+              fill="url(#cwn60-shine)" pointer-events="none"
+              letter-spacing="6">CWN</text>
+
+        <!-- Mod geometric corner diamonds -->
+        <polygon points="16,8 24,16 16,24 8,16"  fill="none" stroke-width="1.5"
+                 style="stroke:currentColor; opacity:.4"/>
+        <polygon points="844,8 852,16 844,24 836,16" fill="none" stroke-width="1.5"
+                 style="stroke:currentColor; opacity:.4"/>
+        <polygon points="16,136 24,144 16,152 8,144" fill="none" stroke-width="1.5"
+                 style="stroke:currentColor; opacity:.4"/>
+        <polygon points="844,136 852,144 844,152 836,144" fill="none" stroke-width="1.5"
+                 style="stroke:currentColor; opacity:.4"/>
+      </svg>
+
+      <p class="cwn-title-line">Cumberland Weather Network</p>
+      <p class="cwn-station-line">1960s Edition &nbsp;&mdash;&nbsp; Middle Tennessee Regional Weather</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="cwn-header-controls">
+      <div class="cwn-time" id="cwnTime" role="timer" aria-live="off">12:00 AM</div>
+
+      <button class="cwn-btn theme-btn" id="themeToggle"
+              title="Click to change · Double-click to reset to AUTO"
+              aria-label="Toggle day/night theme">
+        ☾ NIGHT — AUTO
+      </button>
+
+      <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
+        <button class="cwn-btn directory-button" id="directoryButton"
+                aria-expanded="false" aria-haspopup="true">&#8862; Directory</button>
+        <ul class="directory-menu" role="menu">
+          <li role="none"><a class="directory-link" href="index.html"      role="menuitem">⌂ Home &mdash; 2026 Edition</a></li>
+          <li role="none"><a class="directory-link" href="1994Severe.html" role="menuitem">⚡ 1994 Severe Edition</a></li>
+          <li role="none"><a class="directory-link" href="80s.html"        role="menuitem">◈ 1980s Edition</a></li>
+          <li role="none"><a class="directory-link" href="70s.html"        role="menuitem">◇ 1970s Edition</a></li>
+          <li role="none"><a class="directory-link" href="60s.html"        role="menuitem" aria-current="page">◆ 1960s Edition</a></li>
+          <li role="none"><a class="directory-link" href="50s.html"        role="menuitem">◈ 1950s Edition</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══ ALERT TICKER ══ -->
+  <div class="alert-ticker-wrap" id="alertTicker" hidden
+       role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="alert-ticker-label">
+      <span class="alert-ticker-icon" aria-hidden="true">⚠</span>
+      <span id="alertTickerLabel">Special Weather Statement</span>
+    </div>
+    <div class="alert-ticker-outer">
+      <div class="alert-ticker-track" id="alertTickerTrack"></div>
+    </div>
+  </div>
+
+  <!-- ══ CITY SELECT ══ -->
+  <label class="field-label" for="cwnCitySelect">&#9658; Select City</label>
+  <select class="cwn-city-select" id="cwnCitySelect"
+          aria-label="Select city for weather data">
+    <option value="">— Loading cities… —</option>
+  </select>
+
+  <!-- ══ FORECAST STRIP ══ -->
+  <section aria-label="6-period forecast">
+    <div class="weather-icons" id="forecastPeriods"
+         role="list" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <!-- ══ CONTENT GRID ══ -->
+  <div class="content-grid">
+
+    <section class="panel" aria-label="Current conditions">
+      <h2 class="panel-title">Current Conditions</h2>
+      <div class="current-layout">
+        <div class="current-icon-box" id="currentIconBox">
+          <span class="current-live-symbol" id="currentIcon" aria-hidden="true">☁</span>
+        </div>
+        <div class="current-data">
+          <div class="temperature" id="cwnTemp" aria-label="Temperature">--°F</div>
+          <div class="forecast-item" id="cwnWind">Wind: --</div>
+          <div class="forecast-item" id="cwnDesc">Select a city above</div>
+        </div>
+      </div>
+      <p class="status" id="weatherStatus" aria-live="polite">Awaiting city selection…</p>
+      <div class="alerts-inline" id="alertsInline" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-label="NEXRAD radar">
+      <h2 class="panel-title">NWS Middle TN Radar</h2>
+      <img class="radar-img" id="cwnRadar" src=""
+           alt="NEXRAD radar loop for Middle Tennessee" />
+      <p class="status" id="cwnRadarStatus">Loading radar…</p>
+    </section>
+
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="cwn-footer">
+    Cumberland Weather Network &nbsp;&mdash;&nbsp; 1960s Edition
+    &nbsp;&mdash;&nbsp; Data: National Weather Service &nbsp;&mdash;&nbsp; Radar: KOHX Nashville
+  </footer>
+
+</main>
+<script type="module" src="60s.js"></script>
+</body>
+</html>
