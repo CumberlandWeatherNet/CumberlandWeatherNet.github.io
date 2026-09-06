@@ -5,127 +5,153 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" id="themeColor" content="#030d18">
   <title>Cumberland Weather Network — 1980s Edition</title>
-
+  <link rel="icon" type="image/png" href="assets/cwn-crest-80s.png">
   <link rel="stylesheet" href="80s.css">
 </head>
-
-<body class="era-80s">
-  <div id="scaleWrapper">
-    <main class="cwn-frame">
-
-      <!-- HEADER -->
-      <header class="cwn-header">
-        <div class="cwn-logo-wrap">
-          <div class="cwn-crt-logo">[CWN]</div>
+<body>
+  <div class="cwn-frame">
+    <header class="cwn-header">
+      <div class="cwn-logo-wrap">
+        <div class="cwn-crt-logo">
+          <span class="crt-logo-bracket">[</span>
+          <span class="crt-logo-cwn">CWN</span>
+          <span class="crt-logo-bracket">]</span>
         </div>
+      </div>
+      <div class="cwn-title">Cumberland Weather Network</div>
+      <div class="cwn-station-line">Middle Tennessee · 1980s Edition</div>
 
-        <div class="cwn-header-center">
-          <h1 class="cwn-title">Cumberland Weather Network</h1>
-          <p class="cwn-subtitle">1980s Edition</p>
-        </div>
+      <div class="cwn-header-controls">
+        <div class="cwn-time" id="cwnTime">--:-- -- · --/--/----</div>
 
-        <div class="cwn-header-right">
-          <label for="citySelector">Select City</label>
-          <select id="citySelector">
-            <option value="">Select city…</option>
-          </select>
+        <button class="cwn-btn" id="themeToggle" type="button">
+          Switch to Day
+        </button>
 
-          <div class="cwn-clock-box">
-            <div id="cwnClock">--:-- --</div>
-            <div id="cwnDate">Loading…</div>
-          </div>
-
-          <button id="themeToggle">Switch to Day</button>
-        </div>
-      </header>
-
-      <!-- DIRECTORY -->
-      <section class="cwn-era-directory">
-        <button id="directoryBtn" aria-expanded="false">Directory ▼</button>
-
-        <nav id="directoryNav">
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="1994Severe.html">1994 Severe Edition</a></li>
-            <li><a href="80s.html" aria-current="page">1980s Edition</a></li>
-            <li><a href="70s.html">1970s Edition</a></li>
-            <li><a href="60s.html">1960s Edition</a></li>
-            <li><a href="50s.html">1950s Edition</a></li>
+        <nav class="directory-nav" id="directoryNav">
+          <button class="cwn-btn" id="directoryToggle" type="button">
+            Directory
+          </button>
+          <ul class="directory-menu" id="directoryMenu">
+            <li><a class="directory-link" href="index.html">Main Station</a></li>
+            <li><a class="directory-link" href="70s.html">1970s Edition</a></li>
+            <li><a class="directory-link" href="80s.html" aria-current="page">1980s Edition</a></li>
+            <li><a class="directory-link" href="1994.html">1994 Edition</a></li>
+            <li><a class="directory-link" href="2004.html">2004 Edition</a></li>
           </ul>
         </nav>
-      </section>
+      </div>
 
-      <!-- FORECAST -->
-      <section class="cwn-forecast-strip">
-        <div id="forecastPeriods"></div>
-      </section>
+      <div class="weather-icons" id="forecastStrip">
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+        <div class="icon-card">
+          <div class="period-name"></div>
+          <span class="live-symbol">--</span>
+          <div class="period-temp">--°</div>
+          <div class="period-desc">Loading…</div>
+          <div class="period-rain"></div>
+        </div>
+      </div>
 
-      <!-- MAIN GRID -->
-      <section class="cwn-main-grid">
+      <div class="alert-strip" id="alertStrip" hidden>
+        <span class="alert-flash">ALERT</span>
+        <span id="alertStripText">Severe weather information will appear here.</span>
+      </div>
+    </header>
 
-        <!-- RADAR -->
-        <article class="cwn-panel cwn-panel-radar">
-          <header>
-            <h2>Live Radar — Middle Tennessee</h2>
-            <p id="cwnRadarStatus">Loading radar…</p>
-          </header>
+    <label class="field-label" for="citySelect">Select City</label>
+    <select id="citySelect" class="cwn-city-select">
+      <option value="">Loading cities…</option>
+    </select>
 
-          <div class="cwn-radar-frame">
-            <img id="cwnRadar" alt="Middle Tennessee radar loop">
+    <div class="content-grid">
+      <section class="panel" id="currentPanel">
+        <h2 class="panel-title">Current Conditions</h2>
+        <div class="current-layout">
+          <div class="current-icon-box">
+            <span class="current-live-symbol" id="currentSymbol">--</span>
           </div>
-
-          <button onclick="window.open('https://radar.weather.gov', '_blank')">
-            Open Full Radar
-          </button>
-        </article>
-
-        <!-- CONDITIONS -->
-        <article class="cwn-panel cwn-panel-conditions">
-          <header>
-            <h2>Current Conditions</h2>
-            <p id="currentLocation">Select a city to begin.</p>
-          </header>
-
           <div>
-            <span id="currentTemp">--°F</span>
-            <span id="currentFeels">Feels like --°F</span>
-            <p id="currentSummary">Conditions will appear here.</p>
+            <div class="temperature" id="currentTemp">--°F</div>
+            <div class="feels-like" id="feelsLike">Feels like --°F</div>
+            <div class="summary" id="currentSummary">Loading current conditions…</div>
 
-            <dl>
-              <dt>Wind</dt><dd id="currentWind">-- mph</dd>
-              <dt>Humidity</dt><dd id="currentHumidity">--%</dd>
-              <dt>Pressure</dt><dd id="currentPressure">-- hPa</dd>
+            <dl class="metrics">
+              <dt>Humidity</dt>
+              <dd id="humidity">--%</dd>
+              <dt>Wind</dt>
+              <dd id="wind">-- mph</dd>
+              <dt>Pressure</dt>
+              <dd id="pressure">-- inHg</dd>
+              <dt>Visibility</dt>
+              <dd id="visibility">-- mi</dd>
             </dl>
 
-            <span id="lastUpdate">Last update: --</span>
-          </div>
-        </article>
-
-        <!-- ALERTS -->
-        <article id="alertsPanel" hidden>
-          <header><h2>Active Alerts</h2></header>
-          <div id="alertsBody"></div>
-        </article>
-
-      </section>
-
-      <!-- FOOTER -->
-      <footer class="cwn-footer">
-        <div class="ticker-wrap">
-          <div class="ticker-content">
-            • CWN • Cumberland Weather Network • Middle Tennessee • 1980s Edition •
-          </div>
-          <div class="ticker-content">
-            • CWN • Cumberland Weather Network • Middle Tennessee • 1980s Edition •
+            <div class="last-update" id="lastUpdate">Last updated: --:-- --</div>
           </div>
         </div>
-      </footer>
 
-    </main>
+        <div id="alertsPanel">
+          <div id="alertsEmpty" class="alert-text">No active alerts for this area.</div>
+          <div id="alertsList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="radarPanel">
+        <h2 class="panel-title">Radar</h2>
+        <div class="cwn-radar-frame">
+          <img id="cwnRadar" alt="Live radar">
+        </div>
+        <div class="radar-controls">
+          <button class="cwn-btn" id="openRadarFull" type="button">
+            Open Full Radar
+          </button>
+        </div>
+        <div id="cwnRadarStatus" class="last-update">Radar status: Loading…</div>
+      </section>
+    </div>
+
+    <div class="ticker-wrap">
+      <div class="ticker-content" id="tickerContent">
+        Cumberland Weather Network · Middle Tennessee · 1980s Edition · Live conditions, alerts, and radar powered by HEART.
+      </div>
+    </div>
   </div>
 
-  <script type="module" src="/core/cwn-heart-full.js"></script>
   <script type="module" src="80s.js"></script>
 </body>
 </html>
-
