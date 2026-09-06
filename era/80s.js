@@ -1,72 +1,70 @@
-// WX TABLE
-const WX = {
-  0:['Clear','sunny'],1:['Mostly clear','sunny'],2:['Partly cloudy','cloudy'],
-  3:['Overcast','cloudy'],45:['Fog','cloudy'],48:['Freezing fog','cloudy'],
-  51:['Light drizzle','rain'],53:['Drizzle','rain'],55:['Heavy drizzle','rain'],
-  56:['Freezing drizzle','rain'],57:['Freezing drizzle','rain'],
-  61:['Light rain','rain'],63:['Rain','rain'],65:['Heavy rain','rain'],
-  66:['Freezing rain','rain'],67:['Freezing rain','rain'],
-  71:['Light snow','snow'],73:['Snow','snow'],75:['Heavy snow','snow'],
-  77:['Snow grains','snow'],80:['Rain showers','rain'],81:['Rain showers','rain'],
-  82:['Heavy showers','rain'],85:['Snow showers','snow'],86:['Heavy snow','snow'],
-  95:['Thunderstorms','storm'],96:['Storms with hail','storm'],99:['Severe storms','storm']
-};
-
-// MT FALLBACK
-const MT = {
-  Bedford:['Bell Buckle','Normandy','Shelbyville','Wartrace'],
-  Cannon:['Auburntown','Woodbury'],
-  Cheatham:['Ashland City','Kingston Springs','Pegram','Pleasant View'],
-  Clay:['Celina'],
-  Coffee:['Manchester','Tullahoma'],
-  Cumberland:['Crab Orchard','Crossville'],
-  Davidson:['Belle Meade','Goodlettsville','Nashville']
-};
-
+// CONFIG — SET THIS TO MATCH MOBILE
+// Example: const HEART_BASE = "/api/mobile-heart";
+const HEART_BASE = "/api/heart";      // <-- change to whatever mobile uses
+const CITIES_URL = "/api/cities.json"; // shared city registry
 const CITY_KEY = "cwn_city";
-const THEME_KEY = "cwn_themeMode";
 
-// HEART FETCH
+// HEART FETCH — SAME SOURCE AS MOBILE
 async function fetchHeart(city) {
-  const res = await fetch(`/api/heart?city=${encodeURIComponent(city)}`);
-  if (!res.ok) throw new Error("HEART fetch failed");
+  const url = `${HEART_BASE}?city=${encodeURIComponent(city)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HEART fetch failed: ${res.status}`);
   return await res.json();
 }
 
-// CITY LOADER
+// CITY LOADER — USE SHARED REGISTRY, NO HARDCODED MT
 async function loadCities() {
   const selector = document.getElementById("citySelector");
+  selector.innerHTML = '<option value="">Select a City</option>';
 
   try {
-    const res = await fetch("/api/cities.json");
+    const res = await fetch(CITIES_URL);
     if (!res.ok) throw new Error("cities.json missing");
+    const data = await res.json();
 
-    const cities = await res.json();
-    selector.innerHTML = '<option value="">Select a City</option>';
-
-    cities.forEach(city => {
-      const opt = document.createElement("option");
-      opt.value = city.name;
-      opt.textContent = city.display_name || city.name;
-      selector.appendChild(opt);
-    });
-
-  } catch (e) {
-    selector.innerHTML = '<option value="">Select a City</option>';
-
-    Object.keys(MT).forEach(county => {
-      const group = document.createElement("optgroup");
-      group.label = `${county} County`;
-
-      MT[county].forEach(city => {
-        const opt = document.createElement("option");
-        opt.value = city;
-        opt.textContent = city;
-        group.appendChild(opt);
+    // SUPPORT BOTH FLAT AND GROUPED STRUCTURES
+    // FLAT: [{ name, display_name, county }]
+    // GROUPED: [{ county, cities: [{ name, display_name }] }]
+    if (Array.isArray(data)) {
+      // flat array
+      const byCounty = {};
+      data.forEach(rec => {
+        const county = rec.county || "Middle Tennessee";
+        if (!byCounty[county]) byCounty[county] = [];
+        byCounty[county].push(rec);
       });
 
-      selector.appendChild(group);
-    });
+      Object.keys(byCounty).sort().forEach(county => {
+        const group = document.createElement("optgroup");
+        group.label = `${county} County`;
+        byCounty[county].forEach(rec => {
+          const opt = document.createElement("option");
+          opt.value = rec.name;
+          opt.textContent = rec.display_name || rec.name;
+          group.appendChild(opt);
+        });
+        selector.appendChild(group);
+      });
+
+    } else if (Array.isArray(data.counties)) {
+      // grouped { counties: [{ name, cities: [...] }] }
+      data.counties.forEach(c => {
+        const group = document.createElement("optgroup");
+        group.label = `${c.name} County`;
+        c.cities.forEach(rec => {
+          const opt = document.createElement("option");
+          opt.value = rec.name;
+          opt.textContent = rec.display_name || rec.name;
+          group.appendChild(opt);
+        });
+        selector.appendChild(group);
+      });
+    }
+
+  } catch (e) {
+    console.error("City registry failed:", e);
+    // Honest fallback: keep selector but don’t fake counties
+    selector.innerHTML = '<option value="">City list unavailable</option>';
   }
 
   const saved = localStorage.getItem(CITY_KEY);
@@ -79,44 +77,48 @@ async function loadCities() {
   });
 }
 
-// RENDER
+// RENDER — MATCH HEART CORE FIELDS
 function render(core) {
   document.getElementById("conditionsLocation").textContent = core.city_display;
   document.getElementById("tempValue").textContent = `${Math.round(core.temp_f)}°F`;
-  document.getElementById("feelsLikeValue").textContent = `Feels like ${Math.round(core.apparent_temperature)}°F`;
+  document.getElementById("feelsLikeValue").textContent =
+    `Feels like ${Math.round(core.apparent_temperature)}°F`;
 
-  const [condText] = WX[core.weather_code] || ["Unknown"];
-  document.getElementById("condText").textContent = condText;
+  document.getElementById("condText").textContent = core.condition_text;
+  document.getElementById("windText").textContent =
+    `Wind: ${Math.round(core.wind_mph)} mph ${core.wind_direction}`;
+  document.getElementById("humidityText").textContent =
+    `Humidity: ${Math.round(core.humidity_2m)}%`;
+  document.getElementById("pressureText").textContent =
+    `Pressure: ${Math.round(core.pressure_msl)} hPa`;
+  document.getElementById("obsTime").textContent =
+    `Last update: ${core.local_time}`;
 
-  document.getElementById("windText").textContent = `Wind: ${Math.round(core.wind_mph)} mph ${core.wind_direction}`;
-  document.getElementById("humidityText").textContent = `Humidity: ${Math.round(core.humidity)}%`;
-  document.getElementById("pressureText").textContent = `Pressure: ${Math.round(core.pressure)} hPa`;
-  document.getElementById("obsTime").textContent = `Last update: ${core.local_time}`;
+  // Radar (radar_loop_gif from HEART) 
+  document.getElementById("radarImage").src = core.radar_loop_gif;
+  document.getElementById("radarTime").textContent =
+    `Middle Tennessee Radar: ${core.radar_timestamp || core.local_time}`;
 
-  // Radar
-  document.getElementById("radarImage").src = core.radar_url;
-  document.getElementById("radarTime").textContent = `Middle Tennessee Radar: ${core.radar_time}`;
-
-  // Forecast
+  // Extended forecast (forecast_daily from HEART) 
   const grid = document.getElementById("forecastGrid");
   grid.innerHTML = "";
-  core.extended_forecast.slice(0,5).forEach(p => {
+  core.forecast_daily.slice(0, 5).forEach(p => {
     const tile = document.createElement("div");
     tile.className = "forecast-tile";
     tile.innerHTML = `
-      <div class="forecast-period">${p.name}</div>
+      <div class="forecast-period">${p.label}</div>
       <div class="forecast-desc">${p.description}</div>
       <div class="forecast-temp">${Math.round(p.high_f)}° / ${Math.round(p.low_f)}°</div>
     `;
     grid.appendChild(tile);
   });
 
-  // Alerts
+  // Alerts (active_alerts from HEART) 
   const alertsCard = document.getElementById("alertsCard");
   const alertsBody = document.getElementById("alertsBody");
   alertsBody.innerHTML = "";
 
-  if (core.active_alerts.length) {
+  if (core.active_alerts && core.active_alerts.length) {
     alertsCard.hidden = false;
     core.active_alerts.forEach(a => {
       const div = document.createElement("div");
@@ -127,14 +129,13 @@ function render(core) {
     alertsCard.hidden = true;
   }
 
-  // Clock
   document.getElementById("cwnClock").textContent = core.local_time;
 }
 
-// HEART ERROR
+// ERROR STATE — HONEST STALE DATA 
 function showHeartError() {
   document.getElementById("condText").textContent = "Data unavailable";
-  document.getElementById("radarTime").textContent = "Radar unavailable";
+  document.getElementById("radarTime").textContent = "Middle Tennessee Radar unavailable";
 }
 
 // LOAD CITY
@@ -143,24 +144,12 @@ async function load(city) {
     const core = await fetchHeart(city);
     render(core);
   } catch (e) {
-    console.warn("HEART failed:", e);
+    console.error("HEART failed:", e);
     showHeartError();
   }
 }
 
-// DIRECTORY
-function wireDirectory() {
-  document.querySelectorAll(".dir-btn").forEach(btn => {
-    btn.onclick = () => {
-      const t = btn.dataset.target;
-      if (t === "home") location.href = "/index.html";
-      if (t === "1994") location.href = "/era/1994Severe.html";
-      if (t === "80s") return;
-    };
-  });
-}
-
-// AUTOSCALE
+// AUTOSCALE — SAME AS MAIN PAGE
 function scaleToFit() {
   const wrapper = document.getElementById("scaleWrapper");
   const scaleX = window.innerWidth / 1920;
@@ -169,12 +158,10 @@ function scaleToFit() {
   wrapper.style.transform = `scale(${scale})`;
   wrapper.style.transformOrigin = "top left";
 }
-
 window.addEventListener("resize", scaleToFit);
 
 // BOOT
 document.addEventListener("DOMContentLoaded", async () => {
-  wireDirectory();
   await loadCities();
   scaleToFit();
 
@@ -183,4 +170,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     load(city);
   }
 });
-
