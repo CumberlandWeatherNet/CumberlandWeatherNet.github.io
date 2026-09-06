@@ -11,12 +11,19 @@
 <body class="era-80s">
   <div id="scaleWrapper">
 
+    <!-- 1980s CWN Bug -->
+    <div class="cwn-bug-80s">CWN</div>
+
     <!-- HEADER -->
     <header class="cwn-header">
-      <div class="cwn-logo">
-        <span class="cwn-logo-mark">CWN</span>
-        <span class="cwn-logo-text">Cumberland Weather Network</span>
-        <span class="cwn-era-tag">1980s Edition</span>
+      <div class="cwn-logo-80s">
+        <div class="cwn-logo-outer">
+          <div class="cwn-logo-inner">
+            <div class="cwn-logo-title">CWN</div>
+            <div class="cwn-logo-sub">Cumberland Weather Network</div>
+            <div class="cwn-logo-era">1980s Edition</div>
+          </div>
+        </div>
       </div>
 
       <div class="cwn-header-right">
@@ -55,7 +62,9 @@
 
             <div class="cond-row">
               <span id="condText" class="cond-text">Loading conditions…</span>
-              <span id="condIcon" class="cond-icon"></span>
+              <span id="condIcon" class="cond-icon">
+                <div class="icon-sunny-80s"></div>
+              </span>
             </div>
 
             <div class="meta-row">
@@ -105,12 +114,12 @@
           <header class="crt-card-header">
             <h2>Regional Radar</h2>
             <span class="crt-location">Middle Tennessee</span>
-            <span id="radarTime" class="crt-time">Radar: --</span>
+            <span id="radarTime" class="crt-time">Middle Tennessee Radar: --</span>
           </header>
 
           <div class="crt-card-body">
-            <div class="radar-frame">
-              <img id="radarImage" src="" alt="Regional radar">
+            <div class="radar-frame-80s">
+              <img id="radarImage" src="" alt="Regional Radar">
               <div class="crt-scanlines"></div>
             </div>
           </div>
