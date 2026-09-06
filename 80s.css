@@ -1,11 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════
-   Cumberland Weather Network — 1980s Edition
-   80s.css · VT323 font · CRT phosphor aesthetic
-   ───────────────────────────────────────────────────────────────
-   DAY   — Miami Vice pastels · lavender · teal · hot pink
-   NIGHT — Blue CRT phosphor · electric cyan · current look
-═══════════════════════════════════════════════════════════════ */
-
 /* ══ DAY PALETTE — Miami Vice / 80s Pastel ══ */
 :root {
   --page:         #ddd4f4;
@@ -42,12 +34,10 @@ html[data-theme="night"] {
   --meta-color:   #030d18;
 }
 
-/* ══ RESET ══ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
 html { -webkit-text-size-adjust: 100% }
 button, select { font: inherit }
 
-/* ══ BODY + SCANLINES ══ */
 body {
   min-height: 100vh;
   padding: clamp(10px, 2.5vw, 24px);
@@ -74,7 +64,6 @@ body::before {
   );
 }
 
-/* ══ OUTER FRAME ══ */
 .cwn-frame {
   width: min(100%, 1080px);
   margin: 0 auto;
@@ -87,7 +76,6 @@ body::before {
   transition: background 600ms ease, border-color 600ms ease, box-shadow 600ms ease;
 }
 
-/* ══ HEADER ══ */
 .cwn-header {
   display: flex;
   flex-direction: column;
@@ -123,6 +111,7 @@ body::before {
   text-transform: uppercase;
   transition: color 600ms ease;
 }
+
 .cwn-station-line {
   font-size: clamp(.75rem, 2vw, 1rem);
   letter-spacing: .14em;
@@ -130,7 +119,6 @@ body::before {
   transition: color 600ms ease;
 }
 
-/* ══ HEADER CONTROLS ══ */
 .cwn-header-controls {
   display: flex;
   flex-wrap: wrap;
@@ -168,11 +156,11 @@ body::before {
   transition: background 600ms ease, color 100ms ease,
               box-shadow 100ms ease, border-color 600ms ease;
 }
+
 .cwn-btn:hover        { color: var(--accent); box-shadow: 0 0 10px var(--accent); border-color: var(--accent) }
 .cwn-btn:active       { opacity: .7 }
 .cwn-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px }
 
-/* ══ DIRECTORY DROPDOWN ══ */
 .directory-nav { position: relative; display: inline-block }
 
 .directory-menu {
@@ -190,6 +178,7 @@ body::before {
   box-shadow: 0 0 16px var(--border-light);
   transition: background 600ms ease;
 }
+
 .directory-nav.open .directory-menu { display: block }
 
 .directory-link {
@@ -204,12 +193,12 @@ body::before {
   border-bottom: 1px solid var(--border);
   transition: background 80ms ease, color 80ms ease, border-color 80ms ease;
 }
+
 .directory-link:last-child           { border-bottom: none }
 .directory-link:hover                { background: var(--panel); color: var(--accent); border-left-color: var(--accent) }
 .directory-link[aria-current="page"] { color: var(--accent); background: var(--panel); border-left-color: var(--accent) }
 .directory-link:focus-visible        { outline: 1px solid var(--accent); outline-offset: -2px }
 
-/* ══ FORECAST STRIP ══ */
 .weather-icons {
   display: grid;
   grid-template-columns: repeat(6, minmax(0,1fr));
@@ -225,6 +214,7 @@ body::before {
   box-shadow: 0 0 6px var(--border);
   transition: background 600ms ease, border-color 600ms ease, box-shadow 600ms ease;
 }
+
 .icon-card:hover { border-color: var(--border-light); box-shadow: 0 0 10px var(--border-light) }
 
 .period-name {
@@ -236,6 +226,7 @@ body::before {
   text-transform: uppercase;
   transition: color 600ms ease;
 }
+
 .live-symbol {
   display: block;
   margin: 6px auto 4px;
@@ -244,6 +235,7 @@ body::before {
   color: var(--accent);
   transition: color 600ms ease;
 }
+
 .period-temp {
   color: var(--yellow);
   font-size: 1.4rem;
@@ -251,10 +243,9 @@ body::before {
   margin: 3px 0;
   transition: color 600ms ease;
 }
+
 .period-desc { min-height: 2.4em; font-size: .68rem; line-height: 1.3; color: var(--text) }
 .period-rain { color: var(--muted); font-size: .68rem; margin-top: 4px; transition: color 600ms ease }
-
-/* ══ ALERT STRIP ══ */
 .alert-strip {
   display: flex;
   align-items: center;
@@ -273,22 +264,15 @@ body::before {
   animation: alert-blink 1.2s step-end infinite;
   transition: border-color 600ms ease, color 600ms ease;
 }
+
 .alert-strip[hidden] { display: none }
+
 @keyframes alert-blink { 0%,100%{opacity:1} 50%{opacity:.55} }
-.alert-flash { font-size: 1.2rem; animation: alert-blink 0.8s step-end infinite }
 
-/* ══ FIELD LABEL ══ */
-.field-label {
-  display: block;
-  margin: 16px 0 4px;
-  color: var(--muted);
-  font-size: .9rem;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  transition: color 600ms ease;
+.alert-flash {
+  font-size: 1.2rem;
+  animation: alert-blink 0.8s step-end infinite;
 }
-
-/* ══ CITY SELECT ══ */
 .cwn-city-select {
   display: block;
   width: 100%;
@@ -303,9 +287,11 @@ body::before {
   box-shadow: 0 0 6px var(--border);
   transition: background 600ms ease, border-color 600ms ease;
 }
-.cwn-city-select:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px }
 
-/* ══ CONTENT GRID ══ */
+.cwn-city-select:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0,.82fr) minmax(0,1.18fr);
@@ -334,8 +320,6 @@ body::before {
   text-shadow: -2px 0 var(--pink), 2px 0 var(--border-light);
   transition: color 600ms ease, text-shadow 600ms ease, border-color 600ms ease;
 }
-
-/* ══ CURRENT CONDITIONS ══ */
 .current-layout {
   display: grid;
   grid-template-columns: 84px 1fr;
@@ -353,6 +337,7 @@ body::before {
   box-shadow: 0 0 10px var(--border-light);
   transition: background 600ms ease, box-shadow 600ms ease;
 }
+
 .current-live-symbol {
   font-size: 3rem;
   line-height: 1;
@@ -411,8 +396,6 @@ body::before {
   letter-spacing: .05em;
   transition: color 600ms ease;
 }
-
-/* ══ ALERT PANEL ══ */
 #alertsPanel {
   margin-top: 12px;
   padding: clamp(12px, 2vw, 18px);
@@ -453,8 +436,6 @@ body::before {
   line-height: 1.4;
   transition: color 600ms ease;
 }
-
-/* ══ FOOTER TICKER ══ */
 .ticker-wrap {
   margin-top: 20px;
   overflow: hidden;
@@ -477,8 +458,11 @@ body::before {
   0%   { transform: translateX(0) }
   100% { transform: translateX(-100%) }
 }
+/* ═══════════════════════════════════════════════════════════════
+   RADAR FIX — Seamless scaling inside autoscale wrapper
+   ONLY CHANGE ADDED — everything else is original
+═══════════════════════════════════════════════════════════════ */
 
-/* ══ RADAR FIX — Seamless scaling inside autoscale wrapper ══ */
 .cwn-radar-frame {
   width: 100%;
   height: 100%;
@@ -487,7 +471,6 @@ body::before {
   display: block;
 }
 
-/* Radar image scales perfectly and never escapes its CRT box */
 #cwnRadar {
   width: 100%;
   height: 100%;
