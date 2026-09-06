@@ -19,32 +19,33 @@
       <svg class="cwn60s-svg" viewBox="0 0 860 160" xmlns="http://www.w3.org/2000/svg"
            role="img" aria-label="CWN">
         <defs>
-          <!-- Day gradient: warm harvest gold -->
+          <!-- DAY: light avocado highlight → mid avocado → deep teal → dark olive -->
           <linearGradient id="cwn60-fill-day" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#ffe680"/>
-            <stop offset="40%"  stop-color="#c8780a"/>
-            <stop offset="80%"  stop-color="#8b4c00"/>
-            <stop offset="100%" stop-color="#5a2800"/>
+            <stop offset="0%"   stop-color="#e8f8d0"/>
+            <stop offset="30%"  stop-color="#4a9a40"/>
+            <stop offset="68%"  stop-color="#1a7c6c"/>
+            <stop offset="100%" stop-color="#2e4a08"/>
           </linearGradient>
-          <!-- Night gradient: amber glow -->
+          <!-- NIGHT: bright emerald → vivid emerald → deep forest -->
           <linearGradient id="cwn60-fill-night" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#ffe040"/>
-            <stop offset="45%"  stop-color="#e09818"/>
-            <stop offset="100%" stop-color="#8b5c00"/>
+            <stop offset="0%"   stop-color="#c0f0d8"/>
+            <stop offset="42%"  stop-color="#38c888"/>
+            <stop offset="100%" stop-color="#0d5028"/>
           </linearGradient>
-          <!-- Shared shine -->
+          <!-- Shine: avocado-tinted highlight -->
           <linearGradient id="cwn60-shine" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="rgba(255,255,200,.45)"/>
-            <stop offset="50%" stop-color="rgba(255,240,100,0)"/>
+            <stop offset="0%"  stop-color="rgba(220,255,220,.42)"/>
+            <stop offset="52%" stop-color="rgba(180,255,200,0)"/>
           </linearGradient>
-          <!-- Sunburst ray gradient -->
+          <!-- DAY sun rays: olive green burst -->
           <radialGradient id="cwn60-ray-day" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stop-color="#f0b020" stop-opacity=".55"/>
-            <stop offset="100%" stop-color="#c8780a" stop-opacity="0"/>
+            <stop offset="0%"   stop-color="#5a9a20" stop-opacity=".60"/>
+            <stop offset="100%" stop-color="#2e4a08" stop-opacity="0"/>
           </radialGradient>
+          <!-- NIGHT sun rays: emerald burst -->
           <radialGradient id="cwn60-ray-night" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stop-color="#e09818" stop-opacity=".45"/>
-            <stop offset="100%" stop-color="#7a4800" stop-opacity="0"/>
+            <stop offset="0%"   stop-color="#1e8a50" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#0d5028" stop-opacity="0"/>
           </radialGradient>
           <filter id="cwn60-glow" x="-15%" y="-35%" width="130%" height="170%">
             <feGaussianBlur stdDeviation="7" result="b"/>
@@ -52,13 +53,13 @@
           </filter>
           <filter id="cwn60-drop" x="-8%" y="-15%" width="120%" height="148%">
             <feDropShadow dx="5" dy="5" stdDeviation="4"
-                          flood-color="rgba(40,10,0,.70)" flood-opacity="1"/>
+                          flood-color="rgba(5,20,5,.68)" flood-opacity="1"/>
           </filter>
           <style>
             #cwn60-main-text { fill: url(#cwn60-fill-night) }
-            #cwn60-ray       { fill: url(#cwn60-ray-night) }
+            #cwn60-ray       { fill: url(#cwn60-ray-night)  }
             html[data-theme="day"] #cwn60-main-text { fill: url(#cwn60-fill-day) }
-            html[data-theme="day"] #cwn60-ray       { fill: url(#cwn60-ray-day) }
+            html[data-theme="day"] #cwn60-ray       { fill: url(#cwn60-ray-day)  }
           </style>
         </defs>
 
@@ -94,11 +95,11 @@
         <!-- Glow halo text -->
         <text x="430" y="126" text-anchor="middle"
               font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
-              fill="rgba(220,150,10,.22)" filter="url(#cwn60-glow)">CWN</text>
+              fill="rgba(26,124,108,.20)" filter="url(#cwn60-glow)">CWN</text>
         <!-- Drop shadow text -->
         <text x="430" y="126" text-anchor="middle"
               font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
-              fill="rgba(30,8,0,.60)" filter="url(#cwn60-drop)">CWN</text>
+              fill="rgba(4,16,10,.65)" filter="url(#cwn60-drop)">CWN</text>
         <!-- Main fill text -->
         <text id="cwn60-main-text" x="430" y="126" text-anchor="middle"
               font-family="'Bebas Neue', Impact, sans-serif" font-size="132"
