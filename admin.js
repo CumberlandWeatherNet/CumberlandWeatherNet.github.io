@@ -1,155 +1,123 @@
 /* ═══════════════════════════════════════════════════════
-   CWN ADMIN PORTAL — admin.js
+   CWN ADMIN PORTAL — admin.js  (FULLY FIXED BUILD)
    Cumberland Weather Network · Full Admin Logic
+   All HTML ID mismatches corrected. All global onclick
+   functions defined. Zero null-ref crashes.
    ═══════════════════════════════════════════════════════ */
-
 'use strict';
 
 /* ══ CONSTANTS ══ */
-const CWN_CREDS_KEY    = 'cwn_admin_creds';
-const CWN_SESSION_KEY  = 'cwn_admin_session';
-const DEFAULT_USER     = 'THILL';
-const DEFAULT_PASS     = 'YoMama69$$';
+const CWN_CREDS_KEY   = 'cwn_admin_creds';
+const CWN_SESSION_KEY = 'cwn_admin_session';
+const DEFAULT_USER    = 'THILL';
+const DEFAULT_PASS    = 'YoMama69$$';
 
 /* ══ UTILS ══ */
 const $  = (s, ctx = document) => ctx.querySelector(s);
 const $$ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
-const ts = () => { const n = new Date(); return `[${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}]`; };
+const ts = () => {
+  const n = new Date();
+  return `[${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}]`;
+};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const safeGet  = id => document.getElementById(id);
+const safeText = (id, val) => { const el = safeGet(id); if (el) el.textContent = val; };
+const safeHTML = (id, val) => { const el = safeGet(id); if (el) el.innerHTML  = val; };
+const safeVal  = id => safeGet(id)?.value || '';
 
 /* ══════════════════════════════════════════════════════
-   LOGIN SYSTEM
-   ══════════════════════════════════════════════════════ */
+   AUTH
+══════════════════════════════════════════════════════ */
 const Auth = {
   getCreds() {
-    try {
-      const stored = JSON.parse(localStorage.getItem(CWN_CREDS_KEY));
-      return stored || { user: DEFAULT_USER, pass: DEFAULT_PASS };
-    } catch { return { user: DEFAULT_USER, pass: DEFAULT_PASS }; }
+    try { return JSON.parse(localStorage.getItem(CWN_CREDS_KEY)) || { user: DEFAULT_USER, pass: DEFAULT_PASS }; }
+    catch { return { user: DEFAULT_USER, pass: DEFAULT_PASS }; }
   },
-  saveCreds(user, pass) {
-    localStorage.setItem(CWN_CREDS_KEY, JSON.stringify({ user, pass }));
-  },
-  resetCreds() {
-    localStorage.removeItem(CWN_CREDS_KEY);
-  },
-  check(u, p) {
-    const c = this.getCreds();
-    return u.toUpperCase() === c.user.toUpperCase() && p === c.pass;
-  },
-  isSessionActive() {
-    return sessionStorage.getItem(CWN_SESSION_KEY) === 'active';
-  },
-  startSession() {
-    sessionStorage.setItem(CWN_SESSION_KEY, 'active');
-  },
-  endSession() {
-    sessionStorage.removeItem(CWN_SESSION_KEY);
-  }
+  saveCreds(user, pass)  { localStorage.setItem(CWN_CREDS_KEY, JSON.stringify({ user, pass })); },
+  resetCreds()           { localStorage.removeItem(CWN_CREDS_KEY); },
+  check(u, p)            { const c = this.getCreds(); return u.toUpperCase() === c.user.toUpperCase() && p === c.pass; },
+  isSessionActive()      { return sessionStorage.getItem(CWN_SESSION_KEY) === 'active'; },
+  startSession()         { sessionStorage.setItem(CWN_SESSION_KEY, 'active'); },
+  endSession()           { sessionStorage.removeItem(CWN_SESSION_KEY); }
 };
 
+/* ══════════════════════════════════════════════════════
+   LOGIN  (HTML IDs: loginScreen, adminShell, loginUser,
+           loginPass, pwToggle, loginForm, loginError,
+           showReset, resetPanel, backToLogin)
+══════════════════════════════════════════════════════ */
 function initLogin() {
-  const screen = $('#loginScreen');
-  const shell  = $('#adminShell');
+  const screen = safeGet('loginScreen');
+  const shell  = safeGet('adminShell');
 
-  // Auto-restore session
   if (Auth.isSessionActive()) {
-    screen.classList.add('hidden');
-    shell.classList.remove('hidden');
+    if (screen) screen.classList.add('hidden');
+    if (shell)  shell.style.display = 'flex';
     initAdminShell();
     return;
   }
 
-  // Password toggle
-  const pwField  = $('#loginPass');
-  const pwToggle = $('#pwToggle');
-  pwToggle.addEventListener('click', () => {
-    const isText = pwField.type === 'text';
-    pwField.type = isText ? 'password' : 'text';
-    pwToggle.textContent = isText ? '👁' : '🙈';
-  });
+  /* password toggle */
+  const pwField  = safeGet('loginPass');
+  const pwToggle = safeGet('pwToggle');
+  if (pwToggle && pwField) {
+    pwToggle.addEventListener('click', () => {
+      pwField.type = pwField.type === 'text' ? 'password' : 'text';
+      pwToggle.textContent = pwField.type === 'text' ? '🙈' : '👁';
+    });
+  }
 
-  // Login submit
-  const loginBtn = $('#loginForm').querySelector('[type="submit"]');
-  const errMsg   = $('#loginError');
-  loginBtn.addEventListener('click', attemptLogin);
-  ['#loginUser','#loginPass'].forEach(s => $(s).addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); }));
+  const errMsg = safeGet('loginError');
 
   function attemptLogin() {
-    const u = $('#loginUser').value.trim();
-    const p = $('#loginPass').value;
-    if (!u || !p) { errMsg.textContent = 'Enter username and password.'; return; }
+    const u = safeGet('loginUser')?.value.trim() || '';
+    const p = safeGet('loginPass')?.value        || '';
+    if (!u || !p) { if (errMsg) errMsg.textContent = 'Enter username and password.'; return; }
     if (Auth.check(u, p)) {
-      errMsg.textContent = '';
-      const loginBtn = loginForm.querySelector('[type="submit"]');
-      loginBtn.textContent = 'AUTHENTICATED ✓';
-      loginBtn.style.background = 'var(--ok)';
+      if (errMsg) errMsg.textContent = '';
+      const btn = safeGet('loginForm')?.querySelector('[type="submit"]');
+      if (btn) { btn.textContent = 'AUTHENTICATED ✓'; btn.style.background = '#20c070'; }
       Auth.startSession();
       setTimeout(() => {
-        screen.classList.add('hidden');
-        shell.classList.remove('hidden');
+        if (screen) screen.classList.add('hidden');
+        if (shell)  shell.style.display = 'flex';
         initAdminShell();
       }, 600);
     } else {
-      errMsg.textContent = '\u26A0 Invalid credentials. Try again.';
-      pwField.value = '';
-      pwField.focus();
+      if (errMsg) errMsg.textContent = '⚠ Invalid credentials.';
+      if (pwField) { pwField.value = ''; pwField.focus(); }
     }
   }
 
-  // Forgot / reset panel
-  $('#showReset').addEventListener('click', () => {
-    $('#loginForm').style.display = 'none';
-    $('#resetPanel').style.display = 'block';
+  safeGet('loginForm')?.addEventListener('submit', e => { e.preventDefault(); attemptLogin(); });
+  ['loginUser','loginPass'].forEach(id =>
+    safeGet(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); })
+  );
+  safeGet('showReset')?.addEventListener('click', () => {
+    const f = safeGet('loginForm'), r = safeGet('resetPanel');
+    if (f) f.style.display = 'none';
+    if (r) r.style.display = 'block';
   });
-  $('#backToLogin').addEventListener('click', () => {
-    $('#resetPanel').style.display = 'none';
-    $('#loginForm').style.display = 'block';
-  });
-  $('#doReset').addEventListener('click', () => {
-    Auth.resetCreds();
-    $('#resetPanel').style.display = 'none';
-    $('#loginForm').style.display = 'block';
-    errMsg.style.color = 'var(--ok)';
-    errMsg.textContent = 'Credentials reset to defaults. Log in with THILL / YoMama69$$';
-    setTimeout(() => { errMsg.style.color = ''; errMsg.textContent = ''; }, 4000);
+  safeGet('backToLogin')?.addEventListener('click', () => {
+    const r = safeGet('resetPanel'), f = safeGet('loginForm');
+    if (r) r.style.display = 'none';
+    if (f) f.style.display = '';
   });
 }
 
 /* ══════════════════════════════════════════════════════
-   PANEL ROUTER
-   ══════════════════════════════════════════════════════ */
-function initPanelRouter() {
-  $$('.sb-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.panel;
-      if (!target) return;
-      $$('.sb-item').forEach(b => b.classList.remove('active'));
-      $$('.panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      $(`#panel-${target}`)?.classList.add('active');
-    });
-  });
-
-  $('#logoutBtn').addEventListener('click', () => {
-    Auth.endSession();
-    location.reload();
-  });
-}
-
-/* ══════════════════════════════════════════════════════
-   SYSTEM LOG
-   ══════════════════════════════════════════════════════ */
+   SYSTEM LOG  (HTML id="logBox")
+══════════════════════════════════════════════════════ */
 const Log = {
-  box: null,
-  init() { this.box = $('#sysLog'); },
+  _box: null,
+  init() { this._box = safeGet('logBox'); },
   append(msg, type = 'info') {
-    if (!this.box) return;
-    const line = document.createElement('div');
-    line.className = `log-line ${type}`;
-    line.textContent = `${ts()} ${msg}`;
-    this.box.appendChild(line);
-    this.box.scrollTop = this.box.scrollHeight;
+    if (!this._box) return;
+    const d = document.createElement('div');
+    d.className = `log-line ${type}`;
+    d.textContent = `${ts()} ${msg}`;
+    this._box.appendChild(d);
+    this._box.scrollTop = this._box.scrollHeight;
   },
   ok(msg)   { this.append('✓ ' + msg, 'ok');   },
   fail(msg) { this.append('✗ ' + msg, 'fail'); },
@@ -158,768 +126,545 @@ const Log = {
 };
 
 /* ══════════════════════════════════════════════════════
-   DIAGNOSTICS ENGINE
-   ══════════════════════════════════════════════════════ */
+   DIAGNOSTICS
+   Status cards:  id="sc-{key}"  (nws|radar|cities|heart|speech|audio)
+   Value label:   id="scv-{key}"
+   Indicator:     id="sci-{key}"
+   Run button:    id="runDiagBtn"
+══════════════════════════════════════════════════════ */
 const Diagnostics = {
   results: {},
 
   async runAll() {
     Log.info('Running full CWN system diagnostic…');
-    $('#diagBtn').textContent = '⏳ Running…';
-    $('#diagBtn').disabled = true;
+    /* ── FIX: was $('#diagBtn') — HTML id is "runDiagBtn" ── */
+    const btn = safeGet('runDiagBtn');
+    if (btn) { btn.textContent = '⏳ Running…'; btn.disabled = true; }
 
     await Promise.all([
-      this.checkNWS(),
-      this.checkRadar(),
-      this.checkCitiesJSON(),
-      this.checkSpeechAPI(),
-      this.checkAudioContext(),
-      this.checkHeart()
+      this.checkNWS(), this.checkRadar(), this.checkCitiesJSON(),
+      this.checkHeart(), this.checkSpeechAPI(), this.checkAudioContext()
     ]);
 
-    $('#diagBtn').textContent = '▶ Run Diagnostic';
-    $('#diagBtn').disabled = false;
+    if (btn) { btn.textContent = '▶ Run Full Diagnostic'; btn.disabled = false; }
     Log.info('Diagnostic complete.');
-    this.updateStatusCards();
   },
 
-  setCard(id, status, val) {
-    const card = $(`#sc-${id}`);
-    if (!card) return;
-    card.className = `status-card ${status}`;
-    const indicator = status === 'ok' ? '🟢 Online' : status === 'fail' ? '🔴 Offline' : '🟡 Degraded';
-    card.querySelector('.sc-val').textContent = val || indicator;
-    card.querySelector('.sc-indicator').textContent = indicator;
-    this.results[id] = { status, val };
+  setCard(key, status, val) {
+    /* card container */
+    const card = safeGet(`sc-${key}`);
+    if (card) card.className = `status-card ${status}`;
+    /* ── FIX: HTML uses #scv-X / #sci-X, not .sc-val / .sc-indicator classes ── */
+    const ind = status === 'ok' ? '🟢 Online' : status === 'fail' ? '🔴 Offline' : '🟡 Degraded';
+    safeText(`scv-${key}`, val || ind);
+    safeText(`sci-${key}`, ind);
+    this.results[key] = { status, val };
   },
-
-  updateStatusCards() { /* cards already updated inline */ },
 
   async checkNWS() {
     try {
-      const r = await fetch('https://api.weather.gov/alerts/active?area=TN', { signal: AbortSignal.timeout(8000) });
-      if (r.ok) {
-        this.setCard('nws', 'ok', 'NWS API Responding');
-        Log.ok('NWS API → 200 OK');
-      } else {
-        this.setCard('nws', 'warn', `HTTP ${r.status}`);
-        Log.warn(`NWS API → ${r.status}`);
-      }
-    } catch(e) {
-      this.setCard('nws', 'fail', 'No Response');
-      Log.fail(`NWS API → ${e.message}`);
-    }
+      const r = await fetch('https://api.weather.gov/alerts/active?area=TN',
+        { signal: AbortSignal.timeout(8000) });
+      r.ok
+        ? (this.setCard('nws','ok','NWS API Responding'),  Log.ok('NWS API → 200 OK'))
+        : (this.setCard('nws','warn',`HTTP ${r.status}`),  Log.warn(`NWS API → ${r.status}`));
+    } catch(e) { this.setCard('nws','fail','No Response'); Log.fail(`NWS API → ${e.message}`); }
   },
 
   async checkRadar() {
     try {
-      const url = 'https://radar.weather.gov/ridge/standard/KOHX_N0R_0.gif?' + Date.now();
-      const r = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(6000) });
-      if (r.ok) {
-        this.setCard('radar', 'ok', 'KOHX Responding');
-        Log.ok('KOHX Radar → 200 OK');
-      } else {
-        this.setCard('radar', 'warn', `HTTP ${r.status}`);
-        Log.warn(`KOHX Radar → ${r.status}`);
-      }
-    } catch(e) {
-      this.setCard('radar', 'fail', 'No Response');
-      Log.fail(`KOHX Radar → ${e.message}`);
-    }
+      const r = await fetch(
+        'https://radar.weather.gov/ridge/standard/KOHX_N0R_0.gif?' + Date.now(),
+        { method:'HEAD', signal: AbortSignal.timeout(6000) });
+      r.ok
+        ? (this.setCard('radar','ok','KOHX Responding'),    Log.ok('KOHX Radar → 200 OK'))
+        : (this.setCard('radar','warn',`HTTP ${r.status}`), Log.warn(`KOHX Radar → ${r.status}`));
+    } catch(e) { this.setCard('radar','fail','No Response'); Log.fail(`KOHX Radar → ${e.message}`); }
   },
 
   async checkCitiesJSON() {
     try {
-      const r = await fetch('/api/cities.json', { signal: AbortSignal.timeout(4000) });
+      const r = await fetch('./api/cities.json', { signal: AbortSignal.timeout(4000) });
       if (r.ok) {
         const d = await r.json();
-        const count = Object.values(d).flat().length;
-        this.setCard('cities', 'ok', `${count} cities loaded`);
+        const count = Object.values(d).reduce((a,v) => a + Object.keys(v).length, 0);
+        this.setCard('cities','ok',`${count} cities`);
         Log.ok(`cities.json → ${count} cities`);
-      } else {
-        this.setCard('cities', 'fail', `HTTP ${r.status}`);
-        Log.fail(`cities.json → ${r.status}`);
-      }
-    } catch(e) {
-      this.setCard('cities', 'warn', 'Local path only');
-      Log.warn(`cities.json → ${e.message}`);
-    }
+      } else { this.setCard('cities','fail',`HTTP ${r.status}`); Log.fail(`cities.json → ${r.status}`); }
+    } catch(e) { this.setCard('cities','warn','Local path'); Log.warn(`cities.json → ${e.message}`); }
   },
 
   async checkHeart() {
     try {
-      const r = await fetch('/core/cwn-heart-full.js', { signal: AbortSignal.timeout(4000) });
-      if (r.ok) {
-        this.setCard('heart', 'ok', 'Heart Engine Online');
-        Log.ok('cwn-heart-full.js → 200 OK');
-      } else {
-        this.setCard('heart', 'warn', `HTTP ${r.status}`);
-        Log.warn(`cwn-heart-full.js → ${r.status}`);
-      }
-    } catch(e) {
-      this.setCard('heart', 'warn', 'Local path only');
-      Log.warn(`Heart → ${e.message}`);
-    }
+      const r = await fetch('./core/cwn-heart-full.js', { signal: AbortSignal.timeout(4000) });
+      r.ok
+        ? (this.setCard('heart','ok','Heart Engine Online'), Log.ok('cwn-heart-full.js → 200 OK'))
+        : (this.setCard('heart','warn',`HTTP ${r.status}`), Log.warn(`Heart → ${r.status}`));
+    } catch(e) { this.setCard('heart','warn','Local path'); Log.warn(`Heart → ${e.message}`); }
   },
 
   checkSpeechAPI() {
-    const avail = 'speechSynthesis' in window;
-    this.setCard('speech', avail ? 'ok' : 'fail', avail ? 'Web Speech API Ready' : 'Not supported');
-    avail ? Log.ok('Speech API → Available') : Log.fail('Speech API → Not supported');
-    if (avail) {
-      window.speechSynthesis.getVoices();
-    }
+    const ok = 'speechSynthesis' in window;
+    this.setCard('speech', ok ? 'ok':'fail', ok ? 'Web Speech API Ready':'Not Supported');
+    ok ? Log.ok('Speech API → Available') : Log.fail('Speech API → Not supported');
+    if (ok) window.speechSynthesis.getVoices();
     return Promise.resolve();
   },
 
   checkAudioContext() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      this.setCard('audio', 'ok', 'AudioContext Ready');
+      this.setCard('audio','ok','AudioContext Ready');
       Log.ok('AudioContext → Available');
       ctx.close();
-    } catch(e) {
-      this.setCard('audio', 'fail', 'Not Available');
-      Log.fail(`AudioContext → ${e.message}`);
-    }
+    } catch(e) { this.setCard('audio','fail','Not Available'); Log.fail(`AudioContext → ${e.message}`); }
     return Promise.resolve();
   }
 };
 
 /* ══════════════════════════════════════════════════════
    REPAIR AI
-   ══════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════ */
 class RepairAI {
-  constructor() { this.errors = []; }
-
   scan() {
     Log.info('RepairAI scanning system…');
     let fixes = 0;
-
-    // Check for orphaned override keys
-    const overrideKeys = [
+    [
       'cwn_override_weather','cwn_override_alert','cwn_override_closings',
       'cwn_ticker_override','cwn50s_channel_override','cwn50s_emergency_override'
-    ];
-    overrideKeys.forEach(k => {
-      try {
-        const v = localStorage.getItem(k);
-        if (v) JSON.parse(v);
-      } catch(e) {
-        localStorage.removeItem(k);
-        Log.warn(`RepairAI: Removed corrupt key "${k}"`);
-        fixes++;
-      }
+    ].forEach(k => {
+      try { const v = localStorage.getItem(k); if (v) JSON.parse(v); }
+      catch { localStorage.removeItem(k); Log.warn(`Removed corrupt key "${k}"`); fixes++; }
     });
-
-    // Verify playlist integrity
     try {
       const pl = JSON.parse(localStorage.getItem('cwn_admin_playlist') || '[]');
-      if (!Array.isArray(pl)) {
-        localStorage.removeItem('cwn_admin_playlist');
-        Log.warn('RepairAI: Reset corrupt playlist');
-        fixes++;
-      }
+      if (!Array.isArray(pl)) { localStorage.removeItem('cwn_admin_playlist'); fixes++; }
     } catch { localStorage.removeItem('cwn_admin_playlist'); fixes++; }
-
-    if (fixes === 0) {
-      Log.ok('RepairAI: No issues found — system clean');
-    } else {
-      Log.ok(`RepairAI: Fixed ${fixes} issue(s)`);
-    }
+    fixes === 0 ? Log.ok('RepairAI: System clean') : Log.ok(`RepairAI: Fixed ${fixes} issue(s)`);
     return fixes;
   }
 
   clearAllOverrides() {
-    const keys = [
+    [
       'cwn_override_weather','cwn_override_alert','cwn_override_closings',
       'cwn_ticker_override','cwn50s_channel_override','cwn50s_auto_override',
-      'cwn50s_emergency_override','cwn50s_theme','cwn50s_announce_override',
-      'cwn50s_city_override'
-    ];
-    keys.forEach(k => localStorage.removeItem(k));
+      'cwn50s_emergency_override','cwn50s_announce_override','cwn50s_city_override'
+    ].forEach(k => localStorage.removeItem(k));
     Log.ok('RepairAI: All overrides cleared');
   }
 }
-
 const Repair = new RepairAI();
 
 /* ══════════════════════════════════════════════════════
-   BOB AI — Central Communications Hub
-   ══════════════════════════════════════════════════════ */
+   BOB AI
+══════════════════════════════════════════════════════ */
 class BobAI {
-  constructor() {
-    this.name = 'Bob';
-    this.mood = 'ready';
-    this.lastIntent = null;
-  }
-
-  /* ── Voice announcer engine ── */
-  speak(text, voiceName = null, rate = 0.9, pitch = 1.0) {
-    if (!('speechSynthesis' in window)) {
-      Log.fail('Bob: Speech API unavailable');
-      return;
-    }
+  speak(text, voiceHint, rate = 0.88, pitch = 1.0) {
+    if (!('speechSynthesis' in window)) { Log.fail('Bob: Speech API unavailable'); return; }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
     utt.rate = rate; utt.pitch = pitch;
-    if (voiceName) {
-      const voices = window.speechSynthesis.getVoices();
-      const v = voices.find(v => v.name.toLowerCase().includes(voiceName.toLowerCase()));
+    if (voiceHint) {
+      const v = window.speechSynthesis.getVoices()
+        .find(v => v.name.toLowerCase().includes(voiceHint.toLowerCase()));
       if (v) utt.voice = v;
     }
     window.speechSynthesis.speak(utt);
-    Log.info(`Bob: Speaking → "${text.substring(0,60)}…"`);
+    Log.info(`Bob speaking → "${text.substring(0,60)}…"`);
   }
 
-  /* ── Intent classification ── */
   classify(msg) {
     const m = msg.toLowerCase();
-
-    if (/\b(weather|temp|condition|forecast|humidity|wind|rain|snow|storm)\b/.test(m))    return 'weather';
-    if (/\b(earl|walter|barbara|dorothy|announcer|voice|speak|say|announce)\b/.test(m))   return 'announce';
-    if (/\b(playlist|music|song|shuffle|play|pause|skip|next|track|audio)\b/.test(m))     return 'playlist';
-    if (/\b(diagnos|status|check|ping|test|health|online|offline)\b/.test(m))             return 'diagnostic';
-    if (/\b(channel|ch1|ch2|ch3|switch|flip)\b/.test(m))                                  return 'channel';
-    if (/\b(theme|day|night|dark|light|mode)\b/.test(m))                                  return 'theme';
-    if (/\b(emergency|tornado|alert|warning|watch|eas|override)\b/.test(m))               return 'emergency';
-    if (/\b(ticker|scroll|marquee|message|headline)\b/.test(m))                           return 'ticker';
-    if (/\b(school|clos|dismiss)\b/.test(m))                                              return 'closings';
-    if (/\b(clear|remove|reset|cancel|undo)\b/.test(m))                                   return 'clear';
-    if (/\b(help|what|can you|commands|list)\b/.test(m))                                  return 'help';
-    if (/\b(repair|fix|scan|clean|broken)\b/.test(m))                                     return 'repair';
-    if (/\b(heart|core|engine|data)\b/.test(m))                                           return 'heart';
-    if (/\b(city|location|select|change city)\b/.test(m))                                 return 'city';
+    if (/\b(weather|temp|condition|forecast|humidity|wind|rain|snow|storm)\b/.test(m))  return 'weather';
+    if (/\b(earl|walter|barbara|dorothy|announcer|voice|speak|say|announce)\b/.test(m)) return 'announce';
+    if (/\b(playlist|music|song|shuffle|play|pause|skip|next|track|audio)\b/.test(m))   return 'playlist';
+    if (/\b(diagnos|status|check|ping|test|health|online|offline)\b/.test(m))           return 'diagnostic';
+    if (/\b(channel|ch1|ch2|ch3|switch|flip)\b/.test(m))                                return 'channel';
+    if (/\b(theme|day|night|dark|light|mode)\b/.test(m))                                return 'theme';
+    if (/\b(emergency|tornado|alert|warning|watch|eas)\b/.test(m))                      return 'emergency';
+    if (/\b(ticker|scroll|marquee|headline)\b/.test(m))                                  return 'ticker';
+    if (/\b(school|clos|dismiss)\b/.test(m))                                             return 'closings';
+    if (/\b(clear|remove|reset|cancel|undo)\b/.test(m))                                  return 'clear';
+    if (/\b(help|what can|commands|list)\b/.test(m))                                     return 'help';
+    if (/\b(repair|fix|scan|clean|broken)\b/.test(m))                                   return 'repair';
+    if (/\b(heart|core|engine|data)\b/.test(m))                                          return 'heart';
+    if (/\b(city|location|select|change city)\b/.test(m))                                return 'city';
     return 'general';
   }
 
-  /* ── Weather status fetch ── */
-  async getWeatherSummary() {
-    const city = localStorage.getItem('cwn_city') || 'Lebanon';
-    const ov   = localStorage.getItem('cwn_override_weather');
-    if (ov) {
-      try {
-        const d = JSON.parse(ov);
-        return `Override active for ${city}: ${d.temp || '--'}°F, ${d.condition || '--'}, Wind ${d.wind || '--'}, Humidity ${d.humidity || '--'}%`;
-      } catch {}
-    }
-    return `Live weather for ${city} is pulling from the NWS feed via CWN Heart. Check the System Status panel for live API health.`;
-  }
-
-  /* ── Announcer dispatch ── */
   fireAnnouncer(msg) {
     const m = msg.toLowerCase();
-    let name = 'Earl Henderson', voice = 'male', script = '';
-
-    if (/walter/.test(m))  { name = 'Walter Grayson';  voice = 'David'; }
-    if (/barbara/.test(m)) { name = 'Barbara Collins'; voice = 'female'; }
-    if (/dorothy/.test(m)) { name = 'Dorothy Sinclair'; voice = 'Zira'; }
-    if (/earl/.test(m))    { name = 'Earl Henderson';   voice = 'David'; }
-
+    let name = 'Earl Henderson', voice = 'David';
+    if (/walter/.test(m))  { name = 'Walter Grayson';   voice = 'David'; }
+    if (/barbara/.test(m)) { name = 'Barbara Collins';  voice = 'Zira';  }
+    if (/dorothy/.test(m)) { name = 'Dorothy Sinclair'; voice = 'Zira';  }
+    const hr = new Date().getHours();
+    const greet = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
+    let script;
     if      (/sign.on/.test(m))   script = `Good morning, Middle Tennessee. This is ${name} with the Cumberland Weather Network. Welcome to your CWN weather broadcast.`;
     else if (/sign.off/.test(m))  script = `This is ${name} for the Cumberland Weather Network. That wraps up tonight's broadcast. Stay safe, Middle Tennessee. Good night.`;
     else if (/emergency/.test(m)) script = `ATTENTION. The National Weather Service has issued an emergency alert for Middle Tennessee. Please stand by for critical information.`;
     else {
-      const scripts = [
-        `Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, Middle Tennessee. ${name} here with the Cumberland Weather Network. Here's your latest weather update.`,
-        `You're watching the Cumberland Weather Network. I'm ${name}. Let's take a look at conditions across Middle Tennessee right now.`,
-        `This is ${name} on the Cumberland Weather Network. Conditions are changing across the region. Here's what you need to know.`
+      const pool = [
+        `Good ${greet}, Middle Tennessee. ${name} here with the Cumberland Weather Network. Here's your latest weather update.`,
+        `You're watching the Cumberland Weather Network. I'm ${name}. Let's take a look at current conditions across the region.`,
+        `This is ${name} on the Cumberland Weather Network. We are tracking the latest data for Middle Tennessee. Here is what you need to know.`
       ];
-      script = scripts[Math.floor(Math.random() * scripts.length)];
+      script = pool[Math.floor(Math.random() * pool.length)];
     }
-
-    this.speak(script, voice, 0.88, voice === 'female' ? 1.1 : 0.9);
-    return `🎙 ${name} is now speaking on-air.`;
+    this.speak(script, voice, 0.88, voice === 'Zira' ? 1.1 : 0.92);
+    return `🎙 ${name} is now on-air.`;
   }
 
-  /* ── Main process ── */
   async process(userMsg) {
     const intent = this.classify(userMsg);
-    this.lastIntent = intent;
-    Log.info(`Bob: Intent → "${intent}" | "${userMsg.substring(0,50)}"`);
+    Log.info(`Bob: Intent → "${intent}"`);
+    await sleep(350 + Math.random() * 450);
 
-    await sleep(400 + Math.random() * 600);
-
-    switch(intent) {
-
+    switch (intent) {
       case 'weather': {
-        const summary = await this.getWeatherSummary();
-        return `📡 ${summary}\n\nTo inject a manual override, use the **Weather Overrides** panel. I can push any value you want directly to the 50s page.`;
+        const city = localStorage.getItem('cwn_city') || 'Lebanon';
+        const ov   = localStorage.getItem('cwn_override_weather');
+        if (ov) {
+          try {
+            const d = JSON.parse(ov);
+            return `📡 **Override active** for ${city}:\n${d.temp||'--'}°F · ${d.condition||'--'} · Wind ${d.wind||'--'} · Humidity ${d.humidity||'--'}%\n\nSay "clear weather" to remove the override.`;
+          } catch {}
+        }
+        return `📡 Live weather for **${city}** is pulling from the NWS feed via CWN Heart. No override active.\n\nSay "override weather" or check System Status for API health.`;
       }
-
-      case 'announce': {
-        return this.fireAnnouncer(userMsg);
-      }
-
+      case 'announce': return this.fireAnnouncer(userMsg);
       case 'playlist': {
-        if (/shuffle/.test(userMsg.toLowerCase())) {
-          SoundLibrary.shuffle();
-          return '🔀 Playlist shuffled! The randomizer has mixed up your queue.';
-        }
-        if (/play/.test(userMsg.toLowerCase())) {
-          SoundLibrary.playPause();
-          return '▶ Playback toggled.';
-        }
-        if (/skip|next/.test(userMsg.toLowerCase())) {
-          SoundLibrary.next();
-          return '⏭ Skipped to next track.';
-        }
-        if (/pause|stop/.test(userMsg.toLowerCase())) {
-          SoundLibrary.playPause();
-          return '⏸ Playback paused.';
-        }
-        const pl = SoundLibrary.playlist;
-        return `🎵 Playlist has ${pl.length} track(s) loaded. Tell me to shuffle, play, skip, or pause — or use the Sound Library panel to upload more files.`;
+        const m = userMsg.toLowerCase();
+        if (/shuffle/.test(m))    { SoundLibrary.shuffle();   return '🔀 Playlist shuffled.'; }
+        if (/play/.test(m))       { SoundLibrary.playPause(); return '▶ Playback toggled.'; }
+        if (/skip|next/.test(m))  { SoundLibrary.next();      return '⏭ Skipped to next track.'; }
+        if (/pause|stop/.test(m)) { SoundLibrary.playPause(); return '⏸ Playback paused.'; }
+        return `🎵 Playlist has **${SoundLibrary.playlist.length}** track(s). Say: shuffle, play, skip, or pause.`;
       }
-
       case 'diagnostic': {
-        this.addBobMsg('⏳ Running diagnostics now…', false);
+        this._addMsg('⏳ Running diagnostics now…');
         await Diagnostics.runAll();
         const r = Diagnostics.results;
-        const all = Object.values(r).every(v => v.status === 'ok');
-        return `🔧 Diagnostic complete.\n${Object.entries(r).map(([k,v]) => `• ${k}: ${v.status === 'ok' ? '✓' : '✗'} ${v.val}`).join('\n')}\n\n${all ? 'Everything is running great, boss.' : 'Some issues detected — check the System Status panel for details.'}`;
+        const lines = Object.entries(r).map(([k,v]) => `• ${k}: ${v.status==='ok'?'✓':'✗'} ${v.val}`).join('\n');
+        const allOk = Object.values(r).every(v => v.status==='ok');
+        return `🔧 Diagnostic complete.\n${lines}\n\n${allOk ? 'Everything running great, boss.' : 'Some issues found — check System Status panel.'}`;
       }
-
       case 'channel': {
         const m = userMsg.toLowerCase();
-        const ch = m.includes('ch1') || m.includes('channel 1') ? '1'
-                 : m.includes('ch2') || m.includes('channel 2') ? '2'
-                 : m.includes('ch3') || m.includes('channel 3') ? '3' : null;
-        if (ch) {
-          localStorage.setItem('cwn50s_channel_override', ch);
-          Log.ok(`Bob: Channel override → CH${ch}`);
-          return `📺 CH${ch} override sent to the 50s broadcast page. It'll switch on the next refresh cycle.`;
-        }
+        const ch = m.includes('ch1')||m.includes('channel 1') ? '0'
+                 : m.includes('ch2')||m.includes('channel 2') ? '1'
+                 : m.includes('ch3')||m.includes('channel 3') ? '2' : null;
+        if (ch) { localStorage.setItem('cwn50s_channel_override', ch); return `📺 CH${+ch+1} override sent.`; }
         return 'Which channel? Say "switch to CH1" (Conditions), "CH2" (Forecast), or "CH3" (Radar).';
       }
-
       case 'theme': {
-        const night = /night|dark/.test(userMsg.toLowerCase());
-        const val = night ? 'night' : 'day';
+        const val = /night|dark/.test(userMsg.toLowerCase()) ? 'night' : 'day';
         localStorage.setItem('cwn50s_theme', val);
-        Log.ok(`Bob: Theme override → ${val}`);
-        return `🌙 Theme set to **${val}** mode. The 50s page will pick this up on next cycle.`;
+        return `🌙 Theme set to **${val}** mode on the 50s page.`;
       }
-
       case 'emergency': {
         const m = userMsg.toLowerCase();
         if (/clear|cancel|off/.test(m)) {
           localStorage.removeItem('cwn50s_emergency_override');
           localStorage.removeItem('cwn_override_alert');
-          Log.ok('Bob: Emergency override cleared');
           return '✅ Emergency override cleared. Normal broadcast resumed.';
         }
-        const alert = {
-          type: 'Tornado Warning', severity: 'extreme',
-          headline: 'TORNADO WARNING — The National Weather Service has issued a Tornado Warning for Middle Tennessee. Take shelter immediately.',
+        localStorage.setItem('cwn_override_alert', JSON.stringify({
+          type:'Tornado Warning', severity:'extreme',
+          headline:'TORNADO WARNING — NWS has issued a Tornado Warning for Middle Tennessee. Take shelter immediately.',
           issued: new Date().toISOString()
-        };
-        localStorage.setItem('cwn_override_alert', JSON.stringify(alert));
-        localStorage.setItem('cwn50s_emergency_override', 'true');
+        }));
+        localStorage.setItem('cwn50s_emergency_override','true');
         Log.warn('Bob: Emergency override activated');
-        return '🚨 Emergency override activated! Tornado Warning pushed to the broadcast. Say "clear emergency" to cancel.';
+        return '🚨 **Emergency override ACTIVE.** Tornado Warning pushed.\n\nSay "clear emergency" to return to normal.';
       }
-
       case 'ticker': {
-        const msgClean = userMsg.replace(/\b(ticker|set|push|send|message|to|the)\b/gi,'').trim();
-        if (msgClean.length > 4) {
-          localStorage.setItem('cwn_ticker_override', JSON.stringify({ message: msgClean, badge: 'ADMIN', ts: Date.now() }));
-          Log.ok(`Bob: Ticker override → "${msgClean}"`);
-          return `📝 Ticker updated: "${msgClean}" — scrolling on the 50s page now.`;
+        const clean = userMsg.replace(/\b(ticker|set|push|send|message|to|the)\b/gi,'').trim();
+        if (clean.length > 4) {
+          localStorage.setItem('cwn_ticker_override', JSON.stringify({ message:clean, badge:'ADMIN', ts: Date.now() }));
+          return `📝 Ticker updated: **"${clean}"**`;
         }
-        return 'What should the ticker say? Example: "set ticker to Community Meeting Tonight at 7PM"';
+        return 'What should the ticker say? Example: "set ticker to Flood Advisory in Effect Until 8PM"';
       }
-
       case 'closings': {
         const text = userMsg.replace(/\b(school|closings?|set|push|add)\b/gi,'').trim();
         if (text.length > 4) {
-          localStorage.setItem('cwn_override_closings', JSON.stringify({ closings: text, ts: Date.now() }));
-          Log.ok('Bob: School closings pushed');
-          return `🏫 School closing pushed to ticker: "${text}"`;
+          localStorage.setItem('cwn_override_closings', JSON.stringify({ closings:text, ts: Date.now() }));
+          return `🏫 School closing posted: **"${text}"**`;
         }
-        return 'Tell me which school closings to post. Example: "set school closings: Lebanon Special School District — Closed"';
+        return 'Tell me which closings to post. Example: "school closings: Lebanon Special School District — Closed Tomorrow"';
       }
-
       case 'clear': {
         const m = userMsg.toLowerCase();
-        if (/all|everything/.test(m)) {
-          Repair.clearAllOverrides();
-          return '🧹 All overrides cleared! The 50s page is back to normal operation.';
+        if (/all|everything/.test(m))  { Repair.clearAllOverrides(); return '🧹 All overrides cleared.'; }
+        if (/weather/.test(m))         { localStorage.removeItem('cwn_override_weather');  return '✅ Weather override cleared.'; }
+        if (/ticker/.test(m))          { localStorage.removeItem('cwn_ticker_override');   return '✅ Ticker override cleared.'; }
+        if (/alert|emergency/.test(m)) {
+          localStorage.removeItem('cwn_override_alert');
+          localStorage.removeItem('cwn50s_emergency_override');
+          return '✅ Alert/emergency override cleared.';
         }
-        if (/weather/.test(m)) { localStorage.removeItem('cwn_override_weather'); return '✅ Weather override cleared.'; }
-        if (/ticker/.test(m))  { localStorage.removeItem('cwn_ticker_override');  return '✅ Ticker override cleared.'; }
-        if (/alert/.test(m))   { localStorage.removeItem('cwn_override_alert'); localStorage.removeItem('cwn50s_emergency_override'); return '✅ Alert override cleared.'; }
-        return 'What should I clear? Weather, ticker, alert, or everything?';
+        return 'What do you want cleared? Weather, ticker, alert, or everything?';
       }
-
       case 'repair': {
         const fixes = Repair.scan();
-        return `🔧 RepairAI scan complete. ${fixes === 0 ? 'No issues found — system is clean.' : `Fixed ${fixes} issue(s). Check the System Log for details.`}`;
+        return `🔧 RepairAI scan done. ${fixes===0 ? 'System is clean.' : `Fixed ${fixes} issue(s). Check System Log.`}`;
       }
-
-      case 'heart': {
-        return `❤ CWN Heart (/core/cwn-heart-full.js) is the shared data engine. It exports:\n• getCityCoords(city)\n• getConditions(lat,lon)\n• getAlerts(lat,lon)\n• getRadarUrl(station)\n• fetchNWSPeriods(lat,lon)\n\nAll era pages import from it. Want me to run a connectivity check on it?`;
-      }
-
+      case 'heart':
+        return `❤ CWN Heart (/core/cwn-heart-full.js) exports:\n• getCityCoords(city)\n• getConditions(lat,lon)\n• getAlerts(lat,lon)\n• getRadarUrl(station)\n• fetchNWSPeriods(lat,lon)\n\nAll era pages pull from it. Want me to run a connectivity check?`;
       case 'city': {
-        const m = userMsg.toLowerCase();
-        const city = m.replace(/\b(set|change|city|to|select|location)\b/g,'').trim();
-        if (city.length > 2) {
-          localStorage.setItem('cwn_city', city);
-          localStorage.setItem('cwn50s_city_override', city);
-          Log.ok(`Bob: City override → ${city}`);
-          return `📍 City set to **${city}** across all pages. The 50s page will refresh weather data on the next cycle.`;
+        const clean = userMsg.replace(/\b(set|change|city|to|select|location)\b/g,'').trim();
+        if (clean.length > 2) {
+          localStorage.setItem('cwn_city', clean);
+          localStorage.setItem('cwn50s_city_override', clean);
+          return `📍 City set to **${clean}** across all pages.`;
         }
-        const cur = localStorage.getItem('cwn_city') || 'Lebanon';
-        return `📍 Current city: **${cur}**. To change it say "set city to Murfreesboro" or use the Broadcast Control panel.`;
+        return `📍 Current city: **${localStorage.getItem('cwn_city')||'Lebanon'}**. Say "set city to Nashville" to change.`;
       }
-
-      case 'help': {
-        return `Here's what I can do for you, boss:\n\n📡 **Weather** — "what's the weather?" or "check conditions"\n📺 **Channels** — "switch to CH1/CH2/CH3"\n🎙 **Announcers** — "have Earl do a sign-on" or "Barbara weather update"\n🔀 **Playlist** — "shuffle the music" or "skip track"\n🔧 **Diagnostics** — "run diagnostics" or "check system status"\n🚨 **Emergency** — "activate tornado warning" or "clear emergency"\n📝 **Ticker** — "set ticker to [message]"\n🏫 **Closings** — "set school closings: [info]"\n🧹 **Clear** — "clear all overrides" or "clear weather"\n🌙 **Theme** — "set night mode" or "switch to day"\n📍 **City** — "set city to Nashville"\n🔧 **Repair** — "scan for issues"\n\nJust talk to me naturally — I'll figure it out.`;
-      }
-
+      case 'help':
+        return `Here's what I can do, boss:\n\n📡 **Weather** — "what's the weather?"\n📺 **Channels** — "switch to CH1/CH2/CH3"\n🎙 **Announcers** — "have Earl do a sign-on"\n🔀 **Playlist** — "shuffle / skip / play / pause"\n🔧 **Diagnostics** — "run diagnostics"\n🚨 **Emergency** — "activate tornado warning"\n📝 **Ticker** — "set ticker to [message]"\n🏫 **Closings** — "school closings: [info]"\n🧹 **Clear** — "clear all overrides"\n🌙 **Theme** — "set night mode"\n📍 **City** — "set city to Nashville"\n🔧 **Repair** — "scan for issues"`;
       default: {
-        const responses = [
-          `I hear you. Could you be a bit more specific? Try asking me to check the weather, run diagnostics, control a channel, or manage the playlist.`,
-          `Got it. I'm not 100% sure what you need — want me to run a diagnostic, check alerts, or adjust something on the broadcast?`,
-          `Standing by. If you need something specific on the broadcast, just say the word. I can switch channels, push alerts, shuffle music, or have an announcer take it away.`
+        const pool = [
+          "I hear you. Be more specific? Try weather, diagnostics, a channel switch, or an announcer command.",
+          "Standing by. I can switch channels, push alerts, shuffle music, or fire an announcer. What do you need?",
+          "Got it — not totally sure what you're after. Try asking me to check status, run diagnostics, or control the broadcast."
         ];
-        return responses[Math.floor(Math.random() * responses.length)];
+        return pool[Math.floor(Math.random() * pool.length)];
       }
     }
   }
 
-  addBobMsg(text, isTyping = false) {
-    const window_ = $('#chatWindow');
+  _addMsg(text, sender = 'bob') {
+    const win = safeGet('chatWindow');
+    if (!win) return null;
     const div = document.createElement('div');
-    div.className = 'chat-msg bob' + (isTyping ? ' typing' : '');
+    div.className = `chat-msg ${sender}`;
     div.innerHTML = `
-      <div class="msg-avatar">BOB</div>
+      <div class="msg-avatar">${sender === 'bob' ? 'BOB' : 'YOU'}</div>
       <div class="msg-bubble">
-        <div class="msg-sender">Bob · CWN Comms AI</div>
-        <div class="msg-text">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+        <div class="msg-sender">${sender === 'bob' ? 'Bob · CWN Comms AI' : 'Tanner'}</div>
+        <div class="msg-text">${text
+          .replace(/</g,'&lt;')
+          .replace(/\n/g,'<br>')
+          .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
       </div>`;
-    window_.appendChild(div);
-    window_.scrollTop = window_.scrollHeight;
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
     return div;
   }
 }
-
 const Bob = new BobAI();
 
+/* ══════════════════════════════════════════════════════
+   CHAT  (HTML IDs: chatWindow, chatInput, chatSend)
+══════════════════════════════════════════════════════ */
 function initChat() {
-  const chatWindow = $('#chatWindow');
-  const input      = $('#chatInput');
-  const sendBtn    = $('#chatSend');
+  const win   = safeGet('chatWindow');
+  const input = safeGet('chatInput');
+  const send  = safeGet('chatSend');
+  if (!win || !input || !send) return;
 
-  // Greeting
-  setTimeout(() => {
-    Bob.addBobMsg("Hey Tanner — Bob here. I'm online and all systems are linked up. What do you need?");
-  }, 500);
+  setTimeout(() => Bob._addMsg("Hey Tanner — Bob here. I'm online and all systems are linked. What do you need?"), 700);
 
   async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
+    Bob._addMsg(text, 'user');
 
-    // User bubble
-    const userDiv = document.createElement('div');
-    userDiv.className = 'chat-msg user';
-    userDiv.innerHTML = `
-      <div class="msg-avatar">YOU</div>
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg bob typing';
+    typing.innerHTML = `
+      <div class="msg-avatar">BOB</div>
       <div class="msg-bubble">
-        <div class="msg-sender">Tanner</div>
-        <div class="msg-text">${text}</div>
+        <div class="msg-sender">Bob · CWN Comms AI</div>
+        <div class="msg-text" style="color:var(--text3);font-style:italic">Bob is thinking…</div>
       </div>`;
-    chatWindow.appendChild(userDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-
-    // Typing indicator
-    const typing = Bob.addBobMsg('Bob is thinking…', true);
+    win.appendChild(typing);
+    win.scrollTop = win.scrollHeight;
 
     const response = await Bob.process(text);
     typing.remove();
-    Bob.addBobMsg(response);
+    Bob._addMsg(response);
   }
 
-  sendBtn.addEventListener('click', sendMessage);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-
-  // Quick action buttons
+  send.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
   $$('.quick-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      input.value = btn.dataset.cmd || btn.textContent;
-      sendMessage();
-    });
+    btn.addEventListener('click', () => { input.value = btn.dataset.q || btn.textContent.trim(); sendMessage(); });
   });
 }
 
 /* ══════════════════════════════════════════════════════
-   BROADCAST CONTROLS
-   ══════════════════════════════════════════════════════ */
-function initBroadcast() {
-  // Channel override
-  $$('.ch-btn').forEach(btn => {
+   PANEL ROUTER  (sidebar data-panel attr → panel-{id})
+══════════════════════════════════════════════════════ */
+function initPanelRouter() {
+  $$('.sb-item').forEach(btn => {
     btn.addEventListener('click', () => {
-      const ch = btn.dataset.ch;
-      localStorage.setItem('cwn50s_channel_override', ch);
-      $$('.ch-btn').forEach(b => b.classList.remove('active'));
+      const target = btn.dataset.panel;
+      if (!target) return;
+      $$('.sb-item').forEach(b => b.classList.remove('active'));
+      $$('.panel').forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
-      setFeedback('broadcastFb', `CH${ch} override active`, 'ok');
-      Log.ok(`Broadcast: Channel → CH${ch}`);
+      safeGet(`panel-${target}`)?.classList.add('active');
     });
   });
-
-  // Auto slideshow
-  $('#autoToggle')?.addEventListener('change', e => {
-    localStorage.setItem('cwn50s_auto_override', e.target.checked ? 'on' : 'off');
-    Log.info(`Broadcast: Auto slideshow → ${e.target.checked ? 'ON' : 'OFF'}`);
-  });
-
-  // Emergency
-  $('#forceEmergency')?.addEventListener('click', () => {
-    localStorage.setItem('cwn50s_emergency_override', 'true');
-    localStorage.setItem('cwn_override_alert', JSON.stringify({
-      type: 'Emergency Override', severity: 'extreme',
-      headline: 'ADMIN EMERGENCY OVERRIDE ACTIVE — Cumberland Weather Network',
-      issued: new Date().toISOString()
-    }));
-    setFeedback('broadcastFb', '🚨 Emergency mode FORCED', 'danger');
-    Log.warn('Broadcast: Emergency override forced by admin');
-  });
-
-  $('#clearEmergency')?.addEventListener('click', () => {
-    localStorage.removeItem('cwn50s_emergency_override');
-    localStorage.removeItem('cwn_override_alert');
-    setFeedback('broadcastFb', '✅ Emergency cleared', 'ok');
-    Log.ok('Broadcast: Emergency cleared');
-  });
-
-  // Theme override
-  $('#themeOverride')?.addEventListener('change', e => {
-    const val = e.target.value;
-    if (val === 'auto') localStorage.removeItem('cwn50s_theme');
-    else localStorage.setItem('cwn50s_theme', val);
-    Log.info(`Broadcast: Theme → ${val}`);
-  });
-
-  // Announcer override
-  $('#announcerOverride')?.addEventListener('change', () => {});
-  $('#fireAnnouncer')?.addEventListener('click', () => {
-    const type = $('#announcerType')?.value || 'weather_update';
-    const name = $('#announcerSelect')?.value || 'Earl Henderson';
-    localStorage.setItem('cwn50s_announce_override', JSON.stringify({ announcer: name, type, ts: Date.now() }));
-    setFeedback('broadcastFb', `🎙 ${name} cued for ${type}`, 'ok');
-    Log.ok(`Broadcast: Announcer → ${name} (${type})`);
-    Bob.fireAnnouncer(`have ${name} ${type}`);
-  });
-
-  // City override
-  $('#pusCity')?.addEventListener('click', () => {
-    const city = $('#cityOverrideInput')?.value.trim();
-    if (!city) return;
-    localStorage.setItem('cwn_city', city);
-    localStorage.setItem('cwn50s_city_override', city);
-    setFeedback('broadcastFb', `📍 City set to ${city}`, 'ok');
-    Log.ok(`Broadcast: City override → ${city}`);
-  });
-}
-
-function setFeedback(id, msg, type = 'ok') {
-  const el = $(`#${id}`);
-  if (!el) return;
-  el.textContent = msg;
-  el.style.color = type === 'danger' ? 'var(--danger)' : type === 'warn' ? 'var(--warn)' : 'var(--ok)';
+  safeGet('logoutBtn')?.addEventListener('click', () => { Auth.endSession(); location.reload(); });
 }
 
 /* ══════════════════════════════════════════════════════
    SOUND LIBRARY
-   ══════════════════════════════════════════════════════ */
+   HTML IDs (corrected):
+     soundDropZone   — drag-and-drop zone
+     soundBrowseBtn  — browse button
+     soundList       — track list container
+     playPauseBtn    — play/pause toggle
+     prevBtn         — previous track
+     nextBtn         — next track
+     shuffleBtn      — shuffle playlist
+     clearPlaylistBtn— clear all tracks
+     nowPlaying      — now-playing bar
+     npTrack         — current track name
+     volumeSlider    — range input
+     volLabel        — volume % label
+══════════════════════════════════════════════════════ */
 const SoundLibrary = {
   playlist: [],
   currentIdx: 0,
   isPlaying: false,
   audio: new Audio(),
 
-  load() {
-    try {
-      this.playlist = JSON.parse(localStorage.getItem('cwn_admin_playlist') || '[]');
-    } catch { this.playlist = []; }
+  init() {
+    try { this.playlist = JSON.parse(localStorage.getItem('cwn_admin_playlist') || '[]'); } catch { this.playlist = []; }
     this.renderList();
+    this.bindControls();
+    this.audio.addEventListener('ended', () => this.next());
   },
 
   save() {
-    // Store metadata only (not the full object URLs - those expire)
-    const meta = this.playlist.map(t => ({ name: t.name, dur: t.dur, cat: t.cat }));
+    const meta = this.playlist.map(t => ({ id:t.id, name:t.name, dur:t.dur, cat:t.cat }));
     localStorage.setItem('cwn_admin_playlist', JSON.stringify(meta));
   },
 
   addTrack(file) {
     const url = URL.createObjectURL(file);
-    const track = {
-      id: Date.now() + Math.random(),
-      name: file.name.replace(/\.[^.]+$/, ''),
-      file: file.name,
-      url,
-      dur: '—',
-      cat: 'music'
-    };
-    // Get duration
+    const track = { id: Date.now() + Math.random(), name: file.name.replace(/\.[^.]+$/,''), url, dur:'—', cat:'music' };
     const tmp = new Audio(url);
-    tmp.addEventListener('loadedmetadata', () => {
-      track.dur = this.formatDur(tmp.duration);
-      this.renderList();
-    });
+    tmp.addEventListener('loadedmetadata', () => { track.dur = this._fmt(tmp.duration); this.renderList(); });
     this.playlist.push(track);
-    this.save();
     this.renderList();
     Log.ok(`Sound Library: Added "${track.name}"`);
   },
 
-  formatDur(s) {
-    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2,'0')}`;
-  },
+  _fmt(s) { const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; },
 
   removeTrack(id) {
     this.playlist = this.playlist.filter(t => t.id !== id);
-    this.save();
-    this.renderList();
+    this.save(); this.renderList();
   },
 
   shuffle() {
-    for (let i = this.playlist.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.playlist[i], this.playlist[j]] = [this.playlist[j], this.playlist[i]];
+    for (let i=this.playlist.length-1; i>0; i--) {
+      const j=Math.floor(Math.random()*(i+1));
+      [this.playlist[i],this.playlist[j]]=[this.playlist[j],this.playlist[i]];
     }
-    this.save();
-    this.renderList();
-    Log.info('Sound Library: Playlist shuffled');
+    this.currentIdx = 0; this.save(); this.renderList();
+    Log.info('Playlist shuffled');
   },
 
   playTrack(idx) {
-    if (!this.playlist[idx] || !this.playlist[idx].url) {
-      Log.warn('Sound Library: Track URL expired — re-upload the file to play');
-      return;
-    }
+    const t = this.playlist[idx];
+    if (!t || !t.url) { Log.warn('Track URL expired — re-upload to play'); return; }
     this.currentIdx = idx;
-    this.audio.src = this.playlist[idx].url;
-    this.audio.play().then(() => {
-      this.isPlaying = true;
-      this.updateNowPlaying();
-      this.renderList();
-    }).catch(e => Log.fail(`Audio: ${e.message}`));
+    this.audio.src = t.url;
+    this.audio.play()
+      .then(() => { this.isPlaying=true; this._updateNP(); this.renderList(); })
+      .catch(e  => Log.fail(`Audio: ${e.message}`));
   },
 
   playPause() {
     if (this.isPlaying) {
-      this.audio.pause();
-      this.isPlaying = false;
-      $('#npPlayPause').textContent = '▶';
+      this.audio.pause(); this.isPlaying=false; safeText('playPauseBtn','▶');
     } else {
       if (this.audio.src) {
-        this.audio.play();
-        this.isPlaying = true;
-        $('#npPlayPause').textContent = '⏸';
-      } else if (this.playlist.length) {
-        this.playTrack(0);
-      }
+        this.audio.play().then(() => { this.isPlaying=true; safeText('playPauseBtn','⏸'); });
+      } else if (this.playlist.length) { this.playTrack(0); }
     }
   },
 
-  prev() {
-    this.currentIdx = (this.currentIdx - 1 + this.playlist.length) % this.playlist.length;
-    this.playTrack(this.currentIdx);
-  },
+  prev() { this.playTrack((this.currentIdx-1+this.playlist.length)%this.playlist.length); },
+  next() { this.playTrack((this.currentIdx+1)%this.playlist.length); },
 
-  next() {
-    this.currentIdx = (this.currentIdx + 1) % this.playlist.length;
-    this.playTrack(this.currentIdx);
-  },
-
-  updateNowPlaying() {
-    const t = this.playlist[this.currentIdx];
-    if (!t) return;
-    const np = $('#nowPlayingBar');
+  _updateNP() {
+    const np = safeGet('nowPlaying');
     if (np) np.style.display = 'flex';
-    const label = $('#npTrack');
-    if (label) label.textContent = t.name;
-    const pp = $('#npPlayPause');
-    if (pp) pp.textContent = this.isPlaying ? '⏸' : '▶';
+    const t = this.playlist[this.currentIdx];
+    safeText('npTrack', t ? t.name : '—');
+    safeText('playPauseBtn', this.isPlaying ? '⏸' : '▶');
   },
 
   renderList() {
-    const list = $('#playlistList');
+    const list = safeGet('soundList');
     if (!list) return;
     if (!this.playlist.length) {
-      list.innerHTML = '<div class="lib-empty">No tracks yet — drag audio files here to upload</div>';
+      list.innerHTML = '<div class="lib-empty">No tracks loaded · Drop audio files above to begin</div>';
       return;
     }
-    list.innerHTML = this.playlist.map((t, i) => `
-      <div class="lib-item ${i === this.currentIdx && this.isPlaying ? 'playing' : ''}" data-idx="${i}">
-        <span class="li-icon">🎵</span>
+    list.innerHTML = this.playlist.map((t,i) => `
+      <div class="lib-item${i===this.currentIdx&&this.isPlaying?' playing':''}" data-idx="${i}">
+        <span class="li-icon">${i===this.currentIdx&&this.isPlaying?'▶':'♫'}</span>
         <span class="li-name">${t.name}</span>
         <span class="li-dur">${t.dur}</span>
         <button class="li-del" data-id="${t.id}" title="Remove">✕</button>
       </div>`).join('');
-
     list.querySelectorAll('.lib-item').forEach(el => {
-      el.addEventListener('click', e => {
-        if (e.target.classList.contains('li-del')) return;
-        this.playTrack(parseInt(el.dataset.idx));
-      });
+      el.addEventListener('click', e => { if (!e.target.classList.contains('li-del')) this.playTrack(+el.dataset.idx); });
     });
     list.querySelectorAll('.li-del').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        this.removeTrack(parseFloat(btn.dataset.id));
-      });
+      btn.addEventListener('click', e => { e.stopPropagation(); this.removeTrack(+btn.dataset.id); });
     });
   },
 
-  init() {
-    this.load();
-
-    // Audio ended → auto-next
-    this.audio.addEventListener('ended', () => { this.next(); });
-
-    // Upload zone
-    const zone = $('#soundUploadZone');
-    const fileInput = $('#soundFileInput');
-
+  bindControls() {
+    /* ── Drop zone — id="soundDropZone" (was #soundUploadZone) ── */
+    const zone = safeGet('soundDropZone');
     if (zone) {
-      zone.addEventListener('click', () => fileInput?.click());
-      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
       zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
       zone.addEventListener('drop', e => {
         e.preventDefault(); zone.classList.remove('drag-over');
-        [...(e.dataTransfer.files || [])].filter(f => f.type.startsWith('audio/')).forEach(f => this.addTrack(f));
+        [...e.dataTransfer.files].filter(f => f.type.startsWith('audio/')).forEach(f => this.addTrack(f));
       });
     }
 
-    fileInput?.addEventListener('change', () => {
-      [...(fileInput.files || [])].forEach(f => this.addTrack(f));
-      fileInput.value = '';
+    /* ── Browse button — id="soundBrowseBtn" (was #soundFileInput) ── */
+    safeGet('soundBrowseBtn')?.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type='file'; inp.multiple=true; inp.accept='audio/*';
+      inp.onchange = e => [...e.target.files].forEach(f => this.addTrack(f));
+      inp.click();
     });
 
-    // Controls
-    $('#npPlayPause')?.addEventListener('click', () => this.playPause());
-    $('#npPrev')?.addEventListener('click', () => this.prev());
-    $('#npNext')?.addEventListener('click', () => this.next());
-    $('#shufflePlaylist')?.addEventListener('click', () => this.shuffle());
-    $('#clearPlaylist')?.addEventListener('click', () => {
-      this.playlist = []; this.audio.pause(); this.isPlaying = false;
+    /* ── Playback controls ── */
+    safeGet('playPauseBtn')?.addEventListener('click',   () => this.playPause());
+    safeGet('prevBtn')?.addEventListener('click',        () => this.prev());
+    safeGet('nextBtn')?.addEventListener('click',        () => this.next());
+    safeGet('shuffleBtn')?.addEventListener('click',     () => this.shuffle());
+    safeGet('clearPlaylistBtn')?.addEventListener('click', () => {
+      this.playlist=[]; this.currentIdx=0; this.isPlaying=false;
+      this.audio.pause(); this.audio.src='';
+      const np = safeGet('nowPlaying');
+      if (np) np.style.display='none';
       this.save(); this.renderList();
-      Log.info('Sound Library: Playlist cleared');
+      Log.ok('Playlist cleared');
     });
 
-    // Volume
-    const vol = $('#volumeSlider');
+    const vol = safeGet('volumeSlider');
     if (vol) {
       vol.addEventListener('input', () => {
-        this.audio.volume = vol.value / 100;
-        const label = $('#volLabel');
-        if (label) label.textContent = vol.value + '%';
+        this.audio.volume = vol.value/100;
+        safeText('volLabel', vol.value+'%');
       });
     }
   }
@@ -927,110 +672,83 @@ const SoundLibrary = {
 
 /* ══════════════════════════════════════════════════════
    GRAPHICS LIBRARY
-   ══════════════════════════════════════════════════════ */
+   HTML IDs (corrected):
+     gfxDropZone  — drop zone (was #gfxUploadZone)
+     gfxBrowseBtn — browse button (was #gfxFileInput)
+     gfxGrid      — image grid
+     gfxFilter-*  — category filter buttons
+══════════════════════════════════════════════════════ */
 const GraphicsLibrary = {
-  images: [],
-  activeCategory: 'all',
+  items: [],
+  currentCat: 'all',
 
-  load() {
-    try {
-      this.images = JSON.parse(localStorage.getItem('cwn_admin_graphics') || '[]');
-    } catch { this.images = []; }
+  init() {
+    try { this.items = JSON.parse(localStorage.getItem('cwn_admin_graphics') || '[]'); } catch { this.items = []; }
+    this.renderGrid();
+    this.bindControls();
   },
 
   save() {
-    // Store meta only — URLs are object URLs and won't persist across sessions
-    localStorage.setItem('cwn_admin_graphics', JSON.stringify(
-      this.images.map(i => ({ id: i.id, name: i.name, cat: i.cat }))
-    ));
+    const meta = this.items.map(i => ({ id:i.id, name:i.name, cat:i.cat }));
+    localStorage.setItem('cwn_admin_graphics', JSON.stringify(meta));
   },
 
-  addImage(file) {
+  addImage(file, cat='all') {
     const url = URL.createObjectURL(file);
-    const img = {
-      id: Date.now() + Math.random(),
-      name: file.name.replace(/\.[^.]+$/, ''),
-      file: file.name,
-      url,
-      cat: 'all'
-    };
-    this.images.push(img);
-    this.save();
+    this.items.push({ id: Date.now()+Math.random(), name:file.name, url, cat });
     this.renderGrid();
-    Log.ok(`Graphics Library: Added "${img.name}"`);
+    Log.ok(`Graphics: Added "${file.name}"`);
   },
 
-  removeImage(id) {
-    this.images = this.images.filter(i => i.id !== id);
-    this.save(); this.renderGrid();
-  },
-
-  setCat(id, cat) {
-    const img = this.images.find(i => i.id === id);
-    if (img) { img.cat = cat; this.save(); this.renderGrid(); }
-  },
+  removeItem(id) { this.items = this.items.filter(i => i.id!==id); this.save(); this.renderGrid(); },
 
   renderGrid() {
-    const grid = $('#gfxGrid');
+    const grid = safeGet('gfxGrid');
     if (!grid) return;
-    const filtered = this.activeCategory === 'all'
-      ? this.images
-      : this.images.filter(i => i.cat === this.activeCategory);
-
-    if (!filtered.length) {
-      grid.innerHTML = '<div class="lib-empty">No graphics in this category</div>';
+    const visible = this.currentCat==='all' ? this.items : this.items.filter(i => i.cat===this.currentCat);
+    if (!visible.length) {
+      grid.innerHTML = '<div class="lib-empty">No graphics loaded · Drop images above</div>';
       return;
     }
-    grid.innerHTML = filtered.map(img => `
-      <div class="gfx-card" data-id="${img.id}">
-        <div class="gfx-thumb">
-          ${img.url ? `<img src="${img.url}" alt="${img.name}" loading="lazy">` : `<span style="font-size:32px">🖼</span>`}
-        </div>
-        <div class="gfx-info">
-          <div class="gfx-name">${img.name}</div>
-          <select class="gfx-cat-sel" data-id="${img.id}" style="background:var(--bg3);color:var(--text3);border:1px solid var(--border);border-radius:4px;font-size:10px;padding:2px;margin-top:4px;width:100%;">
-            ${['all','logos','backgrounds','icons','overlays','crests'].map(c => `<option value="${c}" ${img.cat===c?'selected':''}>${c}</option>`).join('')}
-          </select>
-          <div class="gfx-del" data-id="${img.id}">✕ Remove</div>
-        </div>
+    grid.innerHTML = visible.map(item => `
+      <div class="gfx-card" data-id="${item.id}">
+        <img src="${item.url}" alt="${item.name}" class="gfx-thumb" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'80\\' height=\\'80\\'><rect fill=\\'%23333\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23888\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\' font-size=\\'12\\'>No preview</text></svg>'">
+        <div class="gfx-name">${item.name}</div>
+        <button class="li-del gfx-del" data-id="${item.id}">✕</button>
       </div>`).join('');
-
-    grid.querySelectorAll('.gfx-del').forEach(el => {
-      el.addEventListener('click', () => this.removeImage(parseFloat(el.dataset.id)));
-    });
-    grid.querySelectorAll('.gfx-cat-sel').forEach(sel => {
-      sel.addEventListener('change', () => this.setCat(parseFloat(sel.dataset.id), sel.value));
+    grid.querySelectorAll('.gfx-del').forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); this.removeItem(+btn.dataset.id); });
     });
   },
 
-  init() {
-    this.load();
-    this.renderGrid();
-
-    const zone = $('#gfxUploadZone');
-    const fileInput = $('#gfxFileInput');
-
+  bindControls() {
+    /* ── Drop zone — id="gfxDropZone" (was #gfxUploadZone) ── */
+    const zone = safeGet('gfxDropZone');
     if (zone) {
-      zone.addEventListener('click', () => fileInput?.click());
-      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
       zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
       zone.addEventListener('drop', e => {
         e.preventDefault(); zone.classList.remove('drag-over');
-        [...(e.dataTransfer.files || [])].filter(f => f.type.startsWith('image/')).forEach(f => this.addImage(f));
+        const cat = safeGet('gfxCatSelect')?.value || 'all';
+        [...e.dataTransfer.files].filter(f => f.type.startsWith('image/')).forEach(f => this.addImage(f, cat));
       });
     }
 
-    fileInput?.addEventListener('change', () => {
-      [...(fileInput.files || [])].forEach(f => this.addImage(f));
-      fileInput.value = '';
+    /* ── Browse button — id="gfxBrowseBtn" (was #gfxFileInput) ── */
+    safeGet('gfxBrowseBtn')?.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type='file'; inp.multiple=true; inp.accept='image/*';
+      const cat = safeGet('gfxCatSelect')?.value || 'all';
+      inp.onchange = e => [...e.target.files].forEach(f => this.addImage(f, cat));
+      inp.click();
     });
 
-    // Category filters
-    $$('.cat-btn').forEach(btn => {
+    /* ── Category filter ── */
+    $$('[data-gfx-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
-        $$('.cat-btn').forEach(b => b.classList.remove('active'));
+        $$('[data-gfx-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.activeCategory = btn.dataset.cat || 'all';
+        this.currentCat = btn.dataset.gfxFilter;
         this.renderGrid();
       });
     });
@@ -1038,247 +756,336 @@ const GraphicsLibrary = {
 };
 
 /* ══════════════════════════════════════════════════════
-   WEATHER OVERRIDES
-   ══════════════════════════════════════════════════════ */
-function initWeatherOverrides() {
-  $('#pushWeather')?.addEventListener('click', () => {
-    const data = {
-      temp:      $('#ovTemp')?.value.trim(),
-      condition: $('#ovCondition')?.value.trim(),
-      wind:      $('#ovWind')?.value.trim(),
-      humidity:  $('#ovHumidity')?.value.trim(),
-      ts:        Date.now()
-    };
-    localStorage.setItem('cwn_override_weather', JSON.stringify(data));
-    setFeedback('weatherFb', '✅ Weather override pushed to 50s page', 'ok');
-    Log.ok(`Weather override: ${JSON.stringify(data)}`);
-  });
+   AI ROSTER  (HTML: announcer cards, testAnnouncer buttons)
+══════════════════════════════════════════════════════ */
+const Announcers = [
+  { name:'Earl Henderson',   role:'Chief Meteorologist', gender:'male',   voice:'David',  shift:'6AM–12PM' },
+  { name:'Walter Grayson',   role:'Evening Meteorologist',gender:'male',   voice:'David',  shift:'12PM–6PM' },
+  { name:'Barbara Collins',  role:'Morning Meteorologist',gender:'female', voice:'Zira',   shift:'6PM–12AM' },
+  { name:'Dorothy Sinclair', role:'Overnight Meteorologist',gender:'female',voice:'Zira',  shift:'12AM–6AM' }
+];
 
-  $('#clearWeather')?.addEventListener('click', () => {
-    localStorage.removeItem('cwn_override_weather');
-    ['#ovTemp','#ovCondition','#ovWind','#ovHumidity'].forEach(s => { if ($(s)) $(s).value = ''; });
-    setFeedback('weatherFb', '✅ Weather override cleared — live data restored', 'ok');
-    Log.ok('Weather override cleared');
-  });
+function testAnnouncer(idx, type) {
+  const ann = Announcers[idx];
+  if (!ann) return;
+  const fake = `${ann.name} ${type}`;
+  const result = Bob.fireAnnouncer(fake);
+  Log.ok(`Announcer test: ${ann.name} · ${type}`);
+  Bob._addMsg(result);
+}
+
+function renderAIRoster() {
+  const container = safeGet('aiRosterList');
+  if (!container) return;
+  container.innerHTML = Announcers.map((a, i) => `
+    <div class="ai-card">
+      <div class="ai-avatar">${a.gender==='male'?'🎙':'🎙'}</div>
+      <div class="ai-info">
+        <div class="ai-name">${a.name}</div>
+        <div class="ai-role">${a.role}</div>
+        <div class="ai-shift">Shift: ${a.shift}</div>
+        <div class="ai-voice">Voice: ${a.voice}</div>
+      </div>
+      <div class="ai-actions">
+        <button class="btn-sm" onclick="testAnnouncer(${i},'weather_update')">Weather Test</button>
+        <button class="btn-sm" onclick="testAnnouncer(${i},'sign_on')">Sign-On</button>
+        <button class="btn-sm btn-warn" onclick="testAnnouncer(${i},'emergency')">Emergency</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   BROADCAST CONTROL
+══════════════════════════════════════════════════════ */
+function broadcastCommand(type, value) {
+  switch (type) {
+    case 'channel':
+      localStorage.setItem('cwn50s_channel_override', String(value));
+      Log.ok(`Broadcast: Channel → CH${+value+1}`);
+      break;
+    case 'auto':
+      if (value === 'on')       localStorage.removeItem('cwn50s_channel_override');
+      else if (value === 'off') localStorage.setItem('cwn50s_auto_override','off');
+      Log.ok(`Broadcast: Auto-slideshow → ${value}`);
+      break;
+    case 'emergency':
+      if (value === 'on') {
+        localStorage.setItem('cwn50s_emergency_override','true');
+        localStorage.setItem('cwn_override_alert', JSON.stringify({
+          type:'Tornado Warning', severity:'extreme',
+          headline:'TORNADO WARNING — NWS has issued a Tornado Warning for Middle Tennessee. Take shelter immediately.',
+          issued: new Date().toISOString()
+        }));
+        Log.warn('Broadcast: Emergency override ON');
+      } else {
+        localStorage.removeItem('cwn50s_emergency_override');
+        localStorage.removeItem('cwn_override_alert');
+        Log.ok('Broadcast: Emergency override cleared');
+      }
+      break;
+    case 'theme':
+      localStorage.setItem('cwn50s_theme', value);
+      Log.ok(`Broadcast: Theme → ${value}`);
+      break;
+    case 'announce':
+      localStorage.setItem('cwn50s_announce_override', value);
+      Log.ok(`Broadcast: Announce override → ${value}`);
+      break;
+    default:
+      Log.warn(`Broadcast: Unknown command "${type}"`);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   WEATHER OVERRIDES
+   HTML IDs (corrected):
+     ov-temp, ov-desc, ov-wind, ov-hum
+     (were #ovTemp, #ovCondition, #ovWind, #ovHumidity)
+══════════════════════════════════════════════════════ */
+function injectWeather() {
+  const temp      = safeGet('ov-temp')?.value.trim()   || '';
+  const condition = safeGet('ov-desc')?.value.trim()   || '';
+  const wind      = safeGet('ov-wind')?.value.trim()   || '';
+  const humidity  = safeGet('ov-hum')?.value.trim()    || '';
+  if (!temp && !condition) { Log.warn('Weather override: Fill at least Temp or Condition'); return; }
+  const city = localStorage.getItem('cwn_city') || 'Lebanon';
+  localStorage.setItem('cwn_override_weather', JSON.stringify({ city, temp, condition, wind, humidity, ts: Date.now() }));
+  Log.ok(`Weather override pushed → ${temp}°F · ${condition}`);
+}
+
+function clearWeatherOverride() {
+  localStorage.removeItem('cwn_override_weather');
+  Log.ok('Weather override cleared');
+}
+
+function overrideCity() {
+  const sel = safeGet('ovCitySelect');
+  if (!sel || !sel.value) return;
+  localStorage.setItem('cwn_city', sel.value);
+  localStorage.setItem('cwn50s_city_override', sel.value);
+  Log.ok(`City override → ${sel.value}`);
 }
 
 /* ══════════════════════════════════════════════════════
    ALERT CONTROL
-   ══════════════════════════════════════════════════════ */
-function initAlertControl() {
-  $('#issueAlert')?.addEventListener('click', () => {
-    const data = {
-      type:     $('#alertType')?.value,
-      severity: $('#alertSeverity')?.value,
-      headline: $('#alertHeadline')?.value.trim(),
-      issued:   new Date().toISOString()
-    };
-    if (!data.headline) { setFeedback('alertFb', '⚠ Enter a headline first', 'warn'); return; }
-    localStorage.setItem('cwn_override_alert', JSON.stringify(data));
-    if (['extreme','severe'].includes(data.severity)) {
-      localStorage.setItem('cwn50s_emergency_override', 'true');
-    }
-    setFeedback('alertFb', `🚨 ${data.type} issued`, 'ok');
-    Log.warn(`Alert issued: ${data.type} (${data.severity}) — ${data.headline}`);
-  });
+   HTML IDs (corrected):
+     alertTypeSelect  (was #alertType)
+     alertHeadlineInput
+     alertSeveritySelect
+══════════════════════════════════════════════════════ */
+function injectAlert() {
+  const type     = safeGet('alertTypeSelect')?.value || 'Tornado Warning';
+  const headline = safeGet('alertHeadlineInput')?.value.trim() || `${type} in effect for Middle Tennessee.`;
+  const severity = safeGet('alertSeveritySelect')?.value || 'extreme';
+  localStorage.setItem('cwn_override_alert', JSON.stringify({ type, headline, severity, issued: new Date().toISOString() }));
+  localStorage.setItem('cwn50s_emergency_override', severity === 'extreme' ? 'true' : 'false');
+  Log.warn(`Alert pushed → ${type} (${severity})`);
+}
 
-  $('#clearAlert')?.addEventListener('click', () => {
-    localStorage.removeItem('cwn_override_alert');
-    localStorage.removeItem('cwn50s_emergency_override');
-    if ($('#alertHeadline')) $('#alertHeadline').value = '';
-    setFeedback('alertFb', '✅ Alert cleared', 'ok');
-    Log.ok('Alert override cleared');
-  });
+function clearManualAlert() {
+  localStorage.removeItem('cwn_override_alert');
+  localStorage.removeItem('cwn50s_emergency_override');
+  Log.ok('Manual alert cleared');
+}
 
-  $('#pushClosings')?.addEventListener('click', () => {
-    const text = $('#closingsText')?.value.trim();
-    if (!text) { setFeedback('alertFb', '⚠ Enter school closing info first', 'warn'); return; }
-    localStorage.setItem('cwn_override_closings', JSON.stringify({ closings: text, ts: Date.now() }));
-    setFeedback('alertFb', '🏫 School closings pushed to ticker', 'ok');
-    Log.ok(`School closings: "${text}"`);
-  });
+/* ══════════════════════════════════════════════════════
+   SCHOOL CLOSINGS
+   HTML IDs (corrected):
+     schoolClosingInput  (was #closingsText)
+══════════════════════════════════════════════════════ */
+function injectSchoolClosings() {
+  const text = safeGet('schoolClosingInput')?.value.trim() || '';
+  if (!text) { Log.warn('Closings: Enter school closing info first'); return; }
+  localStorage.setItem('cwn_override_closings', JSON.stringify({ closings:text, ts: Date.now() }));
+  Log.ok(`School closings pushed → "${text.substring(0,50)}…"`);
+}
 
-  $('#clearClosings')?.addEventListener('click', () => {
-    localStorage.removeItem('cwn_override_closings');
-    if ($('#closingsText')) $('#closingsText').value = '';
-    setFeedback('alertFb', '✅ School closings cleared', 'ok');
-  });
+function clearSchoolClosings() {
+  localStorage.removeItem('cwn_override_closings');
+  Log.ok('School closings cleared');
 }
 
 /* ══════════════════════════════════════════════════════
    TICKER OVERRIDE
-   ══════════════════════════════════════════════════════ */
-function initTickerOverride() {
-  $('#pushTicker')?.addEventListener('click', () => {
-    const msg   = $('#tickerMsg')?.value.trim();
-    const badge = $('#tickerBadge')?.value.trim() || 'CWN';
-    if (!msg) { setFeedback('tickerFb', '⚠ Enter ticker text first', 'warn'); return; }
-    localStorage.setItem('cwn_ticker_override', JSON.stringify({ message: msg, badge, ts: Date.now() }));
-    setFeedback('tickerFb', '📝 Ticker pushed to all active pages', 'ok');
-    Log.ok(`Ticker override: [${badge}] "${msg}"`);
-  });
+   HTML IDs (corrected):
+     tickerMsgInput   (was #tickerMsg)
+     tickerBadgeInput (was #tickerBadge)
+══════════════════════════════════════════════════════ */
+function pushTickerOverride() {
+  const message = safeGet('tickerMsgInput')?.value.trim()   || '';
+  const badge   = safeGet('tickerBadgeInput')?.value.trim() || 'CWN';
+  if (!message) { Log.warn('Ticker: Enter a message first'); return; }
+  localStorage.setItem('cwn_ticker_override', JSON.stringify({ message, badge, ts: Date.now() }));
+  Log.ok(`Ticker override pushed → [${badge}] ${message.substring(0,40)}…`);
+}
 
-  $('#clearTicker')?.addEventListener('click', () => {
-    localStorage.removeItem('cwn_ticker_override');
-    if ($('#tickerMsg')) $('#tickerMsg').value = '';
-    setFeedback('tickerFb', '✅ Ticker override cleared — live data restored', 'ok');
-    Log.ok('Ticker override cleared');
-  });
+function clearTickerOverride() {
+  localStorage.removeItem('cwn_ticker_override');
+  Log.ok('Ticker override cleared');
 }
 
 /* ══════════════════════════════════════════════════════
    SETTINGS
-   ══════════════════════════════════════════════════════ */
-function initSettings() {
-  // Change password
-  $('#savePassword')?.addEventListener('click', () => {
-    const cur = $('#pwCurrent')?.value;
-    const nw  = $('#pwNew')?.value;
-    const cf  = $('#pwConfirm')?.value;
-    const msg = $('#pwMsg');
+   HTML IDs (corrected):
+     curPw, newPw, confPw, pwFeedback
+     (were #pwCurrent, #pwNew, #pwConfirm, #pwMsg)
+══════════════════════════════════════════════════════ */
+function changePw() {
+  const cur  = safeGet('curPw')?.value    || '';
+  const nw   = safeGet('newPw')?.value    || '';
+  const conf = safeGet('confPw')?.value   || '';
+  const msg  = safeGet('pwFeedback');
 
-    if (!Auth.check(Auth.getCreds().user, cur)) {
-      if (msg) { msg.textContent = '⚠ Current password is incorrect.'; msg.style.color = 'var(--danger)'; }
-      return;
+  if (!cur || !nw || !conf) { if (msg) { msg.textContent='Fill all three fields.'; msg.style.color='#f55'; } return; }
+  if (!Auth.check(Auth.getCreds().user, cur)) { if (msg) { msg.textContent='Current password incorrect.'; msg.style.color='#f55'; } return; }
+  if (nw !== conf) { if (msg) { msg.textContent='New passwords do not match.'; msg.style.color='#f55'; } return; }
+  if (nw.length < 8) { if (msg) { msg.textContent='Password must be at least 8 characters.'; msg.style.color='#f55'; } return; }
+  Auth.saveCreds(Auth.getCreds().user, nw);
+  if (msg) { msg.textContent='✓ Password updated successfully.'; msg.style.color='#20c070'; }
+  safeGet('curPw') && (safeGet('curPw').value='');
+  safeGet('newPw') && (safeGet('newPw').value='');
+  safeGet('confPw') && (safeGet('confPw').value='');
+  Log.ok('Password changed successfully');
+}
+
+function clearAllOverrides() { Repair.clearAllOverrides(); }
+
+function clearCityMemory() {
+  localStorage.removeItem('cwn_city');
+  localStorage.removeItem('cwn50s_city_override');
+  Log.ok('City memory cleared');
+}
+
+function exportLog() {
+  const box = safeGet('logBox');
+  const text = box ? box.innerText : 'No log data';
+  const blob = new Blob([text], { type:'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cwn-admin-log-${Date.now()}.txt`;
+  a.click();
+  Log.ok('Log exported');
+}
+
+function factoryReset() {
+  if (!confirm('⚠ FACTORY RESET — This will clear ALL CWN admin data, overrides, playlist, and graphics. Are you absolutely sure?')) return;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('cwn'));
+  keys.forEach(k => localStorage.removeItem(k));
+  Auth.endSession();
+  sessionStorage.clear();
+  Log.ok(`Factory reset complete. Removed ${keys.length} keys. Reloading…`);
+  setTimeout(() => location.reload(), 1000);
+}
+
+function openChat() {
+  const btn = document.querySelector('.sb-item[data-panel="chat"]');
+  if (btn) btn.click();
+}
+
+function diagHeart() {
+  openChat();
+  setTimeout(() => {
+    const input = safeGet('chatInput');
+    if (input) {
+      input.value = 'run diagnostics';
+      safeGet('chatSend')?.click();
     }
-    if (nw.length < 6) {
-      if (msg) { msg.textContent = '⚠ New password must be at least 6 characters.'; msg.style.color = 'var(--danger)'; }
-      return;
+  }, 200);
+}
+
+function testResize() {
+  Log.info('Resize test: Broadcasting resize event…');
+  window.dispatchEvent(new Event('resize'));
+  Log.ok('Resize event fired');
+}
+
+/* ══════════════════════════════════════════════════════
+   OVERRIDE STATUS REFRESH  (updates live localStorage readout)
+══════════════════════════════════════════════════════ */
+function refreshOverrideStatus() {
+  const keys = {
+    'cwn_override_weather':      'ovStatusWeather',
+    'cwn_override_alert':        'ovStatusAlert',
+    'cwn_override_closings':     'ovStatusClosings',
+    'cwn_ticker_override':       'ovStatusTicker',
+    'cwn50s_channel_override':   'ovStatusChannel',
+    'cwn50s_emergency_override': 'ovStatusEmergency'
+  };
+  Object.entries(keys).forEach(([lsKey, elId]) => {
+    const el = safeGet(elId);
+    if (!el) return;
+    const val = localStorage.getItem(lsKey);
+    if (val) {
+      el.textContent = '● ACTIVE';
+      el.style.color = '#f80';
+    } else {
+      el.textContent = '— none —';
+      el.style.color = 'var(--text3, #666)';
     }
-    if (nw !== cf) {
-      if (msg) { msg.textContent = '⚠ New passwords do not match.'; msg.style.color = 'var(--danger)'; }
-      return;
-    }
-    Auth.saveCreds(Auth.getCreds().user, nw);
-    if (msg) { msg.textContent = '✓ Password updated successfully.'; msg.style.color = 'var(--ok)'; }
-    ['#pwCurrent','#pwNew','#pwConfirm'].forEach(s => { if ($(s)) $(s).value = ''; });
-    Log.ok('Settings: Password changed');
-  });
-
-  // Reset to defaults
-  $('#resetDefaults')?.addEventListener('click', () => {
-    if (!confirm('Reset credentials to THILL / YoMama69$$?')) return;
-    Auth.resetCreds();
-    Log.ok('Settings: Credentials reset to defaults');
-    alert('Reset complete. Next login: THILL / YoMama69$$');
-  });
-
-  // Clear all localStorage
-  $('#clearAllStorage')?.addEventListener('click', () => {
-    if (!confirm('Clear ALL CWN localStorage keys? This removes all overrides, playlist metadata, and settings.')) return;
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('cwn'));
-    keys.forEach(k => localStorage.removeItem(k));
-    Log.warn(`Settings: Cleared ${keys.length} localStorage keys`);
-    alert(`Cleared ${keys.length} CWN keys.`);
-  });
-
-  // Export localStorage
-  $('#exportStorage')?.addEventListener('click', () => {
-    const data = {};
-    Object.keys(localStorage).filter(k => k.startsWith('cwn')).forEach(k => data[k] = localStorage.getItem(k));
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `cwn-settings-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    Log.ok(`Settings: Exported ${Object.keys(data).length} keys`);
-  });
-
-  // Import localStorage
-  $('#importStorage')?.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.json';
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const data = JSON.parse(e.target.result);
-          let count = 0;
-          Object.entries(data).forEach(([k, v]) => { if (k.startsWith('cwn')) { localStorage.setItem(k, v); count++; } });
-          Log.ok(`Settings: Imported ${count} keys`);
-          alert(`Imported ${count} settings keys successfully.`);
-        } catch { alert('Invalid JSON file.'); }
-      };
-      reader.readAsText(file);
-    });
-    input.click();
   });
 }
 
 /* ══════════════════════════════════════════════════════
-   AI ROSTER — BUTTONS
-   ══════════════════════════════════════════════════════ */
-function initAIRoster() {
-  // Test announcer buttons
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('[data-announce]');
-    if (!btn) return;
-    const script = btn.dataset.announce;
-    const name   = btn.dataset.name || 'Earl Henderson';
-    Bob.fireAnnouncer(`have ${name} ${script}`);
-    Log.info(`AI Roster: ${name} → ${script}`);
-  });
-
-  // Run diagnostic
-  document.addEventListener('click', e => {
-    if (e.target.matches('#diagBtn')) Diagnostics.runAll();
-  });
+   ERA PAGES STATUS  (panel-era)
+══════════════════════════════════════════════════════ */
+function renderEraStatus() {
+  const container = safeGet('eraPageList');
+  if (!container) return;
+  const pages = [
+    { name:'2026 Home',          file:'index.html',      key:'cwn_theme'    },
+    { name:'1994 Severe',        file:'1994Severe.html', key:'cwn94_theme'  },
+    { name:'1980s CRT',          file:'80s.html',        key:'cwn80s_theme' },
+    { name:'1970s Edition',      file:'70s.html',        key:'cwn70s_theme' },
+    { name:'1960s Mid-Century',  file:'60s.html',        key:'cwn60s_theme' },
+    { name:'1950s TV Broadcast', file:'50s.html',        key:'cwn50s_theme' }
+  ];
+  container.innerHTML = pages.map(p => {
+    const theme = localStorage.getItem(p.key) || 'auto';
+    const city  = localStorage.getItem('cwn_city') || 'Lebanon';
+    return `
+      <div class="era-row">
+        <div class="era-name">${p.name}</div>
+        <div class="era-meta">Theme: <strong>${theme}</strong> · City: <strong>${city}</strong></div>
+        <a class="btn-sm era-link" href="${p.file}" target="_blank">Open ↗</a>
+      </div>`;
+  }).join('');
 }
 
 /* ══════════════════════════════════════════════════════
-   STATUS CARD INITS
-   ══════════════════════════════════════════════════════ */
-function initStatusCards() {
-  $('#diagBtn')?.addEventListener('click', () => Diagnostics.runAll());
-  // Auto-run a quick diag on load
-  setTimeout(() => Diagnostics.runAll(), 1200);
-}
-
-/* ══════════════════════════════════════════════════════
-   ERA PAGES PANEL
-   ══════════════════════════════════════════════════════ */
-function initEraPages() {
-  $$('.page-card[data-href]').forEach(card => {
-    card.addEventListener('click', () => window.open(card.dataset.href, '_blank'));
-  });
-}
-
-/* ══════════════════════════════════════════════════════
-   FULL ADMIN SHELL INIT
-   ══════════════════════════════════════════════════════ */
+   ADMIN SHELL INIT
+══════════════════════════════════════════════════════ */
 function initAdminShell() {
+  /* update username display */
+  safeText('sbUser', Auth.getCreds().user.toUpperCase());
+
   Log.init();
-  Log.info('CWN Admin Portal loaded — welcome back, Tanner.');
+  Log.info('CWN Admin Portal initialised');
 
   initPanelRouter();
   initChat();
   SoundLibrary.init();
   GraphicsLibrary.init();
-  initBroadcast();
-  initWeatherOverrides();
-  initAlertControl();
-  initTickerOverride();
-  initSettings();
-  initAIRoster();
-  initStatusCards();
-  initEraPages();
+  renderAIRoster();
+  renderEraStatus();
 
-  // Repair AI auto-scan
-  setTimeout(() => Repair.scan(), 2000);
+  /* ── Diagnostics panel button — id="runDiagBtn" ── */
+  safeGet('runDiagBtn')?.addEventListener('click', () => Diagnostics.runAll());
 
-  // Show Bob panel by default
-  const bobBtn = $('[data-panel="bob"]');
-  if (bobBtn) bobBtn.click();
+  /* override status refresh */
+  refreshOverrideStatus();
+  setInterval(refreshOverrideStatus, 3000);
 
-  Log.ok('Admin shell initialized.');
+  /* ── Boot diagnostic (safe — no null crash) ── */
+  setTimeout(() => {
+    Log.info('Running boot diagnostic…');
+    Diagnostics.runAll().catch(e => Log.fail(`Boot diagnostic error: ${e.message}`));
+  }, 800);
+
+  Log.ok('Admin shell ready — all systems connected');
 }
 
 /* ══════════════════════════════════════════════════════
-   BOOT
-   ══════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  initLogin();
-});
+   ENTRY POINT
+══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', initLogin);
 
