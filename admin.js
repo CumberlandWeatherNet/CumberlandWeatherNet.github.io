@@ -137,13 +137,13 @@ const Diagnostics = {
 
   async runAll() {
     Log.info('Running full CWN system diagnostic…');
-    /* ── FIX: was $('#diagBtn') — HTML id is "runDiagBtn" ── */
     const btn = safeGet('runDiagBtn');
     if (btn) { btn.textContent = '⏳ Running…'; btn.disabled = true; }
 
     await Promise.all([
-      this.checkNWS(), this.checkRadar(), this.checkCitiesJSON(),
-      this.checkHeart(), this.checkSpeechAPI(), this.checkAudioContext()
+      this.checkNWS(), this.checkCitiesJSON(),
+      this.checkHeart(), this.checkRadar(),
+      this.checkSpeechAPI(), this.checkAudioContext()
     ]);
 
     if (btn) { btn.textContent = '▶ Run Full Diagnostic'; btn.disabled = false; }
@@ -171,17 +171,6 @@ const Diagnostics = {
     } catch(e) { this.setCard('nws','fail','No Response'); Log.fail(`NWS API → ${e.message}`); }
   },
 
-  async checkRadar() {
-    try {
-      const r = await fetch(
-        'https://radar.weather.gov/ridge/standard/KOHX_N0R_0.gif?' + Date.now(),
-        { method:'HEAD', signal: AbortSignal.timeout(6000) });
-      r.ok
-        ? (this.setCard('radar','ok','KOHX Responding'),    Log.ok('KOHX Radar → 200 OK'))
-        : (this.setCard('radar','warn',`HTTP ${r.status}`), Log.warn(`KOHX Radar → ${r.status}`));
-    } catch(e) { this.setCard('radar','fail','No Response'); Log.fail(`KOHX Radar → ${e.message}`); }
-  },
-
   async checkCitiesJSON() {
     try {
       const r = await fetch('./api/cities.json', { signal: AbortSignal.timeout(4000) });
@@ -195,12 +184,53 @@ const Diagnostics = {
   },
 
   async checkHeart() {
+    /* Step 1: confirm file reachable */
     try {
       const r = await fetch('./core/cwn-heart-full.js', { signal: AbortSignal.timeout(4000) });
-      r.ok
-        ? (this.setCard('heart','ok','Heart Engine Online'), Log.ok('cwn-heart-full.js → 200 OK'))
-        : (this.setCard('heart','warn',`HTTP ${r.status}`), Log.warn(`Heart → ${r.status}`));
-    } catch(e) { this.setCard('heart','warn','Local path'); Log.warn(`Heart → ${e.message}`); }
+      if (!r.ok) { this.setCard('heart','warn',`HTTP ${r.status}`); Log.warn(`Heart → ${r.status}`); return; }
+      Log.ok('cwn-heart-full.js → 200 OK');
+    } catch(e) { this.setCard('heart','warn','Local path'); Log.warn(`Heart → ${e.message}`); return; }
+
+    /* Step 2: pull live data for status panel via dynamic import */
+    try {
+      const heart = await import('./core/cwn-heart-full.js');
+      const city  = localStorage.getItem('cwn_city') || 'Lebanon';
+      const { lat, lon } = await heart.getCityCoords(city);
+      const cond = await heart.getConditions(lat, lon);
+      const tempStr = (cond?.temp_f != null) ? cond.temp_f + '°F' : '--°F';
+      const descStr = cond?.description || '--';
+      this.setCard('heart', 'ok', `${city} · ${tempStr}`);
+      /* Populate heart status display elements if present in HTML */
+      safeText('heart-city',  city);
+      safeText('heart-temp',  tempStr);
+      safeText('heart-desc',  descStr);
+      safeText('heart-wind',  cond?.wind_mph != null ? cond.wind_mph + ' mph' : '--');
+      safeText('heart-hum',   cond?.humidity != null ? cond.humidity + '%'    : '--');
+      Log.ok(`Heart live data → ${city}: ${tempStr} · ${descStr}`);
+    } catch(e) {
+      /* Heart file is reachable but live data failed — still mark online */
+      this.setCard('heart','ok','Heart Engine Online (no live data)');
+      Log.warn(`Heart live data pull → ${e.message}`);
+    }
+  },
+
+  /* ── KOHX Radar — uses new Image() to avoid CORS entirely ── */
+  checkRadar() {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        this.setCard('radar', 'ok', 'KOHX Responding');
+        Log.ok('KOHX Radar → Image loaded successfully');
+        resolve();
+      };
+      img.onerror = () => {
+        this.setCard('radar', 'fail', 'KOHX Unavailable');
+        Log.fail('KOHX Radar → Image failed to load');
+        resolve();
+      };
+      /* Cache-bust with timestamp; image load bypasses CORS */
+      img.src = 'https://radar.weather.gov/ridge/standard/KOHX_loop.gif?' + Date.now();
+    });
   },
 
   checkSpeechAPI() {
@@ -1088,4 +1118,3 @@ function initAdminShell() {
    ENTRY POINT
 ══════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', initLogin);
-
