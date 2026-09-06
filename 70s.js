@@ -209,3 +209,8 @@ fillCities().then(() => {
   const city = sel.value;
   if (city) load(city);
 });
+
+fillCities().then(() => {
+  const city = sel.value;
+  if (city) load(city);
+});
