@@ -1,111 +1,73 @@
 /* ============================================================
-   CWN HEART v2.0 — Hyperlocal Environment Atmospheric Reporting Technology
-   Clean, stable, production-ready core for all CWN era pages
+   CWN HEART v2.1 — Hyperlocal Environment Atmospheric Reporting Technology
+   v2.1: + precip_pct in getConditions()
+         + User-Agent on ALL NWS fetches
+         + exported fetchNWSPeriods()
    ============================================================ */
 
-/* ------------------------------
-   1. Load city coordinates
-   ------------------------------ */
+const NWS_UA = { 'User-Agent': 'CumberlandWeatherNet/2.0 (cumberlandweather.net)' };
+
 export async function getCityCoords(cityName) {
-    const res = await fetch("../api/cities.json");
-    const data = await res.json();
-
-    for (const county in data) {
-        if (data[county][cityName]) {
-            return data[county][cityName];
-        }
-    }
-
-    throw new Error("City not found in cities.json");
+  const res  = await fetch('../api/cities.json', { headers: NWS_UA });
+  const data = await res.json();
+  for (const county in data) {
+    if (data[county][cityName]) return data[county][cityName];
+  }
+  throw new Error(`City not found: ${cityName}`);
 }
 
-/* ------------------------------
-   2. Fetch current conditions
-   ------------------------------ */
 export async function getConditions(lat, lon) {
-    const url = `https://api.weather.gov/points/${lat},${lon}`;
-    const point = await fetch(url).then(r => r.json());
-
-    const forecastUrl = point.properties.forecast;
-    const forecast = await fetch(forecastUrl).then(r => r.json());
-
-    const period = forecast.properties.periods[0];
-
-    return {
-        temp_f: period.temperature,
-        description: period.shortForecast,
-        wind_mph: period.windSpeed,
-        wind_direction: period.windDirection
-    };
+  const point    = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers: NWS_UA }).then(r => r.json());
+  const forecast = await fetch(point.properties.forecast, { headers: NWS_UA }).then(r => r.json());
+  const period   = forecast.properties.periods[0];
+  return {
+    temp_f         : period.temperature,
+    description    : period.shortForecast,
+    wind_mph       : period.windSpeed,
+    wind_direction : period.windDirection,
+    precip_pct     : period.probabilityOfPrecipitation?.value ?? 0
+  };
 }
 
-/* ------------------------------
-   3. Fetch alerts
-   ------------------------------ */
+export async function fetchNWSPeriods(lat, lon, count = 6) {
+  const point    = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers: NWS_UA }).then(r => r.json());
+  const forecast = await fetch(point.properties.forecast, { headers: NWS_UA }).then(r => r.json());
+  return forecast.properties.periods.slice(0, count);
+}
+
 export async function getAlerts(lat, lon) {
-    const url = `https://api.weather.gov/alerts/active?point=${lat},${lon}`;
-    const alerts = await fetch(url).then(r => r.json());
-
-    return alerts.features.map(a => ({
-        event: a.properties.event,
-        severity: a.properties.severity,
-        headline: a.properties.headline
-    }));
+  const data = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`, { headers: NWS_UA }).then(r => r.json());
+  return (data.features || []).map(a => ({
+    event    : a.properties.event,
+    severity : a.properties.severity,
+    headline : a.properties.headline
+  }));
 }
 
-/* ------------------------------
-   4. Radar URL
-   ------------------------------ */
 export function getRadarUrl() {
-    return "https://radar.weather.gov/ridge/standard/KOHX_loop.gif";
+  return 'https://radar.weather.gov/ridge/standard/KOHX_loop.gif';
 }
 
-/* ------------------------------
-   5. Clock
-   ------------------------------ */
 export function getClock() {
-    const now = new Date();
-    return {
-        clock_time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    };
+  return { clock_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
 }
 
-/* ------------------------------
-   6. Today/Tonight logic
-   ------------------------------ */
 export function getDayPeriod() {
-    const hour = new Date().getHours();
-    return (hour >= 18 || hour < 2) ? "Tonight" : "Today";
+  const h = new Date().getHours();
+  return (h >= 18 || h < 2) ? 'Tonight' : 'Today';
 }
 
-/* ------------------------------
-   7. Emergency detection
-   ------------------------------ */
 export function hasEmergency(alerts) {
-    return alerts.some(a =>
-        a.severity === "Severe" ||
-        a.severity === "Extreme" ||
-        a.event.includes("Warning")
-    );
+  return alerts.some(a =>
+    a.severity === 'Severe'  ||
+    a.severity === 'Extreme' ||
+    a.event.includes('Warning')
+  );
 }
 
-/* ------------------------------
-   8. Unified CWN Core Object
-   ------------------------------ */
 export async function getCWNCore(cityName) {
-    const coords = await getCityCoords(cityName);
-
-    const conditions = await getConditions(coords.lat, coords.lon);
-    const alerts = await getAlerts(coords.lat, coords.lon);
-    const radar_url = getRadarUrl();
-    const clock = getClock();
-
-    return {
-        city_name: cityName,
-        ...conditions,
-        alerts,
-        radar_url,
-        ...clock
-    };
+  const { lat, lon } = await getCityCoords(cityName);
+  const [conditions, alerts] = await Promise.all([getConditions(lat, lon), getAlerts(lat, lon)]);
+  return { city_name: cityName, ...conditions, alerts, radar_url: getRadarUrl(), ...getClock() };
 }
 
