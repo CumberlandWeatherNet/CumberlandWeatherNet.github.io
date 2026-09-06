@@ -10,10 +10,8 @@ import {
   getAlerts,
   fetchNWSPeriods,
   getRadarUrl,
-  hasEmergency,
 } from './core/cwn-heart-full.js';
 
-/* ── DOM ── */
 const sel         = document.getElementById('cwnCitySelect');
 const timeEl      = document.getElementById('cwnTime');
 const toggle      = document.getElementById('themeToggle');
@@ -30,36 +28,32 @@ const radarImg    = document.getElementById('cwnRadar');
 const radarStatus = document.getElementById('cwnRadarStatus');
 const metaTheme   = document.getElementById('themeColor');
 
-/* ── WEATHER ICONS ── */
 function wxIcon(desc = '') {
   const d = desc.toLowerCase();
-  if (d.includes('tornado'))                                              return '🌪';
-  if (d.includes('thunder') || d.includes('tstm'))                       return '⚡';
+  if (d.includes('tornado'))                                               return '🌪';
+  if (d.includes('thunder') || d.includes('tstm'))                        return '⚡';
   if (d.includes('snow') || d.includes('blizzard') || d.includes('flurr')) return '✻';
-  if (d.includes('sleet') || d.includes('freezing'))                     return '✻';
-  if (d.includes('fog')   || d.includes('haze'))                         return '🌫';
+  if (d.includes('sleet') || d.includes('freezing'))                      return '✻';
+  if (d.includes('fog')   || d.includes('haze'))                          return '🌫';
   if (d.includes('rain')  || d.includes('shower') || d.includes('drizzle')) return '☂';
-  if (d.includes('cloud') || d.includes('overcast'))                     return '☁';
-  if (d.includes('wind'))                                                return '💨';
-  if (d.includes('sunny') || d.includes('clear') || d.includes('fair'))  return '☀';
+  if (d.includes('cloud') || d.includes('overcast'))                      return '☁';
+  if (d.includes('wind'))                                                  return '💨';
+  if (d.includes('sunny') || d.includes('clear') || d.includes('fair'))   return '☀';
   return '☁';
 }
 
-/* ── CLOCK ── */
 function clock() {
   timeEl.textContent = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit', minute: '2-digit'
   });
 }
 
-/* ── RADAR ── */
 function loadRadar() {
   radarImg.src = getRadarUrl() + '?t=' + Date.now();
 }
 radarImg.onload  = () => { radarStatus.textContent = 'Radar image updated.'; };
 radarImg.onerror = () => { radarStatus.textContent = 'Radar image currently unavailable.'; };
 
-/* ── FORECAST CARDS ── */
 function renderPeriods(periods) {
   if (!periods?.length) {
     forecastEl.innerHTML = '<div class="icon-card">Forecast unavailable</div>';
@@ -76,61 +70,51 @@ function renderPeriods(periods) {
   `).join('');
 }
 
-/* ── LOAD WEATHER ── */
 async function load(cityName) {
   if (!cityName) return;
   statusEl.textContent = 'Loading live local forecast…';
   try {
     const { lat, lon } = await getCityCoords(cityName);
-    const [conditions, alerts, periods] = await Promise.all([
+    const [conditions, , periods] = await Promise.all([
       getConditions(lat, lon),
       getAlerts(lat, lon),
       fetchNWSPeriods(lat, lon, 6),
     ]);
-
     iconBox.innerHTML    = `<div class="current-live-symbol">${wxIcon(conditions.description)}</div>`;
     tempEl.textContent   = `${conditions.temp_f}°F`;
     windEl.textContent   = `Wind: ${conditions.wind_mph} mph`;
     descEl.textContent   = conditions.description;
     statusEl.textContent = `Live report for ${cityName}. Updated ${new Date().toLocaleTimeString()}`;
-
     renderPeriods(periods);
-
   } catch (err) {
     console.error('[CWN]', err);
-    statusEl.textContent = 'The location or weather service could not be reached.';
+    statusEl.textContent = 'Location or weather service could not be reached.';
     forecastEl.innerHTML = '<div class="icon-card">Forecast unavailable</div>';
   }
 }
 
-/* ── CITY SELECT — fill from api/cities.json, restore saved city ── */
+/* ── CITY SELECT ─────────────────────────────────────────────
+   cities.json: { "Davidson County": { "Nashville": {lat,lon} } }
+────────────────────────────────────────────────────────────── */
 async function fillCities() {
   try {
     const resp = await fetch('./api/cities.json');
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const cities = await resp.json();
-
-    const byCounty = {};
-    for (const c of cities) {
-      const county = c.county ?? 'Other';
-      (byCounty[county] ??= []).push(c.name);
-    }
+    const data = await resp.json();
 
     let html = '<option value="">— Select city —</option>';
-    for (const county of Object.keys(byCounty).sort()) {
-      html += `<optgroup label="${county} County">`;
-      for (const name of byCounty[county].sort())
-        html += `<option value="${name}">${name}, TN</option>`;
+    for (const county of Object.keys(data).sort()) {
+      html += `<optgroup label="${county}">`;
+      for (const city of Object.keys(data[county]).sort())
+        html += `<option value="${city}">${city}</option>`;
       html += '</optgroup>';
     }
     sel.innerHTML = html;
-
   } catch (err) {
     console.error('[CWN] fillCities:', err);
     sel.innerHTML = '<option value="">— City list unavailable —</option>';
   }
 
-  /* Restore saved city — persists until user picks a different one */
   const saved = localStorage.getItem('cwn_city');
   if (saved) {
     sel.value = saved;
@@ -138,7 +122,6 @@ async function fillCities() {
   }
 }
 
-/* Save on change + load weather immediately */
 sel.addEventListener('change', () => {
   const city = sel.value;
   if (!city) return;
@@ -146,11 +129,7 @@ sel.addEventListener('change', () => {
   load(city);
 });
 
-/* ── AUTO DAY / NIGHT ──────────────────────────────────────────
-   Day   = 06:00–18:59
-   Night = 19:00–05:59
-   Manual toggle sets MANUAL badge; auto resets at threshold crossings.
-────────────────────────────────────────────────────────────── */
+/* ── AUTO DAY / NIGHT ── */
 let userOverride = false;
 let prevBucket   = null;
 
@@ -170,12 +149,12 @@ function applyTheme(theme, manual = false) {
 }
 
 function initTheme() {
-  const b     = bucket();
-  prevBucket  = b;
-  let saved   = null;
+  const b = bucket();
+  prevBucket = b;
+  let saved = null;
   try { saved = localStorage.getItem('cwn_theme'); } catch (_) {}
   if (saved && saved !== b) { userOverride = true;  applyTheme(saved, true); }
-  else                      { userOverride = false; applyTheme(b, false);    }
+  else                      { userOverride = false; applyTheme(b,     false); }
 }
 
 function autoCheck() {
@@ -185,7 +164,7 @@ function autoCheck() {
 }
 
 toggle.addEventListener('click', () => {
-  const next   = document.documentElement.dataset.theme === 'night' ? 'day' : 'night';
+  const next = document.documentElement.dataset.theme === 'night' ? 'day' : 'night';
   userOverride = true;
   prevBucket   = bucket();
   applyTheme(next, true);
@@ -211,8 +190,8 @@ document.addEventListener('keydown', e => {
 
 /* ── BOOT ── */
 initTheme();
-clock();    setInterval(clock,      1_000);
-loadRadar(); setInterval(loadRadar, 300_000);
+clock();     setInterval(clock,       1_000);
+loadRadar(); setInterval(loadRadar,  300_000);
 setInterval(autoCheck, 60_000);
 
 fillCities().then(() => {
