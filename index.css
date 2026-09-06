@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════
    Cumberland Weather Network — 2026 Edition
-   cwn2026.css
+   index.css
    Same structure as 1994Severe.css — new visual skin only
 ════════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -61,7 +61,7 @@ body {
   background-color: var(--page);
   background-image:
     radial-gradient(ellipse at 18% 8%,  rgba(100,180,255,.22) 0%, transparent 52%),
-    radial-gradient(ellipse at 82% 92%, rgba(20,90,220,.14)   0%, transparent 48%);
+    radial-gradient(ellipse at 82% 92%, rgba(20, 90,220,.14)  0%, transparent 48%);
   color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   transition: background-color 650ms ease, color 650ms ease;
@@ -77,7 +77,9 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1.5px solid var(--glass-border);
   border-radius: 24px;
-  box-shadow: 0 8px 40px var(--shadow), inset 0 1px 0 var(--glass-border);
+  box-shadow:
+    0 8px 40px var(--shadow),
+    inset 0 1px 0 var(--glass-border);
   transition: background 650ms ease, border-color 650ms ease, box-shadow 650ms ease;
 }
 
@@ -92,8 +94,8 @@ body {
   text-align: center;
   transition: border-color 650ms ease;
 }
-.cwn-logo-wrap { width: min(100%, 820px) }
-.cwn26-svg     { display:block; width:100%; height:auto; overflow:visible }
+.cwn-logo-wrap  { width: min(100%, 820px) }
+.cwn26-svg      { display:block; width:100%; height:auto; overflow:visible }
 
 .cwn-title-line {
   font-size: clamp(1rem,3vw,1.45rem);
@@ -182,9 +184,9 @@ body {
   border-radius: 10px;
   transition: background 150ms ease, color 150ms ease;
 }
-.directory-link:hover                { background:var(--panel-deep); color:var(--accent) }
-.directory-link[aria-current="page"] { color:var(--accent); background:var(--panel-deep); font-weight:700 }
-.directory-link:focus-visible        { outline:2px solid var(--accent); outline-offset:2px }
+.directory-link:hover                  { background:var(--panel-deep); color:var(--accent) }
+.directory-link[aria-current="page"]   { color:var(--accent); background:var(--panel-deep); font-weight:700 }
+.directory-link:focus-visible          { outline:2px solid var(--accent); outline-offset:2px }
 
 /* ══ ALERT TICKER ══ */
 .alert-ticker-wrap {
@@ -224,8 +226,8 @@ body {
 }
 .alert-ticker-icon { display:inline-block; font-size:1rem; animation:icon-flash 1s step-end infinite }
 @keyframes icon-flash { 0%,100%{opacity:1} 50%{opacity:0} }
-.alert-ticker-outer { flex:1; overflow:hidden; height:100%; display:flex; align-items:center }
-.alert-ticker-track {
+.alert-ticker-outer  { flex:1; overflow:hidden; height:100%; display:flex; align-items:center }
+.alert-ticker-track  {
   display: inline-block;
   white-space: nowrap;
   will-change: transform;
@@ -283,8 +285,7 @@ body {
   box-shadow: 0 2px 10px var(--shadow);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  transition: background 650ms ease, border-color 650ms ease,
-              transform 150ms ease, box-shadow 150ms ease;
+  transition: background 650ms ease, border-color 650ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 .icon-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px var(--shadow) }
 .period-name {
@@ -366,7 +367,7 @@ body {
   line-height: 1;
   filter: drop-shadow(0 2px 8px rgba(48,160,248,.30));
 }
-.current-data { display:flex; flex-direction:column; gap:6px }
+.current-data   { display:flex; flex-direction:column; gap:6px }
 .temperature {
   font-size: clamp(2rem,6vw,2.9rem);
   font-weight: 800;
@@ -443,17 +444,17 @@ body {
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:760px){
-  .weather-icons { grid-template-columns:repeat(3,minmax(0,1fr)) }
-  .content-grid  { grid-template-columns:1fr }
+  .weather-icons   { grid-template-columns:repeat(3,minmax(0,1fr)) }
+  .content-grid    { grid-template-columns:1fr }
 }
 @media(max-width:480px){
-  body                 { padding:8px 0 }
-  .cwn-frame           { border-radius:16px }
-  .weather-icons       { grid-template-columns:repeat(2,minmax(0,1fr)) }
-  .cwn-header-controls { flex-direction:column; align-items:stretch }
-  .cwn-time,.cwn-btn   { width:100% }
-  .current-layout      { grid-template-columns:72px 1fr }
-  .current-icon-box    { width:72px; height:72px }
+  body                  { padding:8px 0 }
+  .cwn-frame            { border-radius:16px }
+  .weather-icons        { grid-template-columns:repeat(2,minmax(0,1fr)) }
+  .cwn-header-controls  { flex-direction:column; align-items:stretch }
+  .cwn-time,.cwn-btn    { width:100% }
+  .current-layout       { grid-template-columns:72px 1fr }
+  .current-icon-box     { width:72px; height:72px }
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after { transition:none!important; animation:none!important }
