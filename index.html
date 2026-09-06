@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" id="themeColor" content="#060d1a" />
+  <title>Cumberland Weather Network — Home</title>
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="cwn2026.css" />
+</head>
+<body>
+<main class="cwn-frame">
+
+  <!-- ══ HEADER ══ -->
+  <header class="cwn-header">
+    <div class="cwn-logo-wrap">
+
+      <!-- 2026 SVG Logo — clean modern wordmark -->
+      <svg class="cwn26-svg" viewBox="0 0 860 150" xmlns="http://www.w3.org/2000/svg"
+           role="img" aria-label="CWN">
+        <defs>
+          <!-- Day fill -->
+          <linearGradient id="cwn26-fill-day" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#3b9eff"/>
+            <stop offset="50%"  stop-color="#1468c0"/>
+            <stop offset="100%" stop-color="#0a3a80"/>
+          </linearGradient>
+          <!-- Night fill -->
+          <linearGradient id="cwn26-fill-night" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#70ccff"/>
+            <stop offset="50%"  stop-color="#30a0f8"/>
+            <stop offset="100%" stop-color="#1460c0"/>
+          </linearGradient>
+          <!-- Shared shine overlay -->
+          <linearGradient id="cwn26-shine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="rgba(255,255,255,.38)"/>
+            <stop offset="55%" stop-color="rgba(255,255,255,0)"/>
+          </linearGradient>
+          <filter id="cwn26-glow" x="-10%" y="-30%" width="120%" height="160%">
+            <feGaussianBlur stdDeviation="6" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="cwn26-drop" x="-6%" y="-12%" width="118%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6"
+                          flood-color="rgba(0,30,80,.40)" flood-opacity="1"/>
+          </filter>
+          <!-- Switch fill based on theme via CSS currentColor trick -->
+          <style>
+            #cwn26-main-text { fill: url(#cwn26-fill-night) }
+            html[data-theme="day"] #cwn26-main-text { fill: url(#cwn26-fill-day) }
+          </style>
+        </defs>
+
+        <!-- Glow halo -->
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
+              fill="rgba(48,160,248,.18)" filter="url(#cwn26-glow)">CWN</text>
+        <!-- Drop shadow -->
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
+              fill="rgba(0,20,60,.35)" filter="url(#cwn26-drop)">CWN</text>
+        <!-- Main fill -->
+        <text id="cwn26-main-text" x="430" y="118" text-anchor="middle"
+              font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
+              letter-spacing="-4">CWN</text>
+        <!-- Shine overlay -->
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
+              fill="url(#cwn26-shine)" pointer-events="none"
+              letter-spacing="-4">CWN</text>
+      </svg>
+
+      <p class="cwn-title-line">Cumberland Weather Network</p>
+      <p class="cwn-station-line">Home &nbsp;&ndash;&nbsp; Middle Tennessee Regional Weather</p>
+    </div>
+
+    <!-- controls -->
+    <div class="cwn-header-controls">
+      <div class="cwn-time" id="cwnTime" role="timer" aria-live="off">12:00 AM</div>
+
+      <!--
+        Single combined theme button.
+        Shows: "☀ DAY — AUTO" / "🌙 NIGHT — AUTO" / "☀ DAY — MANUAL" / "🌙 NIGHT — MANUAL"
+        Click      → toggle day/night (goes manual on first change)
+        Dbl-click  → reset to AUTO
+      -->
+      <button class="cwn-btn theme-btn" id="themeToggle"
+              title="Click to change · Double-click to reset to AUTO"
+              aria-label="Toggle day/night theme">
+        🌙 NIGHT — AUTO
+      </button>
+
+      <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
+        <button class="cwn-btn directory-button" id="directoryButton"
+                aria-expanded="false" aria-haspopup="true">⊞ Directory</button>
+        <ul class="directory-menu" role="menu">
+          <li role="none"><a class="directory-link" href="/index.html"       role="menuitem" aria-current="page">⌂ Home &mdash; Current Edition</a></li>
+          <li role="none"><a class="directory-link" href="/1994Severe.html"  role="menuitem">⚡ 1994 Severe Edition</a></li>
+          <li role="none"><a class="directory-link" href="/80s.html"         role="menuitem">◈ 1980s Edition</a></li>
+          <li role="none"><a class="directory-link" href="/70s.html"         role="menuitem">◇ 1970s Edition</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══ ALERT TICKER — hidden until active alerts exist ══ -->
+  <div class="alert-ticker-wrap" id="alertTicker" hidden
+       role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="alert-ticker-label">
+      <span class="alert-ticker-icon" aria-hidden="true">⚠</span>
+      <span id="alertTickerLabel">Special Weather Statement</span>
+    </div>
+    <div class="alert-ticker-outer">
+      <div class="alert-ticker-track" id="alertTickerTrack"></div>
+    </div>
+  </div>
+
+  <!-- ══ CITY SELECT ══ -->
+  <label class="field-label" for="cwnCitySelect">▸ Select City</label>
+  <select class="cwn-city-select" id="cwnCitySelect"
+          aria-label="Select city for weather data">
+    <option value="">— Loading cities… —</option>
+  </select>
+
+  <!-- ══ FORECAST STRIP ══ -->
+  <section aria-label="6-period forecast">
+    <div class="weather-icons" id="forecastPeriods"
+         role="list" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <!-- ══ CONTENT GRID ══ -->
+  <div class="content-grid">
+
+    <section class="panel" aria-label="Current conditions">
+      <h2 class="panel-title">Current Conditions</h2>
+      <div class="current-layout">
+        <div class="current-icon-box" id="currentIconBox">
+          <span class="current-live-symbol" id="currentIcon" aria-hidden="true">☁</span>
+        </div>
+        <div class="current-data">
+          <div class="temperature" id="cwnTemp" aria-label="Temperature">--°F</div>
+          <div class="forecast-item" id="cwnWind">Wind: --</div>
+          <div class="forecast-item" id="cwnDesc">Select a city above</div>
+        </div>
+      </div>
+      <p class="status" id="weatherStatus" aria-live="polite">Awaiting city selection…</p>
+      <div class="alerts-inline" id="alertsInline" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-label="NEXRAD radar">
+      <h2 class="panel-title">NWS Middle TN Radar</h2>
+      <img class="radar-img" id="cwnRadar" src=""
+           alt="NEXRAD radar loop for Middle Tennessee" />
+      <p class="status" id="cwnRadarStatus">Loading radar…</p>
+    </section>
+
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="cwn-footer">
+    Cumberland Weather Network &nbsp;·&nbsp; Home Edition
+    &nbsp;·&nbsp; Data: National Weather Service &nbsp;·&nbsp; Radar: KOHX Nashville
+  </footer>
+
+</main>
+<script type="module" src="cwn2026.js"></script>
+</body>
+</html>
