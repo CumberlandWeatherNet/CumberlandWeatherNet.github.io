@@ -70,7 +70,7 @@ function renderPeriods(periods) {
       <div class="live-symbol" aria-hidden="true">${wxIcon(p.shortForecast ?? '')}</div>
       <div class="period-temp">${p.temperature ?? '--'}°${p.temperatureUnit ?? 'F'}</div>
       <div class="period-desc">${p.shortForecast ?? ''}</div>
-      <div class="period-rain">Rain ${p.precip_pct ?? 0}%</div>
+      <div class="period-rain">Rain ${p.probabilityOfPrecipitation?.value ?? p.precip_pct ?? '--'}%</div>
     </article>
   `).join('');
 }
