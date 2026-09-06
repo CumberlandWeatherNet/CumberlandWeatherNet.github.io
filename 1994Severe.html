@@ -1,482 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
-<meta charset="UTF-8">
-<title>CWN — 1994 SEVERE WEATHER BULLETIN</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <div id="status"></div>
-
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-html, body{
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-  overflow:hidden;
-  background:#000;
-  font-family:'Courier New', monospace;
-  color:#FFEFD5;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-#scaleWrapper{
-  width:1920px;
-  height:1080px;
-  transform-origin:center center;
-}
-
-/* --- ORIGINAL 1994 STYLING (unchanged) --- */
-
-.navbar{
-  height:40px;
-  background:#3b0000;
-  border-bottom:3px solid #FFCC00;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding-left:20px;
-}
-.navbar a{
-  color:#FFCC99;
-  text-decoration:none;
-  font-size:20px;
-}
-
-.header{
-  height:120px;
-  background:#3b0000;
-  border-bottom:3px solid #FF0000;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 18px;
-  border:3px solid #FFCC00;
-  color:#FFCC00;
-}
-.network-title{
-  font-size:32px;
-  font-weight:bold;
-}
-.header-sub{
-  font-size:20px;
-  color:#FFCC99;
-}
-.severe-label{
-  font-size:26px;
-  color:#FF0000;
-}
-
-.clock-box{
-  width:380px;
-  height:80px;
-  background:#120000;
-  border:3px solid #FFCC00;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:2px;
-}
-.clock{font-size:28px;color:#FFCC00;}
-.date{font-size:18px;color:#FFCC99;}
-.temp{font-size:22px;color:#FFCC99;}
-
-.main{
-  height:900px;
-  padding:12px;
-  display:grid;
-  grid-template-columns:1100px 780px;
-  gap:12px;
-  overflow:hidden;
-}
-
-.panel{
-  background:#120000;
-  border:4px solid #FFCC00;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-.panel-title{
-  height:52px;
-  line-height:52px;
-  padding-left:16px;
-  font-size:28px;
-  background:linear-gradient(90deg,#3b0000,#7a0000);
-  border-bottom:3px solid #FF0000;
-  color:#FFEFD5;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.city-dropdown{
-  background:#120000;
-  color:#FFCC99;
-  border:2px solid #FFCC00;
-  font-size:20px;
-  padding:4px 8px;
-  margin-right:20px;
-  cursor:pointer;
-}
-.city-dropdown option{
-  background:#120000;
-  color:#FFCC99;
-}
-
-.radar-window{
-  flex:1;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
-}
-.radar-window img{
-  width:115%;
-  height:115%;
-  object-fit:cover;
-  image-rendering:pixelated;
-  filter:contrast(1.2) brightness(1.1);
-}
-
-.radar-legend{
-  height:90px;
-  background:#120000;
-  border-top:3px solid #FFCC00;
-  padding:8px 16px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  font-size:18px;
-  color:#FFEFD5;
-}
-.legend-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.legend-swatch{
-  width:18px;
-  height:18px;
-  border:1px solid #FFEFD5;
-}
-.legend-light{background:#00FF00;}
-.legend-moderate{background:#FFFF00;}
-.legend-heavy{background:#FF8000;}
-.legend-severe{background:#FF0000;}
-
-.right-stack{
-  display:grid;
-  grid-template-rows:430px 430px;
-  gap:12px;
-}
-
-.bulletin-content{
-  padding:14px;
-  font-size:22px;
-  line-height:1.4;
-  overflow:hidden;
-}
-.bulletin-line{
-  margin-bottom:12px;
-  color:#FFEFD5;
-  font-size:24px;
-  font-weight:bold;
-}
-
-.location-content{
-  padding:14px;
-  font-size:22px;
-  line-height:1.5;
-}
-.location-line{
-  margin-bottom:10px;
-  color:#FFCC99;
-  font-size:22px;
-}
-
-.emergency-crawl{
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:40px;
-  background:#8b0000;
-  border-top:3px solid #FFCC00;
-  overflow:hidden;
-  display:none;
-}
-.crawl-text{
-  white-space:nowrap;
-  font-size:24px;
-  line-height:40px;
-  color:#FFCC99;
-  animation:crawl 20s linear infinite;
-  padding-left:100%;
-}
-@keyframes crawl{
-  from{transform:translateX(0);}
-  to{transform:translateX(-100%);}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" id="themeColor" content="#020214" />
+  <title>1994 Severe Weather Edition — Cumberland Weather Network</title>
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="1994severe.css" />
 </head>
-
 <body>
-<div id="scaleWrapper">
+<main class="cwn-frame">
 
-<!-- NAV -->
-<div class="navbar">
-  <a href="80s.html">80s Weather</a>
-  <a href="1994Severe.html">1994 Severe</a>
-</div>
+  <!-- ══ HEADER ══ -->
+  <header class="cwn-header">
+    <div class="cwn-logo-wrap">
 
-<!-- HEADER -->
-<div class="header">
-  <div>
-    <div class="network-title">CUMBERLAND WEATHER NET</div>
-    <div class="header-sub">SEVERE WEATHER BULLETIN — 1994 STYLE</div>
-  </div>
-  <div class="severe-label">SEVERE MODE</div>
-  <div class="clock-box">
-    <div class="clock" id="clock">--:-- --</div>
-    <div class="date" id="date">Loading...</div>
-    <div class="temp" id="temp">Temp: --°</div>
-  </div>
-</div>
+      <!-- 90s SVG Logo -->
+      <svg class="cwn90s-svg" viewBox="0 0 860 150" xmlns="http://www.w3.org/2000/svg"
+           role="img" aria-label="CWN">
+        <defs>
+          <linearGradient id="cwn94-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#fff9b0"/>
+            <stop offset="38%"  stop-color="#ffd700"/>
+            <stop offset="72%"  stop-color="#c88800"/>
+            <stop offset="100%" stop-color="#7a4c00"/>
+          </linearGradient>
+          <linearGradient id="cwn94-shine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="rgba(255,255,220,.52)"/>
+            <stop offset="55%" stop-color="rgba(255,255,220,0)"/>
+          </linearGradient>
+          <filter id="cwn94-glow" x="-12%" y="-35%" width="124%" height="170%">
+            <feGaussianBlur stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="cwn94-drop" x="-8%" y="-15%" width="120%" height="145%">
+            <feDropShadow dx="4" dy="4" stdDeviation="5"
+                          flood-color="#000050" flood-opacity=".88"/>
+          </filter>
+        </defs>
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Anton, Impact, sans-serif" font-size="130"
+              fill="rgba(255,210,0,.16)" filter="url(#cwn94-glow)">CWN</text>
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Anton, Impact, sans-serif" font-size="130"
+              fill="#000840" filter="url(#cwn94-drop)">CWN</text>
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Anton, Impact, sans-serif" font-size="130"
+              fill="url(#cwn94-fill)"
+              stroke="#001060" stroke-width="5" stroke-linejoin="round"
+              paint-order="stroke fill">CWN</text>
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Anton, Impact, sans-serif" font-size="130"
+              fill="url(#cwn94-shine)" pointer-events="none">CWN</text>
+        <text x="430" y="118" text-anchor="middle"
+              font-family="Anton, Impact, sans-serif" font-size="130"
+              fill="none" stroke="rgba(255,255,200,.22)" stroke-width="2"
+              pointer-events="none">CWN</text>
+      </svg>
 
-<!-- MAIN -->
-<div class="main">
-
-<!-- RADAR -->
-<div class="panel">
-  <div class="panel-title">LIVE RADAR — MIDDLE TENNESSEE</div>
-  <div class="radar-window">
-    <img src="https://radar.weather.gov/ridge/standard/KOHX_loop.gif">
-  </div>
-  <div class="radar-legend">
-    <div>RADAR LEGEND</div>
-    <div class="legend-row">
-      <div class="legend-swatch legend-light"></div><span>Light Rain</span>
-      <div class="legend-swatch legend-moderate"></div><span>Moderate Rain</span>
+      <p class="cwn-title-line">Cumberland Weather Network</p>
+      <p class="cwn-station-line">Middle Tennessee Regional Weather &nbsp;&ndash;&nbsp; 1994 Edition</p>
     </div>
-    <div class="legend-row">
-      <div class="legend-swatch legend-heavy"></div><span>Heavy Rain</span>
-      <div class="legend-swatch legend-severe"></div><span>Severe Storms</span>
+
+    <!-- controls -->
+    <div class="cwn-header-controls">
+      <div class="cwn-time" id="cwnTime" role="timer" aria-live="off">12:00 AM</div>
+
+      <!--
+        Single combined theme button.
+        Shows: "☀ DAY — AUTO" / "🌙 NIGHT — AUTO" / "☀ DAY — MANUAL" / "🌙 NIGHT — MANUAL"
+        Click  → toggle day/night (goes manual on first change)
+        Dbl-click → reset to AUTO
+      -->
+      <button class="cwn-btn theme-btn" id="themeToggle"
+              title="Click to change · Double-click to reset to AUTO"
+              aria-label="Toggle day/night theme">
+        🌙 NIGHT — AUTO
+      </button>
+
+      <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
+        <button class="cwn-btn directory-button" id="directoryButton"
+                aria-expanded="false" aria-haspopup="true">▦ Directory</button>
+        <ul class="directory-menu" role="menu">
+          <li role="none"><a class="directory-link" href="/index.html"          role="menuitem">⌂ Home &mdash; Current Edition</a></li>
+          <li role="none"><a class="directory-link" href="/80s.html"            role="menuitem">◈ 1980s Edition</a></li>
+          <li role="none"><a class="directory-link" href="/70s.html"            role="menuitem">◇ 1970s Edition</a></li>
+          <li role="none"><a class="directory-link" href="/era/1994Severe.html" role="menuitem" aria-current="page">⚡ 1994 Severe Edition</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══ ALERT TICKER — hidden until active alerts exist ══ -->
+  <div class="alert-ticker-wrap" id="alertTicker" hidden
+       role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="alert-ticker-label">
+      <span class="alert-ticker-icon" aria-hidden="true">⚠</span>
+      <span id="alertTickerLabel">Special Weather Statement</span>
+    </div>
+    <div class="alert-ticker-outer">
+      <div class="alert-ticker-track" id="alertTickerTrack"></div>
     </div>
   </div>
-</div>
 
-<!-- RIGHT COLUMN -->
-<div class="right-stack">
+  <!-- ══ CITY SELECT ══ -->
+  <label class="field-label" for="cwnCitySelect">▶ Select City</label>
+  <select class="cwn-city-select" id="cwnCitySelect"
+          aria-label="Select city for weather data">
+    <option value="">— Loading cities… —</option>
+  </select>
 
-<!-- BULLETIN -->
-<div class="panel">
-  <div class="panel-title">SEVERE WEATHER BULLETIN</div>
-  <div class="bulletin-content" id="bulletinPanel"></div>
-</div>
+  <!-- ══ FORECAST STRIP ══ -->
+  <section aria-label="6-period forecast">
+    <div class="weather-icons" id="forecastPeriods"
+         role="list" aria-live="polite" aria-atomic="true"></div>
+  </section>
 
-<!-- LOCATION -->
-<div class="panel">
-  <div class="panel-title">
-    YOUR LOCATION
-    <select id="citySelect" class="city-dropdown">
-      <option value="">Select City</option>
-      <option value="36.1627,-86.7816">Nashville</option>
-      <option value="36.2081,-86.2911">Lebanon</option>
-      <option value="36.3884,-86.4467">Gallatin</option>
-      <option value="36.3040,-86.6200">Hendersonville</option>
-      <option value="35.8456,-86.3903">Murfreesboro</option>
-      <option value="35.9251,-86.8689">Franklin</option>
-      <option value="35.6151,-87.0353">Columbia</option>
-      <option value="36.1628,-85.5016">Cookeville</option>
-      <option value="36.5298,-87.3595">Clarksville</option>
-      <option value="36.5092,-86.8850">Springfield</option>
-      <option value="36.0770,-87.3878">Dickson</option>
-      <option value="35.4834,-86.4603">Shelbyville</option>
-      <option value="35.4734,-86.0886">Manchester</option>
-      <option value="35.3620,-86.2094">Tullahoma</option>
-      <option value="35.6860,-85.7791">McMinnville</option>
-      <option value="35.9256,-85.4644">Sparta</option>
-      <option value="36.2515,-85.9511">Carthage</option>
-      <option value="36.5212,-86.0266">Lafayette</option>
-      <option value="36.3900,-86.1600">Hartsville</option>
-      <option value="36.3851,-85.3230">Livingston</option>
-      <option value="36.4345,-84.9372">Jamestown</option>
-      <option value="35.9489,-85.0269">Crossville</option>
-    </select>
+  <!-- ══ CONTENT GRID ══ -->
+  <div class="content-grid">
+
+    <section class="panel" aria-label="Current conditions">
+      <h2 class="panel-title">⚡ Current Conditions</h2>
+      <div class="current-layout">
+        <div class="current-icon-box" id="currentIconBox">
+          <span class="current-live-symbol" id="currentIcon" aria-hidden="true">☁</span>
+        </div>
+        <div class="current-data">
+          <div class="temperature" id="cwnTemp" aria-label="Temperature">--°F</div>
+          <div class="forecast-item" id="cwnWind">Wind: --</div>
+          <div class="forecast-item" id="cwnDesc">Select a city above</div>
+        </div>
+      </div>
+      <p class="status" id="weatherStatus" aria-live="polite">Awaiting city selection…</p>
+      <div class="alerts-inline" id="alertsInline" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-label="NEXRAD radar">
+      <h2 class="panel-title">◉ NEXRAD Radar &mdash; KOHX</h2>
+      <img class="radar-img" id="cwnRadar" src=""
+           alt="NEXRAD radar loop for Middle Tennessee" />
+      <p class="status" id="cwnRadarStatus">Loading radar…</p>
+    </section>
+
   </div>
-  <div class="location-content" id="locationPanel">
-    <div class="location-line">Select a city to view conditions.</div>
-  </div>
-</div>
 
-</div>
-</div>
+  <!-- ══ FOOTER ══ -->
+  <footer class="cwn-footer">
+    Cumberland Weather Network &nbsp;·&nbsp; 1994 Severe Weather Edition
+    &nbsp;·&nbsp; Data: National Weather Service &nbsp;·&nbsp; Radar: KOHX Nashville
+  </footer>
 
-<!-- EMERGENCY CRAWL -->
-<div class="emergency-crawl" id="crawlBox">
-  <div class="crawl-text" id="crawlText"></div>
-</div>
-
-</div>
-
-<script>
-/* AUTO SCALE */
-function scaleToFit(){
-  const w=document.getElementById("scaleWrapper");
-  const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
-  w.style.transform=`scale(${s})`;
-}
-window.addEventListener("resize",scaleToFit);
-window.addEventListener("load",scaleToFit);
-
-/* CLOCK */
-function updateClock(){
-  const now=new Date();
-  document.getElementById("clock").textContent=
-    now.toLocaleTimeString("en-US",{hour:"numeric",minute:"numeric"});
-  document.getElementById("date").textContent=
-    now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-}
-setInterval(updateClock,1000);
-updateClock();
-
-/* LOAD CITY WEATHER — FIXED TO UPDATE TOP-RIGHT TEMP */
-async function loadCity(val){
-  const panel=document.getElementById("locationPanel");
-  if(!val){
-    panel.innerHTML="<div class='location-line'>Select a city to view conditions.</div>";
-    return;
-  }
-
-  const [lat,lon]=val.split(",");
-
-  try{
-    const pointsResp=await fetch(`https://api.weather.gov/points/${lat},${lon}`);
-    const pointsData=await pointsResp.json();
-    const city=pointsData.properties.relativeLocation.properties.city;
-    const state=pointsData.properties.relativeLocation.properties.state;
-
-    const hourlyResp=await fetch(pointsData.properties.forecastHourly);
-    const hourlyData=await hourlyResp.json();
-    const period=hourlyData.properties.periods[0];
-
-    panel.innerHTML=`
-      <div class="location-line"><strong>${city}, ${state}</strong></div>
-      <div class="location-line">Temperature: ${period.temperature}°${period.temperatureUnit}</div>
-      <div class="location-line">Condition: ${period.shortForecast}</div>
-      <div class="location-line">Humidity: ${period.relativeHumidity.value}%</div>
-      <div class="location-line">Wind: ${period.windSpeed} ${period.windDirection}</div>
-      <div class="location-line">Precipitation Chance: ${period.probabilityOfPrecipitation.value}%</div>
-    `;
-
-    /* ⭐ FIXED: Update top-right temp */
-    document.getElementById("temp").textContent =
-      `Temp: ${period.temperature}°${period.temperatureUnit}`;
-
-  }catch(e){
-    panel.innerHTML="<div class='location-line'>Unable to load data.</div>";
-  }
-}
-
-/* CITY SELECT */
-document.getElementById("citySelect").addEventListener("change",function(){
-  const val=this.value;
-  localStorage.setItem("savedCity",val);
-  loadCity(val);
-});
-
-/* LOAD SAVED CITY */
-window.addEventListener("load",()=>{
-  const saved=localStorage.getItem("savedCity");
-  if(saved){
-    document.getElementById("citySelect").value=saved;
-    loadCity(saved);
-  }
-});
-
-/* BULLETIN ALERTS (unchanged) */
-const middleTN=[
-  "DAVIDSON","CHEATHAM","DICKSON","HICKMAN","HOUSTON","HUMPHREYS",
-  "MONTGOMERY","ROBERTSON","STEWART","SUMNER","WILLIAMSON",
-  "WILSON","RUTHERFORD","CANNON","COFFEE","BEDFORD","MARSHALL",
-  "MAURY","PERRY","LEWIS","WAYNE","LAWRENCE","GILES","LINCOLN",
-  "MOORE","FRANKLIN","DEKALB","SMITH","JACKSON","PUTNAM",
-  "OVERTON","CLAY","MACON","TROUSDALE","WHITE","CUMBERLAND",
-  "FENTRESS"
-];
-
-async function updateAlerts(){
-  const panel=document.getElementById("bulletinPanel");
-
-  try{
-    const data=await fetch("https://api.weather.gov/alerts/active?area=TN").then(r=>r.json());
-    const alerts=data.features||[];
-
-    const filtered=alerts.filter(a=>{
-      const areas=(a.properties.areaDesc||"").toUpperCase();
-      return middleTN.some(c=>areas.includes(c));
-    });
-
-    const unique=[];
-    const seen=new Set();
-
-    filtered.forEach(a=>{
-      const event=a.properties.event||"UNKNOWN ALERT";
-      if(!seen.has(event)){
-        seen.add(event);
-        unique.push(event);
-      }
-    });
-
-    panel.innerHTML=unique.length
-      ? unique.map(e=>`<div class="bulletin-line">${e.toUpperCase()}</div>`).join("")
-      : "<div class='bulletin-line'>NO ACTIVE SEVERE ALERTS</div>";
-
-  }catch(e){
-    panel.innerHTML="<div class='bulletin-line'>NO DATA</div>";
-  }
-}
-
-updateAlerts();
-setInterval(updateAlerts,120000);
-
-/* EMERGENCY CRAWL */
-function activateCrawl(text){
-  const box=document.getElementById("crawlBox");
-  const crawl=document.getElementById("crawlText");
-  crawl.textContent=text;
-  box.style.display="block";
-}
-  async function loadWeather() {
-  const city = localStorage.getItem("cwn_city");
-
-  if (!city) {
-    // If no city is selected, tell the user to go back to index.html
-    const status = document.getElementById("status");
-    if (status) {
-      status.textContent = "Please select a city on the main page.";
-    }
-    return;
-  }
-
-  // Pull live data from HEART v2.0
-  const core = await getCWNCore(city);
-
-  // Send the unified HEART object into the era renderer
-  renderEra(core);
-}
-
-loadWeather();
-
-</script>
-
+</main>
+<script type="module" src="1994severe.js"></script>
 </body>
 </html>
