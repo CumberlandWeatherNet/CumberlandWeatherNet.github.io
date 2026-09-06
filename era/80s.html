@@ -1,146 +1,109 @@
 <!DOCTYPE html>
-<html lang="en" data-era="80s">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CWN — 1980s Edition</title>
   <link rel="stylesheet" href="80s.css">
-  <script defer src="80s.js"></script>
 </head>
 
-<body class="era-80s">
+<body>
   <div id="scaleWrapper">
+    <div class="cwn-80s-shell">
 
-    <!-- 1980s CWN Bug -->
-    <div class="cwn-bug-80s">CWN</div>
-
-    <!-- HEADER -->
-    <header class="cwn-header">
-      <div class="cwn-logo-80s">
-        <div class="cwn-logo-outer">
-          <div class="cwn-logo-inner">
-            <div class="cwn-logo-title">CWN</div>
-            <div class="cwn-logo-sub">Cumberland Weather Network</div>
-            <div class="cwn-logo-era">1980s Edition</div>
-          </div>
+      <!-- HEADER -->
+      <header class="cwn-80s-header">
+        <div class="cwn-80s-logo-block">
+          <div class="cwn-80s-logo-main">CWN</div>
+          <div class="cwn-80s-logo-sub">Cumberland Weather Network</div>
+          <div class="cwn-80s-logo-era">1980s Edition</div>
         </div>
-      </div>
 
-      <div class="cwn-header-right">
-        <div id="cwnClock" class="cwn-clock">--:-- --</div>
+        <div class="cwn-80s-nav-block">
+          <button class="cwn-80s-nav-btn" onclick="location.href='index.html'">Home</button>
+          <button class="cwn-80s-nav-btn cwn-80s-nav-active">1980s</button>
+          <button class="cwn-80s-nav-btn" onclick="location.href='1994.html'">1994</button>
+          <button class="cwn-80s-nav-btn" onclick="location.href='2004.html'">2004</button>
+        </div>
+      </header>
 
-        <button id="themeToggleBtn" class="theme-toggle">
-          Mode: <span id="themeStateLabel">AUTO</span>
-        </button>
+      <!-- MAIN GRID -->
+      <main class="cwn-80s-main-grid">
 
-        <nav class="cwn-directory">
-          <button class="dir-btn" data-target="home">Home</button>
-          <button class="dir-btn" data-target="1994">1994 Severe</button>
-          <button class="dir-btn dir-active" data-target="80s">1980s</button>
-        </nav>
-      </div>
-    </header>
+        <!-- CONDITIONS -->
+        <section class="cwn-80s-panel cwn-80s-panel-conditions">
+          <h2 class="cwn-80s-panel-title">Current Conditions</h2>
+          <div class="cwn-80s-panel-body">
+            <div id="conditionsLocation" class="cwn-80s-location">Loading…</div>
 
-    <!-- MAIN -->
-    <main class="cwn-main">
-
-      <!-- LEFT SIDE -->
-      <section class="cwn-left">
-
-        <!-- CONDITIONS CARD -->
-        <div class="crt-card">
-          <header class="crt-card-header">
-            <h2>Current Conditions</h2>
-            <span id="conditionsLocation" class="crt-location">Loading…</span>
-          </header>
-
-          <div class="crt-card-body">
-            <div class="temp-row">
-              <span id="tempValue" class="temp-value">--°F</span>
-              <span id="feelsLikeValue" class="temp-feels">Feels like --°F</span>
+            <div class="cwn-80s-temp-row">
+              <span id="tempValue">--°F</span>
+              <span id="feelsLikeValue">Feels like --°F</span>
             </div>
 
-            <div class="cond-row">
-              <span id="condText" class="cond-text">Loading conditions…</span>
-              <span id="condIcon" class="cond-icon">
-                <div class="icon-sunny-80s"></div>
-              </span>
-            </div>
+            <div id="condText" class="cwn-80s-cond-text">Loading…</div>
 
-            <div class="meta-row">
-              <span id="windText">Wind: -- mph --</span>
+            <div class="cwn-80s-meta-row">
+              <span id="windText">Wind: -- mph</span>
               <span id="humidityText">Humidity: --%</span>
               <span id="pressureText">Pressure: -- hPa</span>
             </div>
 
-            <div class="timestamp-row">
+            <div class="cwn-80s-time-row">
               <span id="obsTime">Last update: --</span>
+              <span id="cwnClock">--:-- --</span>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- FORECAST CARD -->
-        <div class="crt-card">
-          <header class="crt-card-header">
-            <h2>Forecast</h2>
-          </header>
+        <!-- FORECAST -->
+        <section class="cwn-80s-panel cwn-80s-panel-forecast">
+          <h2 class="cwn-80s-panel-title">Forecast</h2>
+          <div id="forecastGrid" class="cwn-80s-panel-body"></div>
+        </section>
 
-          <div id="forecastGrid" class="forecast-grid">
-            <!-- JS fills tiles -->
+        <!-- RADAR -->
+        <section class="cwn-80s-panel cwn-80s-panel-radar">
+          <h2 class="cwn-80s-panel-title">Regional Radar</h2>
+          <div class="cwn-80s-panel-body">
+            <div id="radarTime" class="cwn-80s-radar-label">Middle Tennessee Radar: --</div>
+
+            <div class="cwn-80s-radar-frame">
+              <img id="radarImage" alt="Radar" />
+            </div>
+
+            <button class="cwn-80s-nav-btn"
+              onclick="window.open('https://radar.weather.gov', '_blank')">
+              Open Full Radar
+            </button>
           </div>
-        </div>
+        </section>
+
+        <!-- ALERTS -->
+        <section id="alertsCard" class="cwn-80s-panel cwn-80s-panel-alerts" hidden>
+          <h2 class="cwn-80s-panel-title">Active Alerts</h2>
+          <div id="alertsBody" class="cwn-80s-panel-body"></div>
+        </section>
 
         <!-- CITY SELECTOR -->
-        <div class="crt-card">
-          <header class="crt-card-header">
-            <h2>Select Reporting City</h2>
-          </header>
-
-          <div class="crt-card-body">
-            <select id="citySelector">
-              <option value="">Select a City</option>
+        <section class="cwn-80s-panel cwn-80s-panel-city">
+          <h2 class="cwn-80s-panel-title">Select Reporting City</h2>
+          <div class="cwn-80s-panel-body">
+            <select id="citySelector" class="cwn-80s-select">
+              <option value="">Loading cities…</option>
             </select>
-            <p class="city-helper">City selection is saved for future visits.</p>
+            <div class="cwn-80s-note">City selection is saved for future visits.</div>
           </div>
-        </div>
+        </section>
 
-      </section>
-
-      <!-- RIGHT SIDE -->
-      <section class="cwn-right">
-
-        <!-- RADAR CARD -->
-        <div class="crt-card">
-          <header class="crt-card-header">
-            <h2>Regional Radar</h2>
-            <span class="crt-location">Middle Tennessee</span>
-            <span id="radarTime" class="crt-time">Middle Tennessee Radar: --</span>
-          </header>
-
-          <div class="crt-card-body">
-            <div class="radar-frame-80s">
-              <img id="radarImage" src="" alt="Regional Radar">
-              <div class="crt-scanlines"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ALERTS CARD -->
-        <div id="alertsCard" class="crt-card" hidden>
-          <header class="crt-card-header">
-            <h2>Active Alerts</h2>
-          </header>
-
-          <div id="alertsBody" class="crt-card-body">
-            <!-- JS fills alerts -->
-          </div>
-        </div>
-
-      </section>
-
-    </main>
-
+      </main>
+    </div>
   </div>
+
+  <!-- HEART ENGINE + 80s LOGIC -->
+  <script type="module" src="/core/cwn-heart-full.js"></script>
+  <script type="module" src="80s.js"></script>
+
 </body>
 </html>
 
