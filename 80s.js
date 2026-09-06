@@ -5,7 +5,6 @@
  */
 
 import {
-  getCityCoords,
   getConditions,
   getAlerts,
   getRadarUrl,
@@ -49,7 +48,9 @@ const themeColorMeta  = document.getElementById('themeColor');
 const THEME_KEY       = 'cwn80s_theme';
 const CITY_KEY        = 'cwn_city';
 
-/* ── THEME HANDLING ── */
+/* ──────────────────────────────────────────────── */
+/*   THEME HANDLING                                 */
+/* ──────────────────────────────────────────────── */
 function applyTheme(theme) {
   const html = document.documentElement;
   html.setAttribute('data-theme', theme);
@@ -71,7 +72,9 @@ function initTheme() {
   applyTheme(theme);
 }
 
-/* ── CLOCK ── */
+/* ──────────────────────────────────────────────── */
+/*   CLOCK                                          */
+/* ──────────────────────────────────────────────── */
 function updateClock() {
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -79,30 +82,39 @@ function updateClock() {
   timeEl.textContent = `${time} · ${date}`;
 }
 
-/* ── CITY SELECT ── */
-async function populateCitySelect() {
-  const cities = await getCityCoords();
-  citySelect.innerHTML = '';
+/* ──────────────────────────────────────────────── */
+/*   CITY LIST (API)                                */
+/*   ✔ FIX: 80s page loads cities from /api/cities.json */
+/*   ✔ HEART stays untouched                        */
+/* ──────────────────────────────────────────────── */
+async function loadCities() {
+  try {
+    const resp = await fetch('/api/cities.json');   // <-- YOUR API
+    const cities = await resp.json();
 
-  const storedCity = localStorage.getItem(CITY_KEY);
+    citySelect.innerHTML = '';
 
-  const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = 'Select a city…';
-  citySelect.appendChild(placeholder);
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select a city…';
+    citySelect.appendChild(placeholder);
 
-  for (const city of cities) {
-    const opt = document.createElement('option');
-    opt.value = city.id;
-    opt.textContent = city.name;
-    if (storedCity && storedCity === city.id) {
-      opt.selected = true;
-    }
-    citySelect.appendChild(opt);
+    cities.forEach(city => {
+      const opt = document.createElement('option');
+      opt.value = city.id;       // HEART expects this ID
+      opt.textContent = city.name;
+      citySelect.appendChild(opt);
+    });
+
+  } catch (err) {
+    console.error('City load error:', err);
+    citySelect.innerHTML = '<option value="">Error loading cities</option>';
   }
 }
 
-/* ── FORECAST RENDER ── */
+/* ──────────────────────────────────────────────── */
+/*   FORECAST RENDER                                */
+/* ──────────────────────────────────────────────── */
 function renderForecast(periods) {
   const cards = forecastStrip.querySelectorAll('.icon-card');
   periods.slice(0, cards.length).forEach((p, idx) => {
@@ -117,7 +129,9 @@ function renderForecast(periods) {
   });
 }
 
-/* ── CURRENT CONDITIONS RENDER ── */
+/* ──────────────────────────────────────────────── */
+/*   CURRENT CONDITIONS                             */
+/* ──────────────────────────────────────────────── */
 function renderCurrentConditions(cond) {
   currentSymbol.textContent = cond.symbol || '☁';
   currentTempEl.textContent = `${cond.temperature}°F`;
@@ -138,7 +152,9 @@ function renderCurrentConditions(cond) {
   }
 }
 
-/* ── ALERTS RENDER ── */
+/* ──────────────────────────────────────────────── */
+/*   ALERTS                                         */
+/* ──────────────────────────────────────────────── */
 function renderAlerts(alerts) {
   alertsList.innerHTML = '';
 
@@ -174,14 +190,14 @@ function renderAlerts(alerts) {
 
   const emergency = hasEmergency(alerts);
   alertStrip.hidden = !emergency;
-  if (emergency) {
-    alertStripText.textContent = 'EMERGENCY WEATHER ALERT IN EFFECT · SEE DETAILS BELOW';
-  } else {
-    alertStripText.textContent = 'Weather alerts in effect · See details below.';
-  }
+  alertStripText.textContent = emergency
+    ? 'EMERGENCY WEATHER ALERT IN EFFECT · SEE DETAILS BELOW'
+    : 'Weather alerts in effect · See details below.';
 }
 
-/* ── RADAR LOAD (FIXED) ── */
+/* ──────────────────────────────────────────────── */
+/*   RADAR (FIXED)                                  */
+/* ──────────────────────────────────────────────── */
 async function loadRadar(cityId) {
   if (!cityId) {
     radarStatus.textContent = 'Select a city to load radar.';
@@ -198,8 +214,7 @@ async function loadRadar(cityId) {
       return;
     }
 
-    // Only set src; sizing is handled by CSS (fix)
-    radarImg.src = `${url}?t=${Date.now()}`;
+    radarImg.src = `${url}?t=${Date.now()}`;  // CSS handles scaling
     radarStatus.textContent = 'Radar updated.';
   } catch (err) {
     console.error('Radar error', err);
@@ -208,7 +223,9 @@ async function loadRadar(cityId) {
   }
 }
 
-/* ── FULL RADAR OPEN ── */
+/* ──────────────────────────────────────────────── */
+/*   FULL RADAR VIEW                                */
+/* ──────────────────────────────────────────────── */
 function openFullRadarView(cityId) {
   if (!cityId) return;
   getRadarUrl(cityId).then(url => {
@@ -219,15 +236,13 @@ function openFullRadarView(cityId) {
   });
 }
 
-/* ── DIRECTORY TOGGLE ── */
+/* ──────────────────────────────────────────────── */
+/*   DIRECTORY NAV                                  */
+/* ──────────────────────────────────────────────── */
 function initDirectory() {
   directoryToggle.addEventListener('click', () => {
     const open = directoryNav.classList.toggle('open');
-    if (open) {
-      directoryToggle.setAttribute('aria-expanded', 'true');
-    } else {
-      directoryToggle.setAttribute('aria-expanded', 'false');
-    }
+    directoryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
   document.addEventListener('click', (evt) => {
@@ -238,7 +253,9 @@ function initDirectory() {
   });
 }
 
-/* ── MAIN UPDATE ── */
+/* ──────────────────────────────────────────────── */
+/*   MAIN UPDATE                                    */
+/* ──────────────────────────────────────────────── */
 async function updateForCity(cityId) {
   if (!cityId) return;
 
@@ -261,7 +278,9 @@ async function updateForCity(cityId) {
   }
 }
 
-/* ── INIT ── */
+/* ──────────────────────────────────────────────── */
+/*   INIT                                           */
+/* ──────────────────────────────────────────────── */
 function initEvents() {
   themeToggleBtn.addEventListener('click', () => {
     const html = document.documentElement;
@@ -288,12 +307,10 @@ async function init() {
   updateClock();
   setInterval(updateClock, 30000);
 
-  await populateCitySelect();
+  await loadCities();   // <-- REQUIRED FIX
 
   const storedCity = localStorage.getItem(CITY_KEY);
-  if (storedCity) {
-    updateForCity(storedCity);
-  }
+  if (storedCity) updateForCity(storedCity);
 }
 
 init();
