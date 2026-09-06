@@ -13,7 +13,6 @@
   --border-light: #d2a968;
   --text:         #f7e7c1;
   --muted:        #d8c397;
-  padding: clamp(12px, 3vw, 24px);
   --accent:       #efa11d;
   --accent-deep:  #b84b0c;
   --cwn70-top:    #ffd96b;
