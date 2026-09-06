@@ -458,6 +458,7 @@ body::before {
   0%   { transform: translateX(0) }
   100% { transform: translateX(-100%) }
 }
+
 /* ═══════════════════════════════════════════════════════════════
    RADAR FIX — Seamless scaling inside autoscale wrapper
    ONLY CHANGE ADDED — everything else is original
