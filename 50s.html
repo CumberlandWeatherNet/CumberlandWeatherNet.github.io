@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" id="themeColor" content="#050505">
+  <title>1950s Edition — Cumberland Weather Network</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@300;400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="50s.css">
+</head>
+<body>
+
+<div id="scaleWrapper">
+
+  <!-- ══ TV CABINET ══ -->
+  <div class="tv-cabinet">
+
+    <!-- Antennas -->
+    <div class="tv-antennae">
+      <div class="antenna antenna-l"></div>
+      <div class="antenna antenna-r"></div>
+      <div class="antenna-base"></div>
+    </div>
+
+    <!-- Main cabinet body -->
+    <div class="tv-body">
+
+      <!-- LEFT: Speaker + Branding -->
+      <div class="tv-speaker-panel">
+        <div class="speaker-brand">
+          <div class="brand-cwn">CWN</div>
+          <div class="brand-name">CUMBERLAND<br>WEATHER<br>NETWORK</div>
+          <div class="brand-edition">✦ 1950s EDITION ✦</div>
+        </div>
+        <div class="speaker-grille" aria-hidden="true">
+          <div class="grille-inner"></div>
+        </div>
+        <div class="speaker-cloth"></div>
+      </div>
+
+      <!-- CENTER: Screen -->
+      <div class="tv-screen-mount">
+        <div class="tv-bezel">
+          <div class="tv-screen" id="tvScreen">
+
+            <!-- Watermark: CWN logo top-left, always visible -->
+            <div class="screen-wm">
+              <div class="wm-logo">CWN</div>
+              <div class="wm-sub">WEATHER</div>
+            </div>
+
+            <!-- Clock top-right -->
+            <div class="screen-clock-wrap">
+              <div id="screenClock" class="screen-clock">12:00 PM</div>
+              <div id="screenDate"  class="screen-date">SUN · SEP 6</div>
+            </div>
+
+            <!-- Announcer nameplate bottom-right (appears during announcements) -->
+            <div class="announcer-plate" id="announcerPlate" style="display:none">
+              <div class="ap-name" id="apName">Earl Henderson</div>
+              <div class="ap-title">CWN Meteorologist</div>
+            </div>
+
+            <!-- ══ CHANNEL SCREENS ══ -->
+
+            <!-- CH 0: Current Conditions -->
+            <div class="channel active" id="ch-current" data-ch="0">
+              <div class="ch-hdr">
+                <div class="ch-hdr-badge">CH 1</div>
+                <div class="ch-hdr-title">★ CURRENT CONDITIONS ★</div>
+                <div class="ch-hdr-city" id="condCity">SELECT A CITY BELOW</div>
+              </div>
+              <div class="cond-body">
+                <div class="cond-main">
+                  <div class="cond-symbol" id="condSymbol">⛅</div>
+                  <div class="cond-temp"   id="condTemp">--°F</div>
+                  <div class="cond-desc"   id="condDesc">Awaiting data...</div>
+                </div>
+                <div class="cond-stats">
+                  <div class="stat-row"><span class="stat-lbl">HUMIDITY</span><span class="stat-val" id="condHum">--%</span></div>
+                  <div class="stat-row"><span class="stat-lbl">WIND</span><span class="stat-val" id="condWind">-- mph</span></div>
+                  <div class="stat-row"><span class="stat-lbl">VISIBILITY</span><span class="stat-val" id="condVis">-- mi</span></div>
+                  <div class="stat-row"><span class="stat-lbl">DEW POINT</span><span class="stat-val" id="condDew">--°F</span></div>
+                  <div class="stat-row"><span class="stat-lbl">PRECIP CHANCE</span><span class="stat-val" id="condPrecip">--%</span></div>
+                  <div class="stat-row"><span class="stat-lbl">LAST UPDATE</span><span class="stat-val" id="condUpdate">--</span></div>
+                </div>
+              </div>
+              <div class="cond-alerts" id="condAlerts"></div>
+              <div class="cond-status" id="condStatus">Select a city to load live conditions</div>
+            </div>
+
+            <!-- CH 1: Forecast -->
+            <div class="channel" id="ch-forecast" data-ch="1">
+              <div class="ch-hdr">
+                <div class="ch-hdr-badge">CH 2</div>
+                <div class="ch-hdr-title">★ 6-PERIOD FORECAST ★</div>
+                <div class="ch-hdr-city" id="fcstCity">MIDDLE TENNESSEE</div>
+              </div>
+              <div class="forecast-grid" id="forecastGrid">
+                <div class="fcst-placeholder">Select a city to load forecast</div>
+              </div>
+              <div class="cond-status" id="fcstStatus">Awaiting city selection...</div>
+            </div>
+
+            <!-- CH 2: Radar -->
+            <div class="channel" id="ch-radar" data-ch="2">
+              <div class="ch-hdr">
+                <div class="ch-hdr-badge">CH 3</div>
+                <div class="ch-hdr-title">★ REGIONAL RADAR ★</div>
+                <div class="ch-hdr-city">KOHX · NASHVILLE, TN</div>
+              </div>
+              <div class="radar-layout">
+                <div class="radar-window-wrap">
+                  <img id="radarImg" class="radar-img" src="" alt="NEXRAD radar KOHX Nashville Middle Tennessee">
+                  <div class="radar-city-marker" id="radarMarker" style="display:none">
+                    <div class="marker-dot"></div>
+                    <div class="marker-lbl" id="markerLbl"></div>
+                  </div>
+                </div>
+                <div class="radar-sidebar">
+                  <div class="radar-legend-title">RADAR KEY</div>
+                  <div class="legend-entry"><span class="ls" style="background:#00e000"></span>Light</div>
+                  <div class="legend-entry"><span class="ls" style="background:#ffff00"></span>Moderate</div>
+                  <div class="legend-entry"><span class="ls" style="background:#ff8c00"></span>Heavy</div>
+                  <div class="legend-entry"><span class="ls" style="background:#ff2000"></span>Severe</div>
+                  <div class="legend-entry"><span class="ls" style="background:#cc00cc"></span>Extreme</div>
+                  <hr class="legend-hr">
+                  <div class="radar-city-info" id="radarCityInfo">
+                    <div class="rci-lbl">SELECTED CITY</div>
+                    <div class="rci-val" id="rciVal">None</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cond-status" id="radarStatus">Loading radar image...</div>
+            </div>
+
+            <!-- CH EMERGENCY: Alert Override — auto-shown when active alerts -->
+            <div class="channel ch-emergency" id="ch-emergency" data-ch="3">
+              <div class="emg-header">
+                <span class="emg-icon">⚠</span>
+                <span class="emg-title" id="emgTitle">WEATHER ALERT IN EFFECT</span>
+                <span class="emg-icon">⚠</span>
+              </div>
+              <div class="emg-body" id="emgBody"></div>
+              <div class="emg-radar">
+                <img id="emgRadar" src="" alt="Emergency radar">
+              </div>
+            </div>
+
+            <!-- ══ BOTTOM TICKER ══ -->
+            <div class="ticker-bar" id="tickerBar">
+              <div class="ticker-badge" id="tickerBadge">⚡ CWN</div>
+              <div class="ticker-outer">
+                <div class="ticker-track" id="tickerTrack"></div>
+              </div>
+            </div>
+
+            <!-- Screen FX -->
+            <canvas id="noiseCanvas" class="screen-noise" aria-hidden="true"></canvas>
+            <div class="screen-scanlines" aria-hidden="true"></div>
+            <div class="screen-vignette"  aria-hidden="true"></div>
+
+          </div><!-- /tv-screen -->
+        </div><!-- /tv-bezel -->
+      </div><!-- /tv-screen-mount -->
+
+      <!-- RIGHT: Controls -->
+      <div class="tv-controls-panel">
+
+        <!-- Channel Dial -->
+        <div class="ctrl-group">
+          <div class="ctrl-lbl">CHANNEL</div>
+          <div class="dial-outer">
+            <div class="dial" id="channelDial" role="slider"
+                 aria-label="Channel selector" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0"
+                 title="Click to advance channel">
+              <div class="dial-pointer" id="dialPointer"></div>
+              <span class="dial-tick t0">1</span>
+              <span class="dial-tick t1">2</span>
+              <span class="dial-tick t2">3</span>
+            </div>
+          </div>
+          <div class="ch-btns">
+            <button class="ch-btn" data-ch="0">COND</button>
+            <button class="ch-btn" data-ch="1">FCST</button>
+            <button class="ch-btn" data-ch="2">RADAR</button>
+          </div>
+        </div>
+
+        <!-- Volume Knob -->
+        <div class="ctrl-group">
+          <div class="ctrl-lbl">VOLUME</div>
+          <div class="knob" id="volKnob" title="Drag to adjust"></div>
+          <div class="knob-readout" id="volReadout">50%</div>
+        </div>
+
+        <!-- Auto / Power -->
+        <div class="ctrl-group">
+          <button class="power-btn" id="autoBtn" title="Toggle auto channel rotation">
+            <div class="pwr-ring"><span class="pwr-icon">▶</span></div>
+            <div class="pwr-lbl">AUTO</div>
+          </button>
+        </div>
+
+        <!-- City Select -->
+        <div class="ctrl-group city-ctrl">
+          <div class="ctrl-lbl">CITY SELECT</div>
+          <select id="cwnCitySelect" class="city-select"
+                  aria-label="Select Middle Tennessee city for weather data">
+            <option value="">— Loading cities —</option>
+          </select>
+        </div>
+
+        <!-- Day/Night Toggle -->
+        <button class="tv-ctrl-btn" id="themeToggle"
+                title="Single click = manual · Double-click = auto"
+                aria-label="Toggle day/night theme">
+          ☾ NIGHT — AUTO
+        </button>
+
+        <!-- Directory Nav -->
+        <nav class="directory-nav" id="directoryNav" aria-label="CWN site directory">
+          <button class="tv-ctrl-btn directory-button" id="directoryButton"
+                  aria-expanded="false" aria-haspopup="true">
+            ⊞ DIRECTORY
+          </button>
+          <ul class="directory-menu" role="menu">
+            <li role="none"><a class="directory-link" href="index.html"       role="menuitem">⌂ 2026 Edition</a></li>
+            <li role="none"><a class="directory-link" href="1994Severe.html"  role="menuitem">⚡ 1994 Severe</a></li>
+            <li role="none"><a class="directory-link" href="80s.html"         role="menuitem">◈ 1980s</a></li>
+            <li role="none"><a class="directory-link" href="70s.html"         role="menuitem">◇ 1970s</a></li>
+            <li role="none"><a class="directory-link" href="60s.html"         role="menuitem">◆ 1960s</a></li>
+            <li role="none"><a class="directory-link" href="50s.html"         role="menuitem" aria-current="page">◈ 1950s</a></li>
+          </ul>
+        </nav>
+
+        <!-- Music Drop Zone -->
+        <div class="music-zone" id="musicZone" title="Drag &amp; drop music files here">
+          <div class="mz-icon">♫</div>
+          <div class="mz-label">MUSIC</div>
+          <div class="mz-status" id="mzStatus">Drop files</div>
+        </div>
+
+      </div><!-- /tv-controls-panel -->
+
+    </div><!-- /tv-body -->
+
+    <!-- Cabinet bottom feet -->
+    <div class="tv-feet">
+      <div class="tv-foot"></div>
+      <div class="tv-foot"></div>
+      <div class="tv-foot"></div>
+      <div class="tv-foot"></div>
+    </div>
+
+  </div><!-- /tv-cabinet -->
+
+</div><!-- /scaleWrapper -->
+
+<!-- Audio elements -->
+<audio id="bgMusic"   loop></audio>
+<audio id="alertAudio"></audio>
+
+<script type="module" src="50s.js"></script>
+</body>
+</html>
