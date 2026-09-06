@@ -55,7 +55,7 @@ function renderPeriods(periods) {
     return;
   }
   forecastEl.innerHTML = periods.slice(0, 6).map(p => {
-    const rain = (p.detailedForecast || '').match(/(\d+)\s*percent/i)?.[1] ?? p.precip_pct ?? '--';
+    const rain = p.probabilityOfPrecipitation?.value ?? p.precip_pct ?? '--';
     return `
       <article class="icon-card">
         <div class="period-name">${esc(p.name ?? '—')}</div>
