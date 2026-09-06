@@ -348,8 +348,29 @@ const ANNOUNCERS = [
   { name: 'Dorothy Sinclair', title: 'Forecast Specialist',    voiceName: 'Samantha',                 gender: 'female', pitch: 1.12, rate: 0.92 },
 ];
 
-let isSpeaking   = false;
-let cachedVoices = [];
+let isSpeaking    = false;
+let cachedVoices  = [];
+
+/* ── User-activation gate ──────────────────────────────────────
+   Browsers (Chrome 71+) block speechSynthesis.speak() unless
+   called from within — or after — a user gesture.
+   We queue any pending speech and drain on first interaction.
+──────────────────────────────────────────────────────────────── */
+let userActivated = false;
+let speechQueue   = []; // { text, announcer, onEnd }
+
+function onUserActivation() {
+  if (userActivated) return;
+  userActivated = true;
+  // Drain anything queued before first interaction
+  if (speechQueue.length) {
+    const next = speechQueue.shift();
+    _doSpeak(next.text, next.announcer, next.onEnd);
+  }
+}
+['click','keydown','touchstart','pointerdown'].forEach(evt =>
+  document.addEventListener(evt, onUserActivation, { once: true, passive: true })
+);
 
 function loadVoices() { cachedVoices = speechSynthesis.getVoices(); }
 speechSynthesis.addEventListener('voiceschanged', loadVoices);
@@ -363,7 +384,8 @@ function getVoice(announcer) {
     || cachedVoices[0] || null;
 }
 
-function speak(text, announcer, onEnd) {
+/* Internal — actually fires speechSynthesis, must be called after user gesture */
+function _doSpeak(text, announcer, onEnd) {
   if (!('speechSynthesis' in window)) { onEnd?.(); return; }
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
@@ -371,10 +393,34 @@ function speak(text, announcer, onEnd) {
   utt.pitch  = announcer.pitch;
   utt.rate   = announcer.rate;
   utt.volume = volLevel;
-  utt.onend  = () => { isSpeaking = false; hideAnnouncerPlate(); onEnd?.(); };
+  utt.onend  = () => {
+    isSpeaking = false;
+    hideAnnouncerPlate();
+    onEnd?.();
+    // Drain next queued item
+    if (speechQueue.length) {
+      const next = speechQueue.shift();
+      _doSpeak(next.text, next.announcer, next.onEnd);
+    }
+  };
   isSpeaking = true;
   showAnnouncerPlate(announcer);
   speechSynthesis.speak(utt);
+}
+
+/* Public — safe to call any time; queues if no user gesture yet */
+function speak(text, announcer, onEnd) {
+  if (!('speechSynthesis' in window)) { onEnd?.(); return; }
+  if (!userActivated) {
+    // Park it — will fire on first user interaction or after current speech ends
+    speechQueue.push({ text, announcer, onEnd });
+    return;
+  }
+  if (isSpeaking) {
+    speechQueue.push({ text, announcer, onEnd });
+    return;
+  }
+  _doSpeak(text, announcer, onEnd);
 }
 
 function showAnnouncerPlate(a) {
