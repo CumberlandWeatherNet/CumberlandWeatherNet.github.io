@@ -1,52 +1,47 @@
-/* ════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════════
    Cumberland Weather Network — 1960s Edition
-   60s.css · Mid-century modern · Mod geometry · Matte chromatic
-   Fonts: Bebas Neue (display) · Oswald (body)
-════════════════════════════════════════════════════════ */
+   60s.css  ·  Mid-century Mod  ·  Bebas Neue + Oswald
+   ─────────────────────────────────────────────────────────────────
+   DAY   — avocado green page · deep teal accent · dark olive borders
+   NIGHT — forest black page  · vivid emerald text · emerald borders
+   Matte, chromatic, zero gloss — no blur, no glass, hard edges
+════════════════════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap');
 
-/* ══ DAY PALETTE — 1960s Mod Afternoon
-   Avocado page · deep teal accent · olive borders · cream panels
-   Matte, chromatic, zero gloss                                  ══ */
+/* ══ DAY PALETTE — 1960s Mod Afternoon ══ */
 :root {
-  --page:         #ccd4a0;
-  --frame:        #dce4b4;
-  --panel:        rgba(234,240,206,0.92);
-  --panel-deep:   #b0c070;
-  --border:       #6a8828;
-  --border-hi:    #3d7040;
-  --text:         #161e00;
-  --muted:        #485820;
+  --page:         #c4cc90;
+  --frame:        #d4dc9c;
+  --panel:        #e0e8b4;
+  --panel-deep:   #a8b860;
+  --border:       #2e4a08;
+  --border-hi:    #145530;
+  --text:         #141e00;
+  --muted:        #3a5018;
   --accent:       #1a7c6c;
   --accent2:      #0d5448;
   --red:          #922000;
   --red-hi:       #c03000;
-  --shadow:       rgba(20,36,0,.22);
-  --glass:        rgba(204,212,158,.82);
-  --glass-border: rgba(90,130,30,.60);
-  --stripe:       rgba(50,80,10,.07);
+  --shadow:       rgba(10,24,0,.32);
+  --shadow-hard:  rgba(10,24,0,.55);
 }
 
-/* ══ NIGHT PALETTE — 1960s Lava Lamp Evening
-   Deep forest-black · emerald-teal text · avocado glow
-   Warm chromatic dark — not cold, not neon                      ══ */
+/* ══ NIGHT PALETTE — 1960s Lava Lamp Evening ══ */
 html[data-theme="night"] {
   --page:         #050e0a;
   --frame:        #081408;
-  --panel:        rgba(6,20,12,0.93);
-  --panel-deep:   #030a06;
-  --border:       #0e3018;
-  --border-hi:    #1a6038;
+  --panel:        #0c1e0e;
+  --panel-deep:   #030a04;
+  --border:       #0d5028;
+  --border-hi:    #1e8a50;
   --text:         #68d8a0;
   --muted:        #2e7850;
   --accent:       #38c888;
   --accent2:      #1a9860;
   --red:          #801800;
   --red-hi:       #c02800;
-  --shadow:       rgba(0,0,0,.88);
-  --glass:        rgba(4,16,10,.90);
-  --glass-border: rgba(24,90,48,.40);
-  --stripe:       rgba(40,140,70,.04);
+  --shadow:       rgba(0,0,0,.80);
+  --shadow-hard:  rgba(0,0,0,.95);
 }
 
 /* ══ RESET ══ */
@@ -62,27 +57,27 @@ body {
   background-image:
     repeating-linear-gradient(
       45deg,
-      var(--stripe) 0px, var(--stripe) 2px,
-      transparent 2px, transparent 30px
-    ),
-    radial-gradient(ellipse at 50% 0%, rgba(30,120,90,.14) 0%, transparent 60%);
+      rgba(0,0,0,.05) 0px, rgba(0,0,0,.05) 1px,
+      transparent 1px, transparent 28px
+    );
   color: var(--text);
-  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
   transition: background-color 650ms ease, color 650ms ease;
 }
 
-/* ══ OUTER FRAME — mod double-border ══ */
+/* ══ OUTER FRAME — mod double border + hard offset shadow ══ */
 .cwn-frame {
   width: min(100%, 1080px);
   margin: 0 auto;
   padding: clamp(16px,3vw,28px);
-  background: var(--glass);
+  background: var(--frame);
   border: 3px solid var(--border-hi);
-  outline: 6px solid var(--border);
-  outline-offset: -10px;
-  border-radius: 4px;
-  box-shadow: 0 8px 40px var(--shadow), inset 0 0 0 1px var(--glass-border);
-  transition: background 650ms ease, border-color 650ms ease, box-shadow 650ms ease;
+  outline: 5px solid var(--border);
+  outline-offset: 5px;
+  border-radius: 0;
+  box-shadow: 8px 8px 0 var(--shadow-hard), 0 0 0 8px var(--page);
+  transition: background 650ms ease, border-color 650ms ease;
 }
 
 /* ══ HEADER ══ */
@@ -90,9 +85,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding-bottom: 18px;
-  border-bottom: 3px double var(--border-hi);
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 4px solid var(--border-hi);
   text-align: center;
   transition: border-color 650ms ease;
 }
@@ -101,17 +96,18 @@ body {
 
 .cwn-title-line {
   font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: clamp(1.1rem,3.5vw,1.7rem);
+  font-size: clamp(1.2rem,3.5vw,1.8rem);
   font-weight: 400;
-  letter-spacing: .18em;
+  letter-spacing: .22em;
   color: var(--accent);
   text-transform: uppercase;
   transition: color 650ms ease;
 }
 .cwn-station-line {
-  font-size: clamp(.7rem,2vw,.85rem);
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(.68rem,2vw,.84rem);
   font-weight: 300;
-  letter-spacing: .12em;
+  letter-spacing: .14em;
   color: var(--muted);
   text-transform: uppercase;
   transition: color 650ms ease;
@@ -127,109 +123,112 @@ body {
   width: 100%;
 }
 .cwn-time {
-  padding: 7px 20px;
+  padding: 8px 22px;
   background: var(--panel-deep);
   border: 2px solid var(--border-hi);
-  border-radius: 2px;
+  border-radius: 0;
   color: var(--accent);
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.15rem;
-  letter-spacing: .14em;
-  box-shadow: 3px 3px 0 var(--border);
+  font-size: 1.18rem;
+  letter-spacing: .16em;
+  box-shadow: 4px 4px 0 var(--border);
   transition: background 650ms ease, color 650ms ease;
 }
 .cwn-btn {
-  min-height: 40px;
-  padding: 7px 18px;
-  border: 2px solid var(--border-hi);
-  border-radius: 2px;
+  min-height: 42px;
+  padding: 8px 20px;
   background: var(--panel);
+  border: 2px solid var(--border-hi);
+  border-radius: 0;
   color: var(--text);
   cursor: pointer;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: .95rem;
-  letter-spacing: .12em;
+  font-size: .98rem;
+  letter-spacing: .14em;
   text-transform: uppercase;
   touch-action: manipulation;
-  box-shadow: 3px 3px 0 var(--border);
-  transition: background 650ms ease, border-color 650ms ease,
-              box-shadow 120ms ease, transform 100ms ease;
+  box-shadow: 4px 4px 0 var(--border);
+  transition: background 650ms ease, color 650ms ease,
+              box-shadow 100ms ease, transform 80ms ease;
 }
-.cwn-btn:hover  { box-shadow:4px 4px 0 var(--accent); border-color:var(--accent) }
-.cwn-btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--border) }
+.cwn-btn:hover  { background:var(--panel-deep); color:var(--accent); box-shadow:5px 5px 0 var(--border-hi); border-color:var(--accent) }
+.cwn-btn:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--border) }
 .cwn-btn:focus-visible { outline:2px solid var(--accent); outline-offset:3px }
 
 /* ══ DIRECTORY DROPDOWN ══ */
 .directory-nav { position:relative; display:inline-block }
 .directory-menu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 300;
   display: none;
-  min-width: 272px;
-  padding: 4px;
+  min-width: 278px;
+  padding: 0;
   list-style: none;
   background: var(--frame);
   border: 2px solid var(--border-hi);
-  border-radius: 2px;
-  box-shadow: 6px 6px 0 var(--border), 0 12px 40px var(--shadow);
+  border-radius: 0;
+  box-shadow: 7px 7px 0 var(--border);
   transition: background 650ms ease;
 }
 .directory-nav.open .directory-menu { display:block }
 .directory-link {
   display: block;
-  padding: 10px 14px;
+  padding: 11px 16px;
   color: var(--text);
   text-decoration: none;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: .95rem;
-  letter-spacing: .1em;
-  border-left: 3px solid transparent;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  font-size: .98rem;
+  letter-spacing: .12em;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid var(--border);
+  transition: background 100ms ease, color 100ms ease, border-color 100ms ease;
 }
-.directory-link:hover                { background:var(--panel-deep); color:var(--accent); border-left-color:var(--accent) }
-.directory-link[aria-current="page"] { color:var(--accent); background:var(--panel-deep); border-left-color:var(--accent); font-weight:700 }
-.directory-link:focus-visible        { outline:2px solid var(--accent); outline-offset:2px }
+.directory-link:last-child            { border-bottom:none }
+.directory-link:hover                 { background:var(--panel-deep); color:var(--accent); border-left-color:var(--accent) }
+.directory-link[aria-current="page"]  { color:var(--accent); background:var(--panel-deep); border-left-color:var(--accent); font-weight:700 }
+.directory-link:focus-visible         { outline:2px solid var(--accent); outline-offset:-2px }
 
 /* ══ ALERT TICKER ══ */
 .alert-ticker-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  margin-top: 14px;
+  margin-top: 16px;
   overflow: hidden;
   background: var(--red);
   border: 2px solid var(--red-hi);
-  border-radius: 2px;
-  height: 40px;
-  box-shadow: 4px 4px 0 rgba(0,0,0,.4);
+  border-radius: 0;
+  height: 42px;
+  box-shadow: 4px 4px 0 var(--shadow-hard);
   animation: ticker-pulse60 2.6s ease-in-out infinite;
   transition: background 650ms ease;
 }
 .alert-ticker-wrap[hidden] { display:none }
 @keyframes ticker-pulse60 {
-  0%,100% { box-shadow:4px 4px 0 rgba(0,0,0,.4) }
-  50%      { box-shadow:4px 4px 0 rgba(0,0,0,.4), 0 0 16px rgba(180,50,0,.55) }
+  0%,100% { box-shadow:4px 4px 0 var(--shadow-hard) }
+  50%      { box-shadow:4px 4px 0 var(--shadow-hard), 0 0 18px rgba(180,50,0,.55) }
 }
 .alert-ticker-label {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 14px;
+  padding: 0 16px;
   height: 100%;
   background: var(--red-hi);
   color: #fff;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: .88rem;
-  letter-spacing: .14em;
+  font-size: .92rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
   white-space: nowrap;
+  border-right: 2px solid rgba(0,0,0,.35);
   z-index: 2;
 }
-.alert-ticker-icon { display:inline-block; font-size:1rem; animation:icon-flash60 1s step-end infinite }
+.alert-ticker-icon { display:inline-block; animation:icon-flash60 1s step-end infinite }
 @keyframes icon-flash60 { 0%,100%{opacity:1} 50%{opacity:0} }
 .alert-ticker-outer { flex:1; overflow:hidden; height:100%; display:flex; align-items:center }
 .alert-ticker-track {
@@ -239,22 +238,25 @@ body {
   animation: ticker-scroll60 linear infinite;
   color: #fff;
   font-family: 'Oswald', sans-serif;
-  font-size: .84rem;
+  font-size: .86rem;
   font-weight: 500;
   letter-spacing: .06em;
+  padding-left: 16px;
 }
-@keyframes ticker-scroll60 { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+@keyframes ticker-scroll60 { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
 /* ══ FIELD LABEL ══ */
 .field-label {
   display: block;
-  margin: 18px 0 6px;
+  margin: 20px 0 6px;
+  padding-left: 8px;
+  border-left: 3px solid var(--border-hi);
   color: var(--muted);
   font-family: 'Bebas Neue', sans-serif;
-  font-size: .88rem;
-  letter-spacing: .2em;
+  font-size: .9rem;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  transition: color 650ms ease;
+  transition: color 650ms ease, border-color 650ms ease;
 }
 
 /* ══ CITY SELECT ══ */
@@ -265,45 +267,182 @@ body {
   padding: 10px 16px;
   background: var(--panel);
   border: 2px solid var(--border-hi);
-  border-radius: 2px;
+  border-radius: 0;
   color: var(--text);
   font-family: 'Oswald', sans-serif;
   font-size: .96rem;
   letter-spacing: .04em;
-  box-shadow: 3px 3px 0 var(--border);
+  box-shadow: 4px 4px 0 var(--border);
   transition: background 650ms ease, border-color 650ms ease;
 }
-.cwn-city-select:focus-visible { outline:2px solid var(--accent); outline-offset:3px }
+.cwn-city-select:focus-visible { outline:2px solid var(--accent); outline-offset:2px }
 
 /* ══ FORECAST STRIP ══ */
 .weather-icons {
   display: grid;
   grid-template-columns: repeat(6,minmax(0,1fr));
-  gap: 8px;
-  margin-top: 18px;
+  gap: 10px;
+  margin-top: 20px;
 }
 .icon-card {
   min-width: 0;
-  padding: 12px 6px 10px;
+  padding: 14px 6px 12px;
   text-align: center;
   background: var(--panel);
   border: 2px solid var(--border);
-  border-radius: 2px;
-  box-shadow: 3px 3px 0 var(--border);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--border);
   transition: background 650ms ease, border-color 650ms ease,
-              transform 120ms ease, box-shadow 120ms ease;
+              transform 100ms ease, box-shadow 100ms ease;
 }
-.icon-card:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--accent); border-color:var(--accent) }
+.icon-card:hover { transform:translate(-3px,-3px); box-shadow:7px 7px 0 var(--border-hi); border-color:var(--accent); background:var(--panel-deep) }
 .period-name {
-  min-height: 2em;
+  min-height: 2.1em;
   color: var(--muted);
   font-family: 'Bebas Neue', sans-serif;
-  font-size: .72rem;
+  font-size: .74rem;
   letter-spacing: .1em;
   line-height: 1.2;
   text-transform: uppercase;
   transition: color 650ms ease;
 }
-.wx-icon {
+.wx-icon { display:block; margin:7px auto 5px; font-size:2rem; line-height:1 }
+.period-temp {
+  color: var(--accent);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: .06em;
+  margin: 4px 0;
+  transition: color 650ms ease;
+}
+.period-desc { min-height:2.4em; font-family:'Oswald',sans-serif; font-size:.6rem; font-weight:300; line-height:1.35; letter-spacing:.04em; color:var(--text) }
+.period-rain { color:var(--muted); font-size:.62rem; font-family:'Oswald',sans-serif; margin-top:5px; letter-spacing:.05em; transition:color 650ms ease }
+
+/* ══ CONTENT GRID ══ */
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+.panel {
+  min-width: 0;
+  padding: clamp(14px,2.5vw,22px);
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  box-shadow: 5px 5px 0 var(--border);
+  transition: background 650ms ease, border-color 650ms ease;
+}
+.panel-title {
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--border-hi);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.05rem,2.5vw,1.35rem);
+  font-weight: 400;
+  letter-spacing: .20em;
+  color: var(--accent);
+  text-transform: uppercase;
+  transition: color 650ms ease, border-color 650ms ease;
+}
+
+/* ══ CURRENT CONDITIONS ══ */
+.current-layout { display:grid; grid-template-columns:90px 1fr; align-items:start; gap:16px }
+.current-icon-box {
+  display: grid;
+  place-items: center;
+  width: 90px;
+  height: 90px;
+  background: var(--panel-deep);
+  border: 2px solid var(--border-hi);
+  border-radius: 0;
+  box-shadow: 5px 5px 0 var(--border);
+  transition: background 650ms ease;
+}
+.current-live-symbol { font-size:3.1rem; line-height:1 }
+.current-data        { display:flex; flex-direction:column; gap:7px }
+.temperature {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.3rem,6vw,3.4rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: .04em;
+  transition: color 650ms ease;
+}
+.forecast-item { font-family:'Oswald',sans-serif; font-size:.9rem; font-weight:400; line-height:1.5; letter-spacing:.05em; color:var(--text) }
+.status        { margin:10px 0 0; color:var(--muted); font-family:'Oswald',sans-serif; font-size:.72rem; font-weight:300; letter-spacing:.07em; line-height:1.5; transition:color 650ms ease }
+
+/* ══ ALERTS INLINE ══ */
+.alerts-inline { margin-top:14px }
+.alert-inline-row {
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: var(--panel-deep);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--red-hi);
+  font-size: .82rem;
+  letter-spacing: .03em;
+  line-height: 1.5;
+  box-shadow: 3px 3px 0 var(--border);
+  transition: background 650ms ease;
+}
+.alert-event {
+  color: var(--red-hi);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .88rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  transition: color 650ms ease;
+}
+
+/* ══ RADAR ══ */
+.radar-img {
   display: block;
-  margin
+  width: 100%;
+  height: auto;
+  min-height: 190px;
+  object-fit: contain;
+  background: #020604;
+  border: 2px solid var(--border-hi);
+  border-radius: 0;
+  box-shadow: 5px 5px 0 var(--border);
+  transition: border-color 650ms ease;
+}
+
+/* ══ FOOTER ══ */
+.cwn-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  text-align: center;
+  border-top: 4px double var(--border-hi);
+  color: var(--muted);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .82rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  transition: color 650ms ease, border-color 650ms ease;
+}
+
+/* ══ A11Y ══ */
+.visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:760px){
+  .weather-icons { grid-template-columns:repeat(3,minmax(0,1fr)) }
+  .content-grid  { grid-template-columns:1fr }
+}
+@media(max-width:480px){
+  body                  { padding:8px 0 }
+  .cwn-frame            { outline:none; box-shadow:none }
+  .weather-icons        { grid-template-columns:repeat(2,minmax(0,1fr)) }
+  .cwn-header-controls  { flex-direction:column; align-items:stretch }
+  .cwn-time,.cwn-btn    { width:100% }
+  .current-layout       { grid-template-columns:74px 1fr }
+  .current-icon-box     { width:74px; height:74px }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after { transition:none!important; animation:none!important }
+}
