@@ -12,6 +12,7 @@ import {
   getRadarUrl,
 } from './core/cwn-heart-full.js';
 
+/* ── DOM ── */
 const sel         = document.getElementById('cwnCitySelect');
 const timeEl      = document.getElementById('cwnTime');
 const toggle      = document.getElementById('themeToggle');
@@ -28,32 +29,36 @@ const radarImg    = document.getElementById('cwnRadar');
 const radarStatus = document.getElementById('cwnRadarStatus');
 const metaTheme   = document.getElementById('themeColor');
 
+/* ── ICONS ── */
 function wxIcon(desc = '') {
   const d = desc.toLowerCase();
-  if (d.includes('tornado'))                                               return '🌪';
-  if (d.includes('thunder') || d.includes('tstm'))                        return '⚡';
+  if (d.includes('tornado'))                                                return '🌪';
+  if (d.includes('thunder') || d.includes('tstm'))                         return '⚡';
   if (d.includes('snow') || d.includes('blizzard') || d.includes('flurr')) return '✻';
-  if (d.includes('sleet') || d.includes('freezing'))                      return '✻';
-  if (d.includes('fog')   || d.includes('haze'))                          return '🌫';
-  if (d.includes('rain')  || d.includes('shower') || d.includes('drizzle')) return '☂';
-  if (d.includes('cloud') || d.includes('overcast'))                      return '☁';
-  if (d.includes('wind'))                                                  return '💨';
-  if (d.includes('sunny') || d.includes('clear') || d.includes('fair'))   return '☀';
+  if (d.includes('sleet') || d.includes('freezing'))                       return '✻';
+  if (d.includes('fog')   || d.includes('haze'))                           return '🌫';
+  if (d.includes('rain')  || d.includes('shower') || d.includes('drizzle'))return '☂';
+  if (d.includes('cloud') || d.includes('overcast'))                       return '☁';
+  if (d.includes('wind'))                                                   return '💨';
+  if (d.includes('sunny') || d.includes('clear') || d.includes('fair'))    return '☀';
   return '☁';
 }
 
+/* ── CLOCK ── */
 function clock() {
   timeEl.textContent = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit', minute: '2-digit'
   });
 }
 
+/* ── RADAR ── */
 function loadRadar() {
   radarImg.src = getRadarUrl() + '?t=' + Date.now();
 }
 radarImg.onload  = () => { radarStatus.textContent = 'Radar image updated.'; };
 radarImg.onerror = () => { radarStatus.textContent = 'Radar image currently unavailable.'; };
 
+/* ── FORECAST STRIP ── */
 function renderPeriods(periods) {
   if (!periods?.length) {
     forecastEl.innerHTML = '<div class="icon-card">Forecast unavailable</div>';
@@ -70,6 +75,7 @@ function renderPeriods(periods) {
   `).join('');
 }
 
+/* ── LOAD WEATHER ── */
 async function load(cityName) {
   if (!cityName) return;
   statusEl.textContent = 'Loading live local forecast…';
@@ -94,7 +100,7 @@ async function load(cityName) {
 }
 
 /* ── CITY SELECT ─────────────────────────────────────────────
-   cities.json: { "Davidson County": { "Nashville": {lat,lon} } }
+   cities.json format: { "Davidson County": { "Nashville": { lat, lon } } }
 ────────────────────────────────────────────────────────────── */
 async function fillCities() {
   try {
@@ -110,11 +116,13 @@ async function fillCities() {
       html += '</optgroup>';
     }
     sel.innerHTML = html;
+
   } catch (err) {
     console.error('[CWN] fillCities:', err);
     sel.innerHTML = '<option value="">— City list unavailable —</option>';
   }
 
+  /* Restore saved city */
   const saved = localStorage.getItem('cwn_city');
   if (saved) {
     sel.value = saved;
@@ -129,7 +137,10 @@ sel.addEventListener('change', () => {
   load(city);
 });
 
-/* ── AUTO DAY / NIGHT ── */
+/* ── AUTO DAY / NIGHT ──────────────────────────────────────────
+   Day   = 06:00 – 18:59
+   Night = 19:00 – 05:59
+────────────────────────────────────────────────────────────── */
 let userOverride = false;
 let prevBucket   = null;
 
