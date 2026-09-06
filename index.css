@@ -393,10 +393,15 @@ body {
 }
 
 @media (max-width: 480px) {
-  .cwn-frame { border-left: none; border-right: none; }
-  .weather-icons { grid-template-columns: repeat(2, 1fr); }
-  .cwn-header-controls { gap: 5px; }
-  .cwn-logo-wrap { width: 100%; }
+  body { padding: 12px 0; }
+  .cwn-frame { border-left: 0; border-right: 0; box-shadow: none; }
+  .weather-icons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cwn-header-controls { flex-direction: column; }
+  .cwn-time, .theme-toggle { width: 100%; }
+  .current-layout { grid-template-columns: 72px 1fr; }
+  .current-icon-box { width: 72px; height: 72px; }
+}
+
 }
 @media (max-width: 480px) {
   body { padding: 12px 0; }
