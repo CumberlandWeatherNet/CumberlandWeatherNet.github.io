@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" id="themeColor" content="#060d1a" />
   <title>Cumberland Weather Network — Home</title>
-  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="icon" href="favicon.png" type="image/png" />
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
@@ -15,19 +15,23 @@
   <header class="cwn-header">
     <div class="cwn-logo-wrap">
 
+      <!-- 2026 SVG Logo — clean modern wordmark -->
       <svg class="cwn26-svg" viewBox="0 0 860 150" xmlns="http://www.w3.org/2000/svg"
            role="img" aria-label="CWN">
         <defs>
+          <!-- Day fill -->
           <linearGradient id="cwn26-fill-day" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stop-color="#3b9eff"/>
             <stop offset="50%"  stop-color="#1468c0"/>
             <stop offset="100%" stop-color="#0a3a80"/>
           </linearGradient>
+          <!-- Night fill -->
           <linearGradient id="cwn26-fill-night" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stop-color="#70ccff"/>
             <stop offset="50%"  stop-color="#30a0f8"/>
             <stop offset="100%" stop-color="#1460c0"/>
           </linearGradient>
+          <!-- Shared shine overlay -->
           <linearGradient id="cwn26-shine" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"  stop-color="rgba(255,255,255,.38)"/>
             <stop offset="55%" stop-color="rgba(255,255,255,0)"/>
@@ -40,20 +44,26 @@
             <feDropShadow dx="0" dy="4" stdDeviation="6"
                           flood-color="rgba(0,30,80,.40)" flood-opacity="1"/>
           </filter>
+          <!-- Switch fill based on theme via CSS currentColor trick -->
           <style>
             #cwn26-main-text { fill: url(#cwn26-fill-night) }
             html[data-theme="day"] #cwn26-main-text { fill: url(#cwn26-fill-day) }
           </style>
         </defs>
+
+        <!-- Glow halo -->
         <text x="430" y="118" text-anchor="middle"
               font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
               fill="rgba(48,160,248,.18)" filter="url(#cwn26-glow)">CWN</text>
+        <!-- Drop shadow -->
         <text x="430" y="118" text-anchor="middle"
               font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
               fill="rgba(0,20,60,.35)" filter="url(#cwn26-drop)">CWN</text>
+        <!-- Main fill -->
         <text id="cwn26-main-text" x="430" y="118" text-anchor="middle"
               font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
               letter-spacing="-4">CWN</text>
+        <!-- Shine overlay -->
         <text x="430" y="118" text-anchor="middle"
               font-family="Inter, system-ui, sans-serif" font-size="130" font-weight="800"
               fill="url(#cwn26-shine)" pointer-events="none"
@@ -64,45 +74,38 @@
       <p class="cwn-station-line">Home &nbsp;&ndash;&nbsp; Middle Tennessee Regional Weather</p>
     </div>
 
+    <!-- controls -->
     <div class="cwn-header-controls">
       <div class="cwn-time" id="cwnTime" role="timer" aria-live="off">12:00 AM</div>
 
+      <!--
+        Single combined theme button.
+        Shows: "☀ DAY — AUTO" / "🌙 NIGHT — AUTO" / "☀ DAY — MANUAL" / "🌙 NIGHT — MANUAL"
+        Click      → toggle day/night (goes manual on first change)
+        Dbl-click  → reset to AUTO
+      -->
       <button class="cwn-btn theme-btn" id="themeToggle"
               title="Click to change · Double-click to reset to AUTO"
               aria-label="Toggle day/night theme">
         🌙 NIGHT — AUTO
       </button>
 
-      <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
+            <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
         <button class="cwn-btn directory-button" id="directoryButton"
-                aria-expanded="false" aria-haspopup="true">⊞ Directory</button>
+                aria-expanded="false" aria-haspopup="true">&#8862; Directory</button>
         <ul class="directory-menu" role="menu">
-          <li role="none">
-            <a class="directory-link" href="index.html" role="menuitem" aria-current="page">
-              ⌂ Home &mdash; Current Edition
-            </a>
-          </li>
-          <li role="none">
-            <a class="directory-link" href="1994Severe.html" role="menuitem">
-              ⚡ 1994 Severe Edition
-            </a>
-          </li>
-          <li role="none">
-            <a class="directory-link" href="80s.html" role="menuitem">
-              ◈ 1980s Edition
-            </a>
-          </li>
-          <li role="none">
-            <a class="directory-link" href="70s.html" role="menuitem">
-              ◇ 1970s Edition
-            </a>
-          </li>
+          <li role="none"><a class="directory-link" href="index.html" role="menuitem" aria-current="page">⌂ Home &mdash; 2026 Edition</a></li>
+          <li role="none"><a class="directory-link" href="1994Severe.html" role="menuitem">⚡ 1994 Severe Edition</a></li>
+          <li role="none"><a class="directory-link" href="80s.html" role="menuitem">◈ 1980s Edition</a></li>
+          <li role="none"><a class="directory-link" href="70s.html" role="menuitem">◇ 1970s Edition</a></li>
+          <li role="none"><a class="directory-link" href="60s.html" role="menuitem">◆ 1960s Edition</a></li>
+          <li role="none"><a class="directory-link" href="50s.html" role="menuitem">◈ 1950s Edition</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- ══ ALERT TICKER ══ -->
+  <!-- ══ ALERT TICKER — hidden until active alerts exist ══ -->
   <div class="alert-ticker-wrap" id="alertTicker" hidden
        role="alert" aria-live="assertive" aria-atomic="true">
     <div class="alert-ticker-label">
@@ -165,4 +168,3 @@
 <script type="module" src="index.js"></script>
 </body>
 </html>
-
