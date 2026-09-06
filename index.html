@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="70s.css">
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
@@ -20,7 +20,7 @@
     ══════════════════════════════════════════ -->
     <header class="cwn-header">
 
-      <!-- CWN70 SVG Wordmark — gradient fill, shadow, keyline layers -->
+      <!-- CWN70 SVG Wordmark — 5-layer: shadow / outline+fill / keyline / gloss / inner-edge -->
       <div class="cwn-logo-wrap" aria-label="Cumberland Weather Network 1970s Edition">
         <svg class="cwn70" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg"
              role="img" aria-label="CWN 70 — Cumberland Weather Network wordmark">
@@ -36,23 +36,28 @@
               <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
             </linearGradient>
           </defs>
-          <!-- Drop shadow layer -->
+
+          <!-- Layer 1: Drop shadow -->
           <text class="cwn70__shadow"
                 x="450" y="232" text-anchor="middle"
                 transform="translate(11,13)"
                 font-family="'Limelight',Georgia,serif" font-size="212">CWN70</text>
-          <!-- Main outline + gradient fill -->
+
+          <!-- Layer 2: Main outline + gradient fill -->
           <text class="cwn70__outline"
                 x="450" y="232" text-anchor="middle"
                 font-family="'Limelight',Georgia,serif" font-size="212">CWN70</text>
-          <!-- Keyline hairline -->
+
+          <!-- Layer 3: Keyline hairline highlight -->
           <text class="cwn70__keyline"
                 x="450" y="232" text-anchor="middle"
                 font-family="'Limelight',Georgia,serif" font-size="212">CWN70</text>
-          <!-- Gloss overlay (top half only) -->
+
+          <!-- Layer 4: Gloss overlay (top half only) -->
           <rect class="cwn70__gloss" x="0" y="30" width="900" height="110"
                 fill="url(#cwn70-gloss)" pointer-events="none"/>
-          <!-- Inner edge hairline -->
+
+          <!-- Layer 5: Inner edge hairline -->
           <text class="cwn70__inner-edge"
                 x="450" y="232" text-anchor="middle"
                 font-family="'Limelight',Georgia,serif" font-size="212">CWN70</text>
@@ -63,16 +68,18 @@
       <p class="cwn-station-line">Middle Tennessee Regional Weather &bull; 1970s Edition</p>
 
       <div class="cwn-header-controls">
+
+        <!-- Clock -->
         <div class="cwn-time" id="cwnTime" aria-live="polite">--:--</div>
 
-        <!-- Theme toggle with AUTO / MANUAL badge -->
+        <!-- Day/Night toggle with AUTO / MANUAL badge -->
         <div class="theme-control">
           <button class="theme-toggle" id="themeToggle" type="button"
                   aria-pressed="false">Switch to Night</button>
           <span class="mode-badge" id="modeBadge" data-mode="auto">AUTO</span>
         </div>
 
-        <!-- Directory dropdown — same pattern as home page -->
+        <!-- Directory nav dropdown -->
         <nav class="directory-nav" id="directoryNav"
              aria-label="Cumberland Weather Network directory">
           <button class="directory-button" id="directoryButton" type="button"
@@ -81,12 +88,12 @@
           </button>
           <ul class="directory-menu" id="directoryMenu" role="menu">
             <li role="none"><a class="directory-link" role="menuitem" href="/">Home</a></li>
-            <li role="none"><a class="directory-link" role="menuitem" href="/70s.html">1970s Weather</a></li>
             <li role="none"><a class="directory-link" role="menuitem" href="/80s.html">1980s Weather</a></li>
             <li role="none"><a class="directory-link" role="menuitem" href="/1994Severe.html">1994 Severe Weather</a></li>
           </ul>
         </nav>
-      </div>
+
+      </div><!-- /.cwn-header-controls -->
     </header>
 
     <!-- ══════════════════════════════════════════
@@ -100,7 +107,7 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-         FORECAST PERIOD STRIP (6 cards — above city select)
+         FORECAST PERIOD STRIP — 6 cards above city select
     ══════════════════════════════════════════ -->
     <section aria-labelledby="outlookTitle">
       <h2 class="visually-hidden" id="outlookTitle">Location forecast periods</h2>
@@ -121,7 +128,7 @@
     </select>
 
     <!-- ══════════════════════════════════════════
-         CONTENT GRID — conditions LEFT, radar RIGHT
+         CONTENT GRID — conditions LEFT / radar RIGHT
     ══════════════════════════════════════════ -->
     <div class="content-grid">
 
@@ -131,7 +138,7 @@
 
         <div class="current-layout">
           <div class="current-icon-box" id="currentIconBox" aria-hidden="true"></div>
-          <div>
+          <div class="current-data">
             <div class="temperature" id="cwnTemp">--&deg;F</div>
             <div class="forecast-item" id="cwnDesc" aria-live="polite">Loading report&hellip;</div>
             <div class="forecast-item" id="cwnWind">Wind: --</div>
@@ -161,6 +168,6 @@
 
   </main><!-- /.cwn-frame -->
 
-  <script type="module" src="70s.js"></script>
+  <script type="module" src="index.js"></script>
 </body>
 </html>
