@@ -1,27 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" id="themeColor" content="#030d18">
   <title>Cumberland Weather Network — 1980s Edition</title>
   <link rel="icon" type="image/png" href="favicon.png">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="80s.css">
 </head>
 <body>
 
   <main class="cwn-frame">
 
-    <!-- ══════════════════════════════════════════
-         HEADER
-    ══════════════════════════════════════════ -->
+    <!-- ══ HEADER ══ -->
     <header class="cwn-header">
 
-      <!-- CRT wordmark (text-based, no SVG) -->
       <div class="cwn-logo-wrap" aria-label="Cumberland Weather Network 1980s Edition">
         <div class="cwn-crt-logo" aria-hidden="true">
           <span class="crt-logo-bracket">[</span><!--
@@ -36,25 +32,28 @@
       <div class="cwn-header-controls">
         <div class="cwn-time" id="cwnTime" aria-live="polite">--:--</div>
 
-        <!-- Directory dropdown — same pattern as home page -->
-       <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
-  <button class="cwn-btn directory-button" id="directoryButton"
-          aria-expanded="false" aria-haspopup="true">&#8862; Directory</button>
-  <ul class="directory-menu" role="menu">
-    <li role="none"><a class="directory-link" href="index.html"       role="menuitem">⌂ Home &mdash; 2026 Edition</a></li>
-    <li role="none"><a class="directory-link" href="1994Severe.html"  role="menuitem">⚡ 1994 Severe Edition</a></li>
-    <li role="none"><a class="directory-link" href="80s.html"         role="menuitem" aria-current="page">◈ 1980s Edition</a></li>
-    <li role="none"><a class="directory-link" href="70s.html"         role="menuitem">◇ 1970s Edition</a></li>
-    <li role="none"><a class="directory-link" href="60s.html"         role="menuitem">◆ 1960s Edition</a></li>
-    <li role="none"><a class="directory-link" href="50s.html"         role="menuitem">◈ 1950s Edition</a></li>
-  </ul>
-</nav>
-  </div>
+        <button class="cwn-btn theme-btn" id="themeToggle"
+                title="Click to toggle · Double-click to reset AUTO"
+                aria-label="Toggle day/night theme">
+          ☾ NIGHT — AUTO
+        </button>
+
+        <nav class="directory-nav" id="directoryNav" aria-label="Site directory">
+          <button class="cwn-btn directory-button" id="directoryButton"
+                  aria-expanded="false" aria-haspopup="true">&#8862; Directory</button>
+          <ul class="directory-menu" role="menu">
+            <li role="none"><a class="directory-link" href="index.html"      role="menuitem">⌂ Home &mdash; 2026 Edition</a></li>
+            <li role="none"><a class="directory-link" href="1994Severe.html" role="menuitem">⚡ 1994 Severe Edition</a></li>
+            <li role="none"><a class="directory-link" href="80s.html"        role="menuitem" aria-current="page">◈ 1980s Edition</a></li>
+            <li role="none"><a class="directory-link" href="70s.html"        role="menuitem">◇ 1970s Edition</a></li>
+            <li role="none"><a class="directory-link" href="60s.html"        role="menuitem">◆ 1960s Edition</a></li>
+            <li role="none"><a class="directory-link" href="50s.html"        role="menuitem">◈ 1950s Edition</a></li>
+          </ul>
+        </nav>
+      </div>
     </header>
 
-    <!-- ══════════════════════════════════════════
-         FORECAST PERIOD STRIP (6 cards — above city select)
-    ══════════════════════════════════════════ -->
+    <!-- ══ FORECAST STRIP ══ -->
     <section aria-labelledby="outlookTitle">
       <h2 class="visually-hidden" id="outlookTitle">Location forecast periods</h2>
       <div class="weather-icons" id="forecastPeriods" aria-live="polite">
@@ -68,33 +67,24 @@
       </div>
     </section>
 
-    <!-- ══════════════════════════════════════════
-         ACTIVE ALERTS (inline — hidden when none)
-    ══════════════════════════════════════════ -->
+    <!-- ══ ALERT STRIP ══ -->
     <div class="alert-strip" id="alertStrip" role="alert" aria-live="assertive" hidden>
       <span class="alert-flash" aria-hidden="true">⚠</span>
       <span id="alertStripText">ACTIVE WEATHER ALERT</span>
       <span class="alert-flash" aria-hidden="true">⚠</span>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         CITY SELECT
-    ══════════════════════════════════════════ -->
+    <!-- ══ CITY SELECT ══ -->
     <label class="field-label" for="cwnCitySelect">Select reporting city</label>
     <select id="cwnCitySelect" class="cwn-city-select" aria-label="Select a Middle Tennessee city">
       <option>Loading cities...</option>
     </select>
 
-    <!-- ══════════════════════════════════════════
-         CONTENT GRID — Conditions LEFT · Radar RIGHT
-         (mirrors home page: 0.82fr / 1.18fr)
-    ══════════════════════════════════════════ -->
+    <!-- ══ CONTENT GRID ══ -->
     <div class="content-grid">
 
-      <!-- LEFT — CURRENT CONDITIONS -->
       <section class="panel" aria-labelledby="conditionsTitle">
         <h2 class="panel-title" id="conditionsTitle">Current Conditions</h2>
-
         <div class="current-layout">
           <div class="current-icon-box" id="currentIconBox" aria-hidden="true">
             <div class="current-live-symbol" id="currentIcon">◌</div>
@@ -105,14 +95,10 @@
             <div class="forecast-item" id="cwnDesc" aria-live="polite">Loading report...</div>
           </div>
         </div>
-
-        <!-- Inline alerts within conditions panel -->
         <div class="alerts-inline" id="alertsInline" aria-live="polite"></div>
-
         <p class="status" id="weatherStatus">Connecting to weather service...</p>
       </section>
 
-      <!-- RIGHT — REGIONAL RADAR -->
       <section class="panel" aria-labelledby="radarTitle">
         <h2 class="panel-title" id="radarTitle">Regional Radar</h2>
         <img id="cwnRadar" class="radar-img" src=""
@@ -120,11 +106,8 @@
         <p class="status" id="cwnRadarStatus" aria-live="polite">Loading radar...</p>
       </section>
 
-    </div><!-- end content-grid -->
+    </div>
 
-    <!-- ══════════════════════════════════════════
-         FOOTER
-    ══════════════════════════════════════════ -->
     <footer class="cwn-footer">
       Cumberland Weather Network &bull; Middle Tennessee &bull; 1980s Edition
     </footer>
