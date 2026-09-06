@@ -1,6 +1,4 @@
-// -----------------------------
-//  WX TABLE (same as homepage)
-// -----------------------------
+// WX TABLE
 const WX = {
   0:['Clear','sunny'],1:['Mostly clear','sunny'],2:['Partly cloudy','cloudy'],
   3:['Overcast','cloudy'],45:['Fog','cloudy'],48:['Freezing fog','cloudy'],
@@ -14,9 +12,7 @@ const WX = {
   95:['Thunderstorms','storm'],96:['Storms with hail','storm'],99:['Severe storms','storm']
 };
 
-// -----------------------------
-//  MT FALLBACK (homepage style)
-// -----------------------------
+// MT FALLBACK
 const MT = {
   Bedford:['Bell Buckle','Normandy','Shelbyville','Wartrace'],
   Cannon:['Auburntown','Woodbury'],
@@ -24,28 +20,20 @@ const MT = {
   Clay:['Celina'],
   Coffee:['Manchester','Tullahoma'],
   Cumberland:['Crab Orchard','Crossville'],
-  Davidson:['Belle Meade','Goodlettsville','Nashville'],
-  // Add more counties if needed
+  Davidson:['Belle Meade','Goodlettsville','Nashville']
 };
 
-// -----------------------------
-//  Persistence keys
-// -----------------------------
 const CITY_KEY = "cwn_city";
 const THEME_KEY = "cwn_themeMode";
 
-// -----------------------------
-//  HEART fetch (homepage logic)
-// -----------------------------
+// HEART FETCH
 async function fetchHeart(city) {
   const res = await fetch(`/api/heart?city=${encodeURIComponent(city)}`);
   if (!res.ok) throw new Error("HEART fetch failed");
   return await res.json();
 }
 
-// -----------------------------
-//  Load cities.json (homepage logic)
-// -----------------------------
+// CITY LOADER
 async function loadCities() {
   const selector = document.getElementById("citySelector");
 
@@ -64,8 +52,6 @@ async function loadCities() {
     });
 
   } catch (e) {
-    console.warn("City list failed, using MT fallback:", e);
-
     selector.innerHTML = '<option value="">Select a City</option>';
 
     Object.keys(MT).forEach(county => {
@@ -83,23 +69,17 @@ async function loadCities() {
     });
   }
 
-  // Restore saved city (but DO NOT auto-load)
   const saved = localStorage.getItem(CITY_KEY);
   if (saved) selector.value = saved;
 
   selector.addEventListener("change", () => {
     const city = selector.value;
     localStorage.setItem(CITY_KEY, city);
-
-    if (city) {
-      load(city);
-    }
+    if (city) load(city);
   });
 }
 
-// -----------------------------
-//  Render HEART data
-// -----------------------------
+// RENDER
 function render(core) {
   document.getElementById("conditionsLocation").textContent = core.city_display;
   document.getElementById("tempValue").textContent = `${Math.round(core.temp_f)}°F`;
@@ -115,7 +95,7 @@ function render(core) {
 
   // Radar
   document.getElementById("radarImage").src = core.radar_url;
-  document.getElementById("radarTime").textContent = `Radar: ${core.radar_time}`;
+  document.getElementById("radarTime").textContent = `Middle Tennessee Radar: ${core.radar_time}`;
 
   // Forecast
   const grid = document.getElementById("forecastGrid");
@@ -151,17 +131,13 @@ function render(core) {
   document.getElementById("cwnClock").textContent = core.local_time;
 }
 
-// -----------------------------
-//  HEART error fallback
-// -----------------------------
+// HEART ERROR
 function showHeartError() {
   document.getElementById("condText").textContent = "Data unavailable";
   document.getElementById("radarTime").textContent = "Radar unavailable";
 }
 
-// -----------------------------
-//  Load page for selected city
-// -----------------------------
+// LOAD CITY
 async function load(city) {
   try {
     const core = await fetchHeart(city);
@@ -172,9 +148,7 @@ async function load(city) {
   }
 }
 
-// -----------------------------
-//  Directory buttons
-// -----------------------------
+// DIRECTORY
 function wireDirectory() {
   document.querySelectorAll(".dir-btn").forEach(btn => {
     btn.onclick = () => {
@@ -186,17 +160,27 @@ function wireDirectory() {
   });
 }
 
-// -----------------------------
-//  Boot sequence
-// -----------------------------
+// AUTOSCALE
+function scaleToFit() {
+  const wrapper = document.getElementById("scaleWrapper");
+  const scaleX = window.innerWidth / 1920;
+  const scaleY = window.innerHeight / 1080;
+  const scale = Math.min(scaleX, scaleY);
+  wrapper.style.transform = `scale(${scale})`;
+  wrapper.style.transformOrigin = "top left";
+}
+
+window.addEventListener("resize", scaleToFit);
+
+// BOOT
 document.addEventListener("DOMContentLoaded", async () => {
   wireDirectory();
   await loadCities();
+  scaleToFit();
 
   const city = localStorage.getItem(CITY_KEY) || "";
-
-  // DO NOT auto-load unless user already picked a city
   if (city) {
     load(city);
   }
 });
+
