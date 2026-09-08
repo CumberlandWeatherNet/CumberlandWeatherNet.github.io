@@ -261,8 +261,14 @@ async function load(cityName) {
     const icon = wxIcon(cond.description ?? '');
     $('currentIconBox').innerHTML =
       `<span class="current-live-symbol" aria-hidden="true">${icon}</span>`;
-    $('cwnTemp').textContent = `${cond.temp_f ?? '--'}°F`;
-    $('cwnWind').textContent = `Wind: ${cond.wind_mph ?? '--'} mph`;
+   $('cwnTemp').textContent =
+  cond.temp_f != null
+    ? `${Math.round(cond.temp_f)}°F`
+    : '--°F';
+    $('cwnWind').textContent =
+  cond.wind_speed_mph != null
+    ? `Wind: ${Math.round(cond.wind_speed_mph)} mph ${cond.wind_direction || ''}`
+    : 'Wind: -- mph';
     $('cwnDesc').textContent = cond.description ?? '--';
     statusEl.textContent =
       `Live data for ${cityName} · Updated ${new Date().toLocaleTimeString('en-US', {
