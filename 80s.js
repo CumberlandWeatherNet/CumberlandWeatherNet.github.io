@@ -185,10 +185,26 @@ function renderCurrentConditions(cond) {
     ? `${cond.wind_mph} mph${cond.wind_direction ? ' ' + cond.wind_direction : ''}`
     : '--';
 
-  // Fields core doesn't expose
-  if (humidityEl)   humidityEl.textContent   = '--';
-  if (pressureEl)   pressureEl.textContent   = '--';
-  if (visibilityEl) visibilityEl.textContent = '--';
+  if (humidityEl) {
+  humidityEl.textContent =
+    cond.humidity_pct != null
+      ? `${Math.round(cond.humidity_pct)}%`
+      : '--%';
+}
+
+if (pressureEl) {
+  pressureEl.textContent =
+    cond.pressure_inhg != null
+      ? `${cond.pressure_inhg.toFixed(2)} inHg`
+      : '-- inHg';
+}
+
+if (visibilityEl) {
+  visibilityEl.textContent =
+    cond.visibility_miles != null
+      ? `${cond.visibility_miles.toFixed(1)} mi`
+      : '-- mi';
+}
 
   lastUpdateEl.textContent =
     `Last updated: ${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
