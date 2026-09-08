@@ -1,2 +1,6 @@
 git add .
 git commit -m "Fix Heart observation bindings for 50s 60s 70s and 80s pages"
+
+git add index.js 1994Severe.js 80s.js 70s.js 60s.js 50s.js core/cwn-heart-full.js
+git commit -m "Modernize Heart and fix weather bindings across all public pages"
+git push
