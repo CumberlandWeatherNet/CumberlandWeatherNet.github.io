@@ -1,0 +1,6 @@
+{
+  "syntax_files": 5,
+  "negative_smoke_tests": "passed",
+  "valid_login": "passed",
+  "owner_only_route": "passed"
+}

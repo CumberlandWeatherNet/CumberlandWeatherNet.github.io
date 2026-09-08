@@ -1,0 +1,6 @@
+{
+  "package": "CWN_Phase1_Security_Remediation_Starter",
+  "finding_count": 0,
+  "findings": [],
+  "note": "Generated package source/config self-scan. Dedicated password-hash input and negative test fixtures were reviewed separately. This is not a scan of the complete CWN repository or Git history."
+}

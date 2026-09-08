@@ -1,0 +1,14 @@
+{
+  "name": "cwn-security-foundation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "hash-password": "node scripts/generate-password-hash.mjs",
+    "test:security": "node tests/security-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

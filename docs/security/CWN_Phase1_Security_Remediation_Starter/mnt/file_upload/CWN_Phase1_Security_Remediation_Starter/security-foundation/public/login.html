@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>CWN Restricted Access</title>
+  <style>
+    body{font-family:system-ui,sans-serif;background:#060d1a;color:#e8f2ff;display:grid;place-items:center;min-height:100vh;margin:0}
+    main{width:min(92vw,420px);background:#0a1428;border:1px solid #284880;border-radius:16px;padding:24px;box-shadow:0 20px 60px #0008}
+    label{display:block;margin-top:14px} input,button{box-sizing:border-box;width:100%;min-height:44px;margin-top:6px;border-radius:8px;border:1px solid #527898;padding:10px}
+    button{background:#1468c0;color:white;font-weight:700;cursor:pointer}.status{min-height:1.5em;margin-top:12px;color:#ffd27a}
+  </style>
+</head>
+<body>
+<main>
+  <h1>CWN Restricted Access</h1>
+  <p>Authentication is verified by the private CWN server. Credentials are not stored in this page or browser storage.</p>
+  <form id="loginForm">
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit">Sign in</button>
+  </form>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+</main>
+<script type="module" src="/login.js"></script>
+</body>
+</html>
