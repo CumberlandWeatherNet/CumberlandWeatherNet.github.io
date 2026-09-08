@@ -1,2 +1,2 @@
 git add .
-git commit -m "Fix Heart observation bindings for 50s 70s and 80s pages"
+git commit -m "Fix Heart observation bindings for 50s 60s 70s and 80s pages"
