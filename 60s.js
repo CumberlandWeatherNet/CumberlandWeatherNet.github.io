@@ -227,3 +227,5 @@ clock();     setInterval(clock,      1_000);
 loadRadar(); setInterval(loadRadar, 300_000);
 setInterval(() => { const c = sel.value; if (c) load(c); }, 600_000);
 fillCities().then(() => { const c = sel.value; if (c) load(c); });
+
+
