@@ -185,7 +185,7 @@ function renderCurrentConditions(cond) {
   cond.wind_speed_mph != null
     ? `${Math.round(cond.wind_speed_mph)} mph${cond.wind_direction ? ' ' + cond.wind_direction : ''}`
     : '-- mph'; 
-  `
+  
   if (humidityEl) {
   humidityEl.textContent =
     cond.humidity_pct != null
