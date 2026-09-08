@@ -181,9 +181,11 @@ function renderCurrentConditions(cond) {
 
   summaryEl.textContent = cond.description || 'Conditions unavailable.';
 
-  windEl.textContent = cond.wind_mph != null
-    ? `${cond.wind_mph} mph${cond.wind_direction ? ' ' + cond.wind_direction : ''}`
-    : '--';
+  windEl.textContent =
+  cond.wind_speed_mph != null
+    ? `${Math.round(cond.wind_speed_mph)} mph${cond.wind_direction ? ' ' + cond.wind_direction : ''}`
+    : '-- mph';
+`
 
   if (humidityEl) {
   humidityEl.textContent =
