@@ -191,9 +191,20 @@ function renderConditions(cond, alerts) {
   $('condSymbol').textContent = wxIcon(cond.description || '');
   $('condTemp').textContent   = `${cond.temp_f ?? '--'}°F`;
   $('condDesc').textContent   = cond.description || 'No description';
-  $('condWind').textContent   = `${cond.wind_mph ?? '--'} mph`;
-  $('condHum').textContent    = cond.humidity != null ? `${cond.humidity}%` : '--%';
-  $('condVis').textContent    = cond.visibility_mi != null ? `${cond.visibility_mi} mi` : '-- mi';
+$('condWind').textContent =
+  cond.wind_speed_mph != null
+    ? `${Math.round(cond.wind_speed_mph)} mph ${cond.wind_direction || ''}`
+    : '-- mph';
+
+$('condHum').textContent =
+  cond.humidity_pct != null
+    ? `${Math.round(cond.humidity_pct)}%`
+    : '--%';
+
+$('condVis').textContent =
+  cond.visibility_miles != null
+    ? `${cond.visibility_miles.toFixed(1)} mi`
+    : '-- mi';
   $('condDew').textContent    = cond.dewpoint_f != null ? `${cond.dewpoint_f}°F` : '--°F';
   $('condPrecip').textContent = cond.precip_pct != null ? `${cond.precip_pct}%` : '--%';
   $('condUpdate').textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
