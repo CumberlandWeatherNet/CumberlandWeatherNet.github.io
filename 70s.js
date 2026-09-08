@@ -87,8 +87,14 @@ async function load(cityName) {
       fetchNWSPeriods(lat, lon, 6),
     ]);
     iconBox.innerHTML    = `<div class="current-live-symbol">${wxIcon(conditions.description)}</div>`;
-    tempEl.textContent   = `${conditions.temp_f}°F`;
-    windEl.textContent   = `Wind: ${conditions.wind_mph} mph`;
+    tempEl.textContent =
+  conditions.temp_f != null
+    ? `${Math.round(conditions.temp_f)}°F`
+    : '--°F';
+    windEl.textContent =
+  conditions.wind_speed_mph != null
+    ? `Wind: ${Math.round(conditions.wind_speed_mph)} mph ${conditions.wind_direction || ''}`
+    : 'Wind: -- mph';
     descEl.textContent   = conditions.description;
     statusEl.textContent = `Live report for ${cityName}. Updated ${new Date().toLocaleTimeString()}`;
     renderPeriods(periods);
