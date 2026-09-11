@@ -1,164 +1,908 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>CWN Mission Control</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<style>
+  <title>CWN Mission Control</title>
 
-body{
-    background:#08111b;
-    color:white;
-    font-family:Arial, sans-serif;
-    margin:0;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.status-bar{
-    background:#16304f;
-    padding:15px;
-    display:flex;
-    justify-content:space-around;
-    font-weight:bold;
-}
+    :root {
+      color-scheme: dark;
 
-.layout{
-    display:flex;
-    min-height:90vh;
-}
+      --page: #08111b;
+      --sidebar: #102337;
+      --status: #16304f;
+      --card: #132b45;
+      --card-border: #285276;
+      --button: #1d466d;
+      --button-hover: #2a5e90;
+      --text: #ffffff;
+      --muted: #9bb9d6;
+      --accent: #58a9f6;
+      --healthy: #58d68d;
+      --warning: #ffd166;
+      --critical: #ff6b6b;
+    }
 
-.sidebar{
-    width:250px;
-    background:#102337;
-    padding:20px;
-}
+    body {
+      min-height: 100vh;
+      background: var(--page);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
 
-.sidebar button{
-    width:100%;
-    margin-bottom:10px;
-    padding:10px;
-    background:#1d466d;
-    color:white;
-    border:none;
-    cursor:pointer;
-}
+    .status-bar {
+      min-height: 58px;
+      padding: 10px 16px;
 
-.dashboard{
-    flex:1;
-    padding:20px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-    gap:20px;
-}
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 10px 18px;
 
-.card{
-    background:#132b45;
-    padding:20px;
-    border-radius:12px;
-}
+      background: var(--status);
+      border-bottom: 2px solid var(--accent);
 
-</style>
+      font-size: 13px;
+      font-weight: bold;
+    }
 
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 58px);
+    }
+
+    .sidebar {
+      width: 165px;
+      flex-shrink: 0;
+
+      padding: 20px 12px;
+
+      background: var(--sidebar);
+      border-right: 1px solid #29496a;
+    }
+
+    .logo {
+      margin-bottom: 20px;
+    }
+
+    .logo h1 {
+      font-size: 22px;
+    }
+
+    .logo p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 1.8px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      min-height: 32px;
+      margin-bottom: 8px;
+      padding: 8px;
+
+      background: var(--button);
+      color: var(--text);
+
+      border: 1px solid transparent;
+
+      cursor: pointer;
+      font-size: 11px;
+
+      transition: 0.2s;
+    }
+
+    .sidebar button:hover,
+    .sidebar button:focus-visible {
+      background: var(--button-hover);
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .dashboard {
+      flex: 1;
+      min-width: 0;
+
+      padding: 12px;
+
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(225px, 1fr));
+      align-content: start;
+      gap: 12px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 14px;
+
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+
+      box-shadow:
+        0 0 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .card h2 {
+      margin-bottom: 12px;
+      color: var(--text);
+      font-size: 17px;
+    }
+
+    .card p {
+      margin: 7px 0;
+      line-height: 1.4;
+      font-size: 12px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+
+      padding: 7px 0;
+
+      border-bottom:
+        1px solid rgba(255, 255, 255, 0.08);
+
+      font-size: 12px;
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      color: var(--muted);
+    }
+
+    .metric-value {
+      color: var(--text);
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .healthy {
+      color: var(--healthy);
+    }
+
+    .warning {
+      color: var(--warning);
+    }
+
+    .critical {
+      color: var(--critical);
+    }
+
+    .alert-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .alert-item {
+      padding: 10px;
+
+      background:
+        rgba(255, 107, 107, 0.1);
+
+      border-left:
+        4px solid var(--critical);
+    }
+
+    .alert-title {
+      color: var(--critical);
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .alert-headline {
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .radar-image {
+      display: block;
+
+      width: 100%;
+      max-height: 260px;
+
+      margin-top: 10px;
+
+      background: #000;
+      border: 1px solid var(--card-border);
+
+      object-fit: contain;
+    }
+
+    .safe-state-button {
+      width: 100%;
+      min-height: 42px;
+
+      margin-top: 12px;
+      padding: 10px;
+
+      background: #542222;
+      color: #ffd2d2;
+
+      border: 1px solid var(--critical);
+      border-radius: 5px;
+
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    @media (max-width: 760px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+
+        border-right: none;
+        border-bottom: 1px solid #29496a;
+      }
+
+      .sidebar nav {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .sidebar button {
+        margin-bottom: 0;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="status-bar">
+  <header class="status-bar">
     <div>ENV: SANDBOX</div>
-    <div>ERA: 1950s</div>
+
+    <div>ERA: MISSION CONTROL</div>
+
     <div id="statusCity">
-    CITY: LOADING
-</div>
-    <div>ALERTS: 0</div>
-    <div>AI: 3 ONLINE</div>
-</div>
-
-<div class="layout">
-
-    <div class="sidebar">
-        <h2>CWN</h2>
-
-        <button>Dashboard</button>
-        <button>Weather</button>
-        <button>Alerts</button>
-        <button>Radar</button>
-        <button>Bob</button>
-        <button>Uhtred</button>
-        <button>Sentinel</button>
-        <button>Logs</button>
+      CITY: LOADING
     </div>
 
-    <div class="dashboard">
-
-        <div class="card">
-            <h2>Bob Briefing</h2>
-            <p>Good Morning Tanner.</p>
-            <p>Mission Control initialized.</p>
-        </div>
-
-        <div class="card">
-            <h2>AI Status</h2>
-            <p>Bob — ACTIVE</p>
-            <p>Uhtred — ACTIVE</p>
-            <p>Sentinel — PASSIVE</p>
-        </div>
-
-        <div class="card">
-            <h2>System Health</h2>
-            <p>Weather Engine: Healthy</p>
-            <p>Radar: Healthy</p>
-        </div>
-
-<div class="card">
-    <h2>Active Alerts</h2>
-    <p>Current Alerts: 0</p>
-    <p>Status: Normal</p>
-</div>
-
-<div class="card">
-    <h2>Weather Operations</h2>
-    <p id="currentCity">
-    Current City: Loading...
-</p>
-    <p>Weather Engine: Online</p>
-</div>
-
-<div class="card">
-    <h2>Pending Approvals</h2>
-    <p>No pending approvals.</p>
-</div>
-        
-        <div class="card">
-            <h2>Safe State</h2>
-            <p>Not Implemented Yet</p>
-        </div>
-
-<div class="card">
-    <h2>Recent Activity</h2>
-
-    <p>Mission Control initialized.</p>
-    <p>Bob briefing loaded.</p>
-    <p>System check complete.</p>
-</div>
-        
+    <div id="statusAlerts">
+      ALERTS: --
     </div>
 
-</div>
+    <div id="statusWeather">
+      WEATHER: LOADING
+    </div>
 
-<script>
+    <div id="statusClock">
+      TIME: --
+    </div>
+  </header>
 
-const savedCity =
-    localStorage.getItem('cwn_city') ||
-    'No City Selected';
+  <div class="layout">
 
-document.getElementById('currentCity').textContent =
-    `Current City: ${savedCity}`;
+    <aside class="sidebar">
 
-document.getElementById('statusCity').textContent =
-    `CITY: ${savedCity.toUpperCase()}`;
-    
-</script>
-    
+      <div class="logo">
+        <h1>CWN</h1>
+        <p>MISSION CONTROL</p>
+      </div>
+
+      <nav aria-label="Mission Control navigation">
+        <button type="button">Dashboard</button>
+        <button type="button">Weather</button>
+        <button type="button">Alerts</button>
+        <button type="button">Radar</button>
+        <button type="button">Bob</button>
+        <button type="button">Uhtred</button>
+        <button type="button">Sentinel</button>
+        <button type="button">Logs</button>
+      </nav>
+
+    </aside>
+
+    <main class="dashboard">
+
+      <section class="card">
+        <h2>Bob Briefing</h2>
+
+        <p id="bobGreeting">
+          Loading briefing...
+        </p>
+
+        <p id="bobWeather">
+          Checking weather systems...
+        </p>
+
+        <p id="bobAlerts">
+          Checking active alerts...
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>AI Status</h2>
+
+        <p>Bob — NOT CONNECTED</p>
+        <p>Uhtred — NOT CONNECTED</p>
+        <p>Sentinel — NOT CONNECTED</p>
+      </section>
+
+      <section class="card">
+        <h2>System Health</h2>
+
+        <p id="weatherHealth">
+          Weather Engine: Loading...
+        </p>
+
+        <p id="radarHealth">
+          Radar: Loading...
+        </p>
+
+        <p>
+          Publishing: Not Connected
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Active Alerts</h2>
+
+        <p id="alertSummary">
+          Loading active alerts...
+        </p>
+
+        <div
+          class="alert-list"
+          id="alertList"
+        ></div>
+      </section>
+
+      <section class="card">
+        <h2>Weather Operations</h2>
+
+        <div class="metric">
+          <span class="metric-label">
+            Current City
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentCity"
+          >
+            Loading...
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Temperature
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentTemperature"
+          >
+            --°F
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Conditions
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentDescription"
+          >
+            --
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Feels Like
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentFeelsLike"
+          >
+            --°F
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Humidity
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentHumidity"
+          >
+            --%
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Wind
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentWind"
+          >
+            -- mph
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Pressure
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentPressure"
+          >
+            -- inHg
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Visibility
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentVisibility"
+          >
+            -- mi
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Station
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentStation"
+          >
+            --
+          </span>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">
+            Observation
+          </span>
+
+          <span
+            class="metric-value"
+            id="currentObservation"
+          >
+            --
+          </span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Pending Approvals</h2>
+
+        <p>No approval backend is connected.</p>
+      </section>
+
+      <section class="card">
+        <h2>Radar</h2>
+
+        <p id="radarSource">
+          Loading radar source...
+        </p>
+
+        <img
+          class="radar-image"
+          id="radarImage"
+          alt="KOHX Nashville radar"
+        >
+      </section>
+
+      <section class="card">
+        <h2>Recent Activity</h2>
+
+        <p id="activityWeather">
+          Waiting for weather data.
+        </p>
+
+        <p id="activityAlerts">
+          Waiting for alert data.
+        </p>
+
+        <p id="activityRadar">
+          Waiting for radar data.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Safe State</h2>
+
+        <p>Safe State is not implemented.</p>
+
+        <button
+          class="safe-state-button"
+          type="button"
+          disabled
+        >
+          RETURN CWN TO SAFE STATE
+        </button>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script type="module">
+    import {
+      getCityCoords,
+      getConditions,
+      getAlerts,
+      getRadarConfig,
+      getClock,
+      getDayPeriod,
+      hasEmergency
+    } from '../core/cwn-heart-full.js';
+
+    const $ = id =>
+      document.getElementById(id);
+
+    function formatNumber(
+      value,
+      suffix,
+      digits = 0
+    ) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return `--${suffix}`;
+      }
+
+      return `${number.toFixed(digits)}${suffix}`;
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return '--';
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return '--';
+      }
+
+      return date.toLocaleString();
+    }
+
+    function formatWind(conditions) {
+      const speed =
+        Number(conditions.wind_speed_mph);
+
+      if (!Number.isFinite(speed)) {
+        return '-- mph';
+      }
+
+      const direction =
+        conditions.wind_direction
+          ? ` ${conditions.wind_direction}`
+          : '';
+
+      return `${Math.round(speed)} mph${direction}`;
+    }
+
+    function updateClock() {
+      const clock = getClock();
+
+      $('statusClock').textContent =
+        `TIME: ${clock.clock_time}`;
+    }
+
+    function renderAlerts(alerts) {
+      const safeAlerts =
+        Array.isArray(alerts)
+          ? alerts
+          : [];
+
+      const alertCount =
+        safeAlerts.length;
+
+      $('statusAlerts').textContent =
+        `ALERTS: ${alertCount}`;
+
+      $('alertSummary').textContent =
+        alertCount === 0
+          ? 'No active alerts for this city.'
+          : `${alertCount} active alert${
+              alertCount === 1
+                ? ''
+                : 's'
+            }.`;
+
+      $('bobAlerts').textContent =
+        alertCount === 0
+          ? 'No active weather alerts were returned.'
+          : `${alertCount} active weather alert${
+              alertCount === 1
+                ? ''
+                : 's'
+            } require attention.`;
+
+      $('activityAlerts').textContent =
+        `Alert check completed: ${alertCount} active.`;
+
+      const list =
+        $('alertList');
+
+      list.replaceChildren();
+
+      for (const alert of safeAlerts) {
+        const item =
+          document.createElement('div');
+
+        item.className =
+          'alert-item';
+
+        const title =
+          document.createElement('div');
+
+        title.className =
+          'alert-title';
+
+        title.textContent =
+          alert.event ||
+          'Weather Alert';
+
+        const headline =
+          document.createElement('div');
+
+        headline.className =
+          'alert-headline';
+
+        headline.textContent =
+          alert.headline ||
+          alert.description ||
+          'Alert details unavailable.';
+
+        item.append(
+          title,
+          headline
+        );
+
+        list.appendChild(item);
+      }
+
+      if (hasEmergency(safeAlerts)) {
+        $('statusAlerts').classList.add(
+          'critical'
+        );
+      }
+    }
+
+    async function loadMissionControl() {
+      const selectedCity =
+        localStorage.getItem('cwn_city') ||
+        'Lebanon';
+
+      $('statusCity').textContent =
+        `CITY: ${selectedCity.toUpperCase()}`;
+
+      $('currentCity').textContent =
+        selectedCity;
+
+      $('bobGreeting').textContent =
+        `Good ${getDayPeriod().toLowerCase()}, Tanner.`;
+
+      try {
+        const coordinates =
+          await getCityCoords(selectedCity);
+
+        const results =
+          await Promise.all([
+            getConditions(
+              coordinates.lat,
+              coordinates.lon
+            ),
+
+            getAlerts(
+              coordinates.lat,
+              coordinates.lon
+            )
+          ]);
+
+        const conditions =
+          results[0];
+
+        const alerts =
+          results[1];
+
+        $('currentTemperature').textContent =
+          formatNumber(
+            conditions.temperature_f,
+            '°F',
+            0
+          );
+
+        $('currentDescription').textContent =
+          conditions.description ||
+          '--';
+
+        $('currentFeelsLike').textContent =
+          formatNumber(
+            conditions.feels_like_f,
+            '°F',
+            0
+          );
+
+        $('currentHumidity').textContent =
+          formatNumber(
+            conditions.humidity_pct,
+            '%',
+            0
+          );
+
+        $('currentWind').textContent =
+          formatWind(conditions);
+
+        $('currentPressure').textContent =
+          formatNumber(
+            conditions.pressure_inhg,
+            ' inHg',
+            2
+          );
+
+        $('currentVisibility').textContent =
+          formatNumber(
+            conditions.visibility_miles,
+            ' mi',
+            1
+          );
+
+        $('currentStation').textContent =
+          conditions.observation_station ||
+          '--';
+
+        $('currentObservation').textContent =
+          formatDate(
+            conditions.observation_time
+          );
+
+        const dataStatus =
+          conditions.data_status ||
+          'unknown';
+
+        $('statusWeather').textContent =
+          `WEATHER: ${dataStatus.toUpperCase()}`;
+
+        $('weatherHealth').textContent =
+          `Weather Engine: ${dataStatus.toUpperCase()}`;
+
+        $('bobWeather').textContent =
+          `${selectedCity} is reporting ${
+            $('currentTemperature').textContent
+          } with ${
+            conditions.description ||
+            'conditions unavailable'
+          }.`;
+
+        $('activityWeather').textContent =
+          `Weather data loaded for ${selectedCity}.`;
+
+        if (dataStatus === 'live') {
+          $('statusWeather').classList.add(
+            'healthy'
+          );
+
+          $('weatherHealth').classList.add(
+            'healthy'
+          );
+        } else {
+          $('statusWeather').classList.add(
+            'warning'
+          );
+
+          $('weatherHealth').classList.add(
+            'warning'
+          );
+        }
+
+        renderAlerts(alerts);
+
+        const radar =
+          getRadarConfig();
+
+        $('radarSource').textContent =
+          `${radar.source_name} · ${radar.mode}`;
+
+        $('radarImage').src =
+          `${radar.url}?t=${Date.now()}`;
+
+        $('radarHealth').textContent =
+          `Radar: ${radar.station} ONLINE`;
+
+        $('radarHealth').classList.add(
+          'healthy'
+        );
+
+        $('activityRadar').textContent =
+          `${radar.station} radar loaded.`;
+
+      } catch (error) {
+        console.error(
+          '[CWN Mission Control]',
+          error
+        );
+
+        $('statusWeather').textContent =
+          'WEATHER: ERROR';
+
+        $('statusWeather').classList.add(
+          'critical'
+        );
+
+        $('weatherHealth').textContent =
+          'Weather Engine: ERROR';
+
+        $('weatherHealth').classList.add(
+          'critical'
+        );
+
+        $('bobWeather').textContent =
+          'Weather data could not be loaded.';
+
+        $('activityWeather').textContent =
+          'Weather data load failed.';
+      }
+    }
+
+    updateClock();
+
+    setInterval(
+      updateClock,
+      30000
+    );
+
+    loadMissionControl();
+
+    setInterval(
+      loadMissionControl,
+      300000
+    );
+  </script>
+
 </body>
 </html>
