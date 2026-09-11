@@ -24,7 +24,14 @@ const NATIVE_W = 1920, NATIVE_H = 1080;
 
 function scaleToFit() {
   const wrapper = document.getElementById('scaleWrapper');
-  const s = Math.min(window.innerWidth / NATIVE_W, window.innerHeight / NATIVE_H);
+  let s = Math.min(
+  window.innerWidth / NATIVE_W,
+  window.innerHeight / NATIVE_H
+);
+
+if (window.innerWidth < 768) {
+  s *= 1.15;
+}
   const offsetX = (window.innerWidth  - NATIVE_W * s) / 2;
   const offsetY = (window.innerHeight - NATIVE_H * s) / 2;
   wrapper.style.transform       = `scale(${s})`;
