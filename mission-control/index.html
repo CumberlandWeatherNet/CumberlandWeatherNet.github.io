@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CWN Mission Control</title>
+
+<style>
+
+body{
+    background:#08111b;
+    color:white;
+    font-family:Arial, sans-serif;
+    margin:0;
+}
+
+.status-bar{
+    background:#16304f;
+    padding:15px;
+    display:flex;
+    justify-content:space-around;
+    font-weight:bold;
+}
+
+.layout{
+    display:flex;
+    min-height:90vh;
+}
+
+.sidebar{
+    width:250px;
+    background:#102337;
+    padding:20px;
+}
+
+.sidebar button{
+    width:100%;
+    margin-bottom:10px;
+    padding:10px;
+    background:#1d466d;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+.dashboard{
+    flex:1;
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#132b45;
+    padding:20px;
+    border-radius:12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="status-bar">
+    <div>ENV: SANDBOX</div>
+    <div>ERA: 1950s</div>
+    <div>CITY: COOKEVILLE</div>
+    <div>ALERTS: 0</div>
+    <div>AI: 3 ONLINE</div>
+</div>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <h2>CWN</h2>
+
+        <button>Dashboard</button>
+        <button>Weather</button>
+        <button>Alerts</button>
+        <button>Radar</button>
+        <button>Bob</button>
+        <button>Uhtred</button>
+        <button>Sentinel</button>
+        <button>Logs</button>
+    </div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h2>Bob Briefing</h2>
+            <p>Good Morning Tanner.</p>
+            <p>Mission Control initialized.</p>
+        </div>
+
+        <div class="card">
+            <h2>AI Status</h2>
+            <p>Bob — ACTIVE</p>
+            <p>Uhtred — ACTIVE</p>
+            <p>Sentinel — PASSIVE</p>
+        </div>
+
+        <div class="card">
+            <h2>System Health</h2>
+            <p>Weather Engine: Healthy</p>
+            <p>Radar: Healthy</p>
+        </div>
+
+        <div class="card">
+            <h2>Safe State</h2>
+            <p>Not Implemented Yet</p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
