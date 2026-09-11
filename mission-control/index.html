@@ -144,5 +144,16 @@ body{
 
 </div>
 
+<script>
+
+const savedCity =
+    localStorage.getItem('cwn_city') ||
+    'No City Selected';
+
+document.getElementById('currentCity').textContent =
+    `Current City: ${savedCity}`;
+
+</script>
+    
 </body>
 </html>
