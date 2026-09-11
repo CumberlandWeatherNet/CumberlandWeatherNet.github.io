@@ -724,8 +724,22 @@
       $('currentCity').textContent =
         selectedCity;
 
-      $('bobGreeting').textContent =
-        `Good ${getDayPeriod().toLowerCase()}, Tanner.`;
+      const hour = new Date().getHours();
+
+let greeting = 'Hello';
+
+if (hour < 12) {
+    greeting = 'Good morning';
+}
+else if (hour < 17) {
+    greeting = 'Good afternoon';
+}
+else {
+    greeting = 'Good evening';
+}
+
+$('bobGreeting').textContent =
+    `${greeting}, Tanner.`;
 
       try {
         const coordinates =
