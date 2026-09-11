@@ -217,6 +217,67 @@
       line-height: 1.4;
     }
 
+    .forecast-card {
+      grid-column: 1 / -1;
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(7, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .forecast-day {
+      min-width: 0;
+      padding: 12px 10px;
+
+      background: #0b1b2b;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+
+      text-align: center;
+    }
+
+    .forecast-name {
+      min-height: 20px;
+      margin-bottom: 8px;
+
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .forecast-temp {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .forecast-type {
+      margin-top: 2px;
+
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .forecast-desc {
+      min-height: 44px;
+      margin-top: 8px;
+
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .forecast-rain {
+      margin-top: 8px;
+
+      color: var(--muted);
+      font-size: 10px;
+    }
+
     .radar-image {
       display: block;
 
@@ -248,6 +309,13 @@
       opacity: 0.65;
     }
 
+    @media (max-width: 1100px) {
+      .forecast-grid {
+        grid-template-columns:
+          repeat(4, minmax(120px, 1fr));
+      }
+    }
+
     @media (max-width: 760px) {
       .layout {
         display: block;
@@ -272,6 +340,17 @@
       }
 
       .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .forecast-grid {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 390px) {
+      .forecast-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -547,6 +626,10 @@
         <p id="activityRadar">
           Waiting for radar data.
         </p>
+
+        <p id="activityForecast">
+          Waiting for forecast data.
+        </p>
       </section>
 
       <section class="card">
@@ -563,6 +646,17 @@
         </button>
       </section>
 
+      <section class="card forecast-card">
+        <h2>7-Day Forecast</h2>
+
+        <div
+          class="forecast-grid"
+          id="forecastGrid"
+        >
+          <p>Loading forecast...</p>
+        </div>
+      </section>
+
     </main>
 
   </div>
@@ -572,9 +666,9 @@
       getCityCoords,
       getConditions,
       getAlerts,
+      fetchNWSPeriods,
       getRadarConfig,
       getClock,
-      getDayPeriod,
       hasEmergency
     } from '../core/cwn-heart-full.js';
 
@@ -586,7 +680,8 @@
       suffix,
       digits = 0
     ) {
-      const number = Number(value);
+      const number =
+        Number(value);
 
       if (!Number.isFinite(number)) {
         return `--${suffix}`;
@@ -600,7 +695,8 @@
         return '--';
       }
 
-      const date = new Date(value);
+      const date =
+        new Date(value);
 
       if (Number.isNaN(date.getTime())) {
         return '--';
@@ -625,8 +721,31 @@
       return `${Math.round(speed)} mph${direction}`;
     }
 
+    function updateGreeting() {
+      const hour =
+        new Date().getHours();
+
+      let greeting =
+        'Hello';
+
+      if (hour < 12) {
+        greeting =
+          'Good morning';
+      } else if (hour < 17) {
+        greeting =
+          'Good afternoon';
+      } else {
+        greeting =
+          'Good evening';
+      }
+
+      $('bobGreeting').textContent =
+        `${greeting}, Tanner.`;
+    }
+
     function updateClock() {
-      const clock = getClock();
+      const clock =
+        getClock();
 
       $('statusClock').textContent =
         `TIME: ${clock.clock_time}`;
@@ -640,6 +759,12 @@
 
       const alertCount =
         safeAlerts.length;
+
+      $('statusAlerts').classList.remove(
+        'healthy',
+        'warning',
+        'critical'
+      );
 
       $('statusAlerts').textContent =
         `ALERTS: ${alertCount}`;
@@ -710,12 +835,311 @@
         $('statusAlerts').classList.add(
           'critical'
         );
+      } else if (alertCount > 0) {
+        $('statusAlerts').classList.add(
+          'warning'
+        );
+      } else {
+        $('statusAlerts').classList.add(
+          'healthy'
+        );
       }
+    }
+
+    function forecastDateKey(period) {
+      if (!period?.startTime) {
+        return '';
+      }
+
+      return String(
+        period.startTime
+      ).slice(0, 10);
+    }
+
+    function localTodayKey() {
+      const now =
+        new Date();
+
+      const year =
+        now.getFullYear();
+
+      const month =
+        String(
+          now.getMonth() + 1
+        ).padStart(2, '0');
+
+      const day =
+        String(
+          now.getDate()
+        ).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    }
+
+    function selectSevenDailyForecasts(periods) {
+      const groups =
+        new Map();
+
+      for (const period of periods) {
+        const key =
+          forecastDateKey(period);
+
+        if (!key) {
+          continue;
+        }
+
+        if (!groups.has(key)) {
+          groups.set(
+            key,
+            []
+          );
+        }
+
+        groups
+          .get(key)
+          .push(period);
+      }
+
+      const selected =
+        [];
+
+      for (
+        const dayPeriods
+        of groups.values()
+      ) {
+        const daytimePeriod =
+          dayPeriods.find(
+            period =>
+              period.isDaytime === true
+          );
+
+        const chosenPeriod =
+          daytimePeriod ||
+          dayPeriods[0];
+
+        if (chosenPeriod) {
+          selected.push(
+            chosenPeriod
+          );
+        }
+
+        if (selected.length === 7) {
+          break;
+        }
+      }
+
+      return selected;
+    }
+
+    function forecastLabel(period) {
+      const key =
+        forecastDateKey(period);
+
+      if (key === localTodayKey()) {
+        return period.isDaytime
+          ? 'Today'
+          : 'Tonight';
+      }
+
+      const date =
+        new Date(period.startTime);
+
+      if (Number.isNaN(date.getTime())) {
+        return period.name ||
+          'Forecast';
+      }
+
+      return date.toLocaleDateString(
+        'en-US',
+        {
+          weekday: 'long'
+        }
+      );
+    }
+
+    function renderForecast(periods) {
+      const grid =
+        $('forecastGrid');
+
+      grid.replaceChildren();
+
+      const safePeriods =
+        Array.isArray(periods)
+          ? periods
+          : [];
+
+      const selectedPeriods =
+        selectSevenDailyForecasts(
+          safePeriods
+        );
+
+      if (selectedPeriods.length === 0) {
+        const message =
+          document.createElement('p');
+
+        message.textContent =
+          'Forecast unavailable.';
+
+        grid.appendChild(message);
+
+        $('activityForecast').textContent =
+          'Forecast data was unavailable.';
+
+        return;
+      }
+
+      for (
+        const period
+        of selectedPeriods
+      ) {
+        const card =
+          document.createElement(
+            'article'
+          );
+
+        card.className =
+          'forecast-day';
+
+        const name =
+          document.createElement(
+            'div'
+          );
+
+        name.className =
+          'forecast-name';
+
+        name.textContent =
+          forecastLabel(period);
+
+        const temperature =
+          document.createElement(
+            'div'
+          );
+
+        temperature.className =
+          'forecast-temp';
+
+        temperature.textContent =
+          period.temperature != null
+            ? `${period.temperature}°${
+                period.temperatureUnit ||
+                'F'
+              }`
+            : '--°F';
+
+        const type =
+          document.createElement(
+            'div'
+          );
+
+        type.className =
+          'forecast-type';
+
+        type.textContent =
+          period.isDaytime
+            ? 'High'
+            : 'Low';
+
+        const description =
+          document.createElement(
+            'div'
+          );
+
+        description.className =
+          'forecast-desc';
+
+        description.textContent =
+          period.shortForecast ||
+          'Forecast unavailable';
+
+        const rain =
+          document.createElement(
+            'div'
+          );
+
+        rain.className =
+          'forecast-rain';
+
+        const rainChance =
+          period
+            .probabilityOfPrecipitation
+            ?.value;
+
+        rain.textContent =
+          rainChance != null
+            ? `Rain: ${rainChance}%`
+            : 'Rain: --%';
+
+        card.append(
+          name,
+          temperature,
+          type,
+          description,
+          rain
+        );
+
+        grid.appendChild(card);
+      }
+
+      $('activityForecast').textContent =
+        `${selectedPeriods.length}-day forecast loaded.`;
+    }
+
+    function loadRadar() {
+      const radar =
+        getRadarConfig();
+
+      $('radarSource').textContent =
+        `${radar.source_name} · ${radar.mode}`;
+
+      const radarImage =
+        $('radarImage');
+
+      radarImage.onload =
+        () => {
+          $('radarHealth').textContent =
+            `Radar: ${radar.station} ONLINE`;
+
+          $('radarHealth').classList.remove(
+            'warning',
+            'critical'
+          );
+
+          $('radarHealth').classList.add(
+            'healthy'
+          );
+
+          $('activityRadar').textContent =
+            `${radar.station} radar loaded.`;
+        };
+
+      radarImage.onerror =
+        () => {
+          $('radarHealth').textContent =
+            `Radar: ${radar.station} ERROR`;
+
+          $('radarHealth').classList.remove(
+            'healthy',
+            'warning'
+          );
+
+          $('radarHealth').classList.add(
+            'critical'
+          );
+
+          $('activityRadar').textContent =
+            `${radar.station} radar failed to load.`;
+        };
+
+      radarImage.src =
+        `${radar.url}?t=${Date.now()}`;
     }
 
     async function loadMissionControl() {
       const selectedCity =
-        localStorage.getItem('cwn_city') ||
+        localStorage.getItem(
+          'cwn_city'
+        ) ||
         'Lebanon';
 
       $('statusCity').textContent =
@@ -724,45 +1148,47 @@
       $('currentCity').textContent =
         selectedCity;
 
-      const hour = new Date().getHours();
+      updateGreeting();
 
-let greeting = 'Hello';
+      $('statusWeather').classList.remove(
+        'healthy',
+        'warning',
+        'critical'
+      );
 
-if (hour < 12) {
-    greeting = 'Good morning';
-}
-else if (hour < 17) {
-    greeting = 'Good afternoon';
-}
-else {
-    greeting = 'Good evening';
-}
-
-$('bobGreeting').textContent =
-    `${greeting}, Tanner.`;
+      $('weatherHealth').classList.remove(
+        'healthy',
+        'warning',
+        'critical'
+      );
 
       try {
         const coordinates =
-          await getCityCoords(selectedCity);
+          await getCityCoords(
+            selectedCity
+          );
 
-        const results =
-          await Promise.all([
-            getConditions(
-              coordinates.lat,
-              coordinates.lon
-            ),
+        const [
+          conditions,
+          alerts,
+          forecastPeriods
+        ] = await Promise.all([
+          getConditions(
+            coordinates.lat,
+            coordinates.lon
+          ),
 
-            getAlerts(
-              coordinates.lat,
-              coordinates.lon
-            )
-          ]);
+          getAlerts(
+            coordinates.lat,
+            coordinates.lon
+          ),
 
-        const conditions =
-          results[0];
-
-        const alerts =
-          results[1];
+          fetchNWSPeriods(
+            coordinates.lat,
+            coordinates.lon,
+            14
+          )
+        ]);
 
         $('currentTemperature').textContent =
           formatNumber(
@@ -790,7 +1216,9 @@ $('bobGreeting').textContent =
           );
 
         $('currentWind').textContent =
-          formatWind(conditions);
+          formatWind(
+            conditions
+          );
 
         $('currentPressure').textContent =
           formatNumber(
@@ -844,7 +1272,10 @@ $('bobGreeting').textContent =
           $('weatherHealth').classList.add(
             'healthy'
           );
-        } else {
+        } else if (
+          dataStatus === 'stale' ||
+          dataStatus === 'fallback'
+        ) {
           $('statusWeather').classList.add(
             'warning'
           );
@@ -852,28 +1283,25 @@ $('bobGreeting').textContent =
           $('weatherHealth').classList.add(
             'warning'
           );
+        } else {
+          $('statusWeather').classList.add(
+            'critical'
+          );
+
+          $('weatherHealth').classList.add(
+            'critical'
+          );
         }
 
-        renderAlerts(alerts);
-
-        const radar =
-          getRadarConfig();
-
-        $('radarSource').textContent =
-          `${radar.source_name} · ${radar.mode}`;
-
-        $('radarImage').src =
-          `${radar.url}?t=${Date.now()}`;
-
-        $('radarHealth').textContent =
-          `Radar: ${radar.station} ONLINE`;
-
-        $('radarHealth').classList.add(
-          'healthy'
+        renderAlerts(
+          alerts
         );
 
-        $('activityRadar').textContent =
-          `${radar.station} radar loaded.`;
+        renderForecast(
+          forecastPeriods
+        );
+
+        loadRadar();
 
       } catch (error) {
         console.error(
@@ -900,14 +1328,36 @@ $('bobGreeting').textContent =
 
         $('activityWeather').textContent =
           'Weather data load failed.';
+
+        $('activityForecast').textContent =
+          'Forecast data load failed.';
+
+        const grid =
+          $('forecastGrid');
+
+        grid.replaceChildren();
+
+        const message =
+          document.createElement('p');
+
+        message.textContent =
+          'Forecast unavailable.';
+
+        grid.appendChild(message);
       }
     }
 
     updateClock();
+    updateGreeting();
 
     setInterval(
       updateClock,
       30000
+    );
+
+    setInterval(
+      updateGreeting,
+      60000
     );
 
     loadMissionControl();
